@@ -27,7 +27,7 @@ max_count = 10
 test_surface = pygame.Surface((WIDTH, HEIGHT))
 
 
-Fruit(FruitType.Apple, Vector2(400, 200), Vector2(0, -100))
+Fruit(FruitType.Apple, Vector2(400, 200), Vector2(-10, -30))
 
 
 def get_cv_results():

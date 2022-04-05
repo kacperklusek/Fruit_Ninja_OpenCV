@@ -12,7 +12,7 @@ class FruitType(Enum):
 
 
 class Fruit(Item):
-    APPLE_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'apple.png')
+    APPLE_IMG_PATH = os.path.join('../assets', 'images', 'items', 'fruits', 'apple.png')
 
     group = pygame.sprite.Group()
 
