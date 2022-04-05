@@ -1,6 +1,6 @@
 import pygame
 import pygame_physics
-from pygame_physics import collisions
+
 pygame.init()
 counter = 0
 
