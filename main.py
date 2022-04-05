@@ -9,7 +9,10 @@ while True:
     img = cv2.flip(img, 1)
     hands, img = detector.findHands(img, flipType=False)
 
-    print(len(hands))
+    if hands:
+        hand = hands[0] if len(hands) == 1 or hands[0]['type'] == 'Right' else hands[1]
+        point = hand['lmList'][8]
+        print(point)
 
     cv2.imshow('Image', img)
     cv2.waitKey(1)
