@@ -1,14 +1,15 @@
 import pygame
-from collections import deque
 from pygame.math import Vector2
+from collections import deque
 
 from cv2 import cv2
-# from cvzone.HandTrackingModule import HandDetector
 import mediapipe as mp
 mp_hands = mp.solutions.hands
 
 cap = cv2.VideoCapture(0)
-# detector = HandDetector(detectionCon=0.8, maxHands=3)
+
+from items.fruits.fruit import Fruit, FruitType
+
 
 WIDTH = 800
 HEIGHT = 400
@@ -24,6 +25,9 @@ coords = deque()
 max_count = 10
 
 test_surface = pygame.Surface((WIDTH, HEIGHT))
+
+
+Fruit(FruitType.Apple, Vector2(400, 200), Vector2(0, -100))
 
 
 def get_cv_results():
@@ -43,6 +47,7 @@ with mp_hands.Hands(
   while True:
     test_surface.fill('Black')
 
+
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         pygame.quit()
@@ -59,6 +64,8 @@ with mp_hands.Hands(
 
     if len(coords) > 1: pygame.draw.lines(test_surface, 'Red', False, coords, 4)
 
+    Fruit.group.update()
+    Fruit.group.draw(test_surface)
     screen.blit(test_surface, (0, 0))
     pygame.display.update()
     clock.tick(FPS)
