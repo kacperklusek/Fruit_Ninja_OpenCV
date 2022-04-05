@@ -3,16 +3,19 @@ from collections import deque
 from pygame.math import Vector2
 
 from cv2 import cv2
-from cvzone.HandTrackingModule import HandDetector
+# from cvzone.HandTrackingModule import HandDetector
+import mediapipe as mp
+mp_hands = mp.solutions.hands
 
 cap = cv2.VideoCapture(0)
-detector = HandDetector(detectionCon=0.8, maxHands=3)
+# detector = HandDetector(detectionCon=0.8, maxHands=3)
 
-
+WIDTH = 800
+HEIGHT = 400
 FPS = 200
 
 pygame.init()
-screen = pygame.display.set_mode((800, 400))
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Fruit Ninja')
 clock = pygame.time.Clock()
 game_active = True
@@ -20,31 +23,39 @@ game_active = True
 coords = deque()
 max_count = 10
 
-test_surface = pygame.Surface((800, 400))
+test_surface = pygame.Surface((WIDTH, HEIGHT))
 
 
-while True:
-    # hand detection shit in here
-    success, img = cap.read()
-    img = cv2.flip(img, 1)
-    hands, img = detector.findHands(img, flipType=False)
-    # hand detection done
+def get_cv_results():
+  success, image = cap.read()
+  image.flags.writeable = True
+  image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+  return hands.process(image)
 
+def get_coords():
+  normalized_landmark = results.multi_hand_landmarks[0].landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+  return [WIDTH - normalized_landmark.x * WIDTH, normalized_landmark.y * HEIGHT]
+
+with mp_hands.Hands(
+    model_complexity=0,
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5) as hands:
+  while True:
     test_surface.fill('Black')
-    # if coords: coords.popleft()
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+      if event.type == pygame.QUIT:
+        pygame.quit()
+        exit()
 
     if game_active:
-        if hands:
-            hand = hands[0] if len(hands) == 1 or hands[0]['type'] == 'Right' else hands[1]
-            fingerpos = hand['lmList'][8]
-            coords.append(fingerpos[:2])
+      if cap.isOpened():
+        results = get_cv_results()
+        if results and results.multi_hand_landmarks:
+          pixel_coords = get_coords()
+          coords.append(pixel_coords)
         if len(coords) > max_count:
-            coords.popleft()
+          coords.popleft()
 
     if len(coords) > 1: pygame.draw.lines(test_surface, 'Red', False, coords, 4)
 
