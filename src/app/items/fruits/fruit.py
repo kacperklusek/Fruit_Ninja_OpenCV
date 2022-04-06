@@ -2,7 +2,8 @@ import os
 import pygame
 from pygame.math import Vector2
 from enum import Enum
-from ..item import Item
+
+from src.app.items.item import Item
 
 
 class FruitType(Enum):
@@ -12,7 +13,7 @@ class FruitType(Enum):
 
 
 class Fruit(Item):
-    APPLE_IMG_PATH = os.path.join('../assets', 'images', 'items', 'fruits', 'apple.png')
+    APPLE_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'apple.png')
 
     group = pygame.sprite.Group()
 
@@ -26,4 +27,6 @@ class Fruit(Item):
 
     @classmethod
     def get_image_path(cls, fruit_type: FruitType):
-        return cls.APPLE_IMG_PATH
+        match fruit_type:
+            case FruitType.Apple:
+                return cls.APPLE_IMG_PATH

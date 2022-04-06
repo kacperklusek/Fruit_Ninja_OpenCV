@@ -1,6 +1,7 @@
 from pygame.math import Vector2
-from fruits.fruit import Fruit
-from bombs.bomb import Bomb
+
+from src.app.items.bombs.bomb import Bomb
+from src.app.items.fruits.fruit import Fruit
 
 
 class ItemsSpawner:

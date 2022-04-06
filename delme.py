@@ -1,5 +1,5 @@
-from cv2 import cv2
-from cvzone.HandTrackingModule import HandDetector
+# from cv2 import cv2
+# from cvzone.HandTrackingModule import HandDetector
 
 import cv2
 import mediapipe
@@ -17,20 +17,18 @@ circleRadius = 40
 
 with handsModule.Hands(static_image_mode=False, min_detection_confidence=0.7, min_tracking_confidence=0.7,
                        max_num_hands=1) as hands:
-    while (True):
+    while True:
 
         ret, frame = capture.read()
 
-        if ret == False:
-            continue
+        if not ret: continue
 
         frame = cv2.flip(frame, 1)
 
         results = hands.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         circleColor = (0, 0, 0)
 
-        if results.multi_hand_landmarks != None:
-
+        if results.multi_hand_landmarks:
             normalizedLandmark = results.multi_hand_landmarks[0].landmark[handsModule.HandLandmark.INDEX_FINGER_TIP]
             pixelCoordinatesLandmark = drawingModule._normalized_to_pixel_coordinates(normalizedLandmark.x,
                                                                                       normalizedLandmark.y,
@@ -38,7 +36,6 @@ with handsModule.Hands(static_image_mode=False, min_detection_confidence=0.7, mi
                                                                                       frameHeight)
 
             cv2.circle(frame, pixelCoordinatesLandmark, 2, (255, 0, 0), -1)
-
 
         cv2.circle(frame, circleCenter, circleRadius, circleColor, -1)
 

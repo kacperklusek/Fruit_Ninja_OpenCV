@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
-from physics.gravity_controller import GravityController
+
+from src.app.physics.gravity_controller import GravityController
 
 
 class Item(pygame.sprite.Sprite):
