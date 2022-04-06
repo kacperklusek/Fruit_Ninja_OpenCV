@@ -4,7 +4,7 @@ from physics.gravity_controller import GravityController
 
 
 class Item(pygame.sprite.Sprite):
-    gravity_controller = GravityController(Vector2(0, 2))
+    gravity_controller = GravityController(Vector2(0, 1))
 
     def __init__(self, image: str, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
         pygame.sprite.Sprite.__init__(self)

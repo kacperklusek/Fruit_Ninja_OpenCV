@@ -4,11 +4,14 @@ from collections import deque
 
 from cv2 import cv2
 import mediapipe as mp
+
+
 mp_hands = mp.solutions.hands
 
 cap = cv2.VideoCapture(0)
 
 from items.fruits.fruit import Fruit, FruitType
+from items.blade import Blade
 
 
 WIDTH = 800
@@ -27,8 +30,7 @@ max_count = 10
 test_surface = pygame.Surface((WIDTH, HEIGHT))
 
 
-Fruit(FruitType.Apple, Vector2(400, 200), Vector2(-10, -30))
-
+Fruit(FruitType.Apple, Vector2(400, 200), Vector2(-5, -20))
 
 def get_cv_results():
   success, image = cap.read()
@@ -39,6 +41,8 @@ def get_cv_results():
 def get_coords():
   normalized_landmark = results.multi_hand_landmarks[0].landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
   return [WIDTH - normalized_landmark.x * WIDTH, normalized_landmark.y * HEIGHT]
+
+line = pygame.sprite.Sprite()
 
 with mp_hands.Hands(
     model_complexity=0,
@@ -63,6 +67,12 @@ with mp_hands.Hands(
           coords.popleft()
 
     if len(coords) > 1: pygame.draw.lines(test_surface, 'Red', False, coords, 4)
+
+    # check collision and remove colliding
+    if coords and pixel_coords:
+      for fruit in Fruit.group:
+        if fruit.rect.collidepoint(coords[-1]):
+          fruit.kill()
 
     Fruit.group.update()
     Fruit.group.draw(test_surface)
