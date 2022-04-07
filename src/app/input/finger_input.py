@@ -8,10 +8,9 @@ class FingerInput(InputSource):
     mp_hands = mp.solutions.hands
 
     def __init__(self,
-                 history_size=10,
+                 visibility_duration=.25,
                  finger_code=mp_hands.HandLandmark.INDEX_FINGER_TIP):
-        InputSource.__init__(self)
-        self.history_size = history_size
+        InputSource.__init__(self, visibility_duration)
         self.finger_code = finger_code
         self.camera = None
 
@@ -29,7 +28,7 @@ class FingerInput(InputSource):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return hands.process(image)
 
-    def run(self):
+    def run(self, callback):
         with self.mp_hands.Hands(
                 model_complexity=0,
                 min_detection_confidence=0.75,
@@ -39,8 +38,9 @@ class FingerInput(InputSource):
                 results = self.get_cv_results(hands)
 
                 if results and results.multi_hand_landmarks:
-                    self.update_history(self.get_coords(results))
+                    self.add_to_history(self.get_coords(results))
 
+                callback()
                 cv2.waitKey(1)
 
     def get_coords(self, results):
