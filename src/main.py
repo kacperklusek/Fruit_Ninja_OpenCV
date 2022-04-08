@@ -4,11 +4,11 @@ from pygame.math import Vector2
 from src.app.items.fruits.fruit import Fruit, FruitType
 from src.app.input.finger_input import FingerInput
 from src.app.input.mouse_input import MouseInput
-
+from src.app.input.hand_input import HandInput
 
 WIDTH = 800
 HEIGHT = 400
-FPS = 60
+FPS = 200
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -21,8 +21,9 @@ test_surface = pygame.Surface((WIDTH, HEIGHT))
 
 Fruit(FruitType.Apple, Vector2(400, 200), Vector2(-5, -20))
 
+input_source = HandInput()
 # input_source = FingerInput()
-input_source = MouseInput()
+# input_source = MouseInput()
 input_source.start_tracking()
 
 
@@ -34,8 +35,6 @@ while True:
             input_source.end_tracking()
             pygame.quit()
             exit()
-
-    print(input_source.points_history)
 
     if len(input_source.points_history) > 1:
         pygame.draw.lines(test_surface, 'White', False, input_source.points_history, 4)
