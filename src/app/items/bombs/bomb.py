@@ -16,3 +16,7 @@ class Bomb(Item):
     def kill(self):
         self.group.remove(self)
         super().kill()
+
+    def handle_out_of_bounds(self):
+        self.kill()
+

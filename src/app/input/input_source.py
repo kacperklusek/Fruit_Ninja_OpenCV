@@ -7,6 +7,7 @@ from functools import reduce
 from collections import deque
 from src.config import game_config
 from abc import ABC, abstractmethod
+from src.app.helpers.point import Point
 
 
 class InputPoint:
@@ -34,7 +35,7 @@ class InputSource(ABC):
         self.thread.join()
 
     def add_to_history(self, coords):
-        self._points_history.append(InputPoint(coords, time.time()))
+        self._points_history.append(InputPoint(Point(*coords), time.time()))
 
     def update_blade(self):
         while self._points_history and time.time() - self._points_history[0].time_added >= self.visibility_duration:

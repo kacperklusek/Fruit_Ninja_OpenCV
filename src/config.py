@@ -16,7 +16,8 @@ GameConfig = namedtuple('GameConfig', [
     'FPS',
     'BACKGROUND_COLOR',
     'FRUIT_FREQUENCY',
-    'BOMB_FREQUENCY'
+    'BOMB_FREQUENCY',
+    'LIFES'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -41,7 +42,10 @@ game_config = GameConfig(
     HEIGHT=400,
     FPS=60,
     BACKGROUND_COLOR='Black',
-    TITLE='Fruit Ninja'
+    TITLE='Fruit Ninja',
+    FRUIT_FREQUENCY=70,
+    BOMB_FREQUENCY=300,
+    LIFES=3
 )
 
 blade_config = BladeConfig(

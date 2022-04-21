@@ -23,6 +23,9 @@ class Blade(pygame.sprite.Sprite):  # TODO - replace line drawing from main with
     def __repr__(self):
         return f'{self.__class__.__name__}({self.points_history})'
 
+    def __getitem__(self, idx):
+        return self.points_history[idx]
+
     @property
     def points_history(self):
         return self.input_source.points_history
@@ -30,12 +33,38 @@ class Blade(pygame.sprite.Sprite):  # TODO - replace line drawing from main with
     def draw(self):
         self.surface.fill(self.EMPTY_COLOR)
         if len(self.points_history) > 1:
+            # points = self.approximate_points()
             pygame.draw.lines(self.surface, self.config.COLORS[0], False, self.points_history, len(self))
             self.screen.blit(self.surface, (0, 0))
 
     def change_input_source(self, input_source_type):
         self.input_source.end_tracking()
         self.input_source = self.create_input_source(input_source_type)
+
+    def approximate_points(self):  # FIXME - singular matrix error
+        xs, ys = zip(*self.filter_points(self.points_history))
+        ws = [1] * len(xs)
+        ws[-1] = 1000
+        fn = self.mean_square_approximation(xs, ys, ws, 5)
+        xs2 = np.linspace(xs[0], xs[-1], self.APPROXIMATION_POINTS)
+        return list(zip(xs2, np.vectorize(fn)(xs2)))
+
+    def filter_points(self):  # TODO - implement for approximation
+        n = len(self)
+        inf = float('inf')
+        min_x = inf
+        max_x = -inf
+
+        for i in range(n, -1, -1):
+            if min_x == inf and min_x == inf:
+                min_x = min(min_x, self.points_history.x)
+                max_x = max(max_x, self.points_history.x)
+            elif min_x == inf:
+                ...
+            elif min_x == inf:
+                ...
+            else:
+                ...
 
     @staticmethod
     def create_input_source(input_source_type):
@@ -46,17 +75,6 @@ class Blade(pygame.sprite.Sprite):  # TODO - replace line drawing from main with
                 return FingerInput()  # TODO - add a possibility to adjust parameters
             case InputSource.MOUSE:
                 return MouseInput()  # TODO - add a possibility to adjust parameters
-
-    def get_last_point(self):
-        return self.input_source.points_history[-1]
-
-    def approximate_points(self):  # FIXME - singular matrix error
-        xs, ys = zip(*self.points_history)
-        ws = [1] * len(xs)
-        ws[-1] = 1000
-        fn = self.mean_square_approximation(xs, ys, ws, 3)
-        xs2 = np.linspace(xs[0], xs[-1], self.APPROXIMATION_POINTS)
-        return list(zip(xs2, np.vectorize(fn)(xs2)))
 
     @staticmethod
     def mean_square_approximation(xs, ys, ws, m):

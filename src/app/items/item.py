@@ -8,6 +8,7 @@ from src.config import game_config
 
 class Item(pygame.sprite.Sprite):
     gravity_controller = GravityController(Vector2(0, 0.3))
+    out_of_bounds = 0
 
     def __init__(self, image: str, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
         pygame.sprite.Sprite.__init__(self)
@@ -31,4 +32,9 @@ class Item(pygame.sprite.Sprite):
 
     def check_screen_boundaries(self):
         if self.position.y > game_config.HEIGHT + 100 and self.velocity.y > 0:
-            self.kill()
+            self.handle_out_of_bounds()
+
+    def handle_out_of_bounds(self):
+        self.kill()
+        Item.out_of_bounds += 1
+
