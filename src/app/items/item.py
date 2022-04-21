@@ -3,9 +3,11 @@ from pygame.math import Vector2
 
 from src.app.physics.gravity_controller import GravityController
 
+from src.config import game_config
+
 
 class Item(pygame.sprite.Sprite):
-    gravity_controller = GravityController(Vector2(0, 1))
+    gravity_controller = GravityController(Vector2(0, 0.3))
 
     def __init__(self, image: str, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
         pygame.sprite.Sprite.__init__(self)
@@ -19,9 +21,14 @@ class Item(pygame.sprite.Sprite):
 
     def update(self):
         self.apply_gravity()
+        self.check_screen_boundaries()
 
     def apply_gravity(self):
         self.velocity += self.gravity_controller.g
         self.position += self.velocity
         self.rect.x = self.position.x
         self.rect.y = self.position.y
+
+    def check_screen_boundaries(self):
+        if self.position.y > game_config.HEIGHT + 100 and self.velocity.y > 0:
+            self.kill()

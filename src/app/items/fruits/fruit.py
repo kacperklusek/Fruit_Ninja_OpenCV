@@ -1,15 +1,9 @@
 import os
 import pygame
 from pygame.math import Vector2
-from enum import Enum
 
 from src.app.items.item import Item
-
-
-class FruitType(Enum):
-    Apple = 'Apple'
-    Orange = 'Orange'
-    Banana = 'Banana'
+from src.app.enums.fruit_type import FruitType
 
 
 class Fruit(Item):
@@ -28,5 +22,5 @@ class Fruit(Item):
     @classmethod
     def get_image_path(cls, fruit_type: FruitType):
         match fruit_type:
-            case FruitType.Apple:
-                return cls.APPLE_IMG_PATH
+            case FruitType.Apple: return cls.APPLE_IMG_PATH
+        return cls.APPLE_IMG_PATH
