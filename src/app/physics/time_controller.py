@@ -16,8 +16,10 @@ class TimeController(Singleton):
     _last_frame_time = 0
     _last_spawn_time = 0
     _last_frame_duration = 0
+    _last_fruit_kill_time = 0
     _init_time = 0
     _ratio = 1
+
 
     @classmethod
     def set_ratio(cls, ratio):
@@ -54,3 +56,15 @@ class TimeController(Singleton):
     @property
     def get_interval_since_last_spawn(cls) -> float:
         return time() - cls._last_spawn_time
+
+    @classmethod
+    @property
+    def last_fruit_kill_time(cls):
+        return cls._last_fruit_kill_time
+
+    @classmethod
+    def update_last_fruit_kill(cls):
+        cls._last_fruit_kill_time = time()
+
+
+

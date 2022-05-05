@@ -57,7 +57,7 @@ game_config = GameConfig(
 blade_config = BladeConfig(
     COLORS=['White'],
     VISIBILITY_DURATION=.2,
-    INPUT_SOURCE=InputSource.FINGER
+    INPUT_SOURCE=InputSource.MOUSE
 )
 
 bomb_config = BombConfig(
