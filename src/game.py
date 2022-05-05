@@ -29,23 +29,34 @@ class Game:
 
         # Utilities
         self.time_controller = TimeController()
-        self.fruit_spawner = ItemsSpawner(config.fruit,
-                                          config.bomb,
-                                          self.time_controller,
-                                          self.config.DIFFICULTY)
+        self.item_spawner = ItemsSpawner(
+            config.fruits,
+            config.bomb,
+            self.time_controller,
+            self.config.DIFFICULTY
+        )
 
         # Game state
         self.game_active = True
         self.score = 0
-        self.lives = self.config.LIFES
+        self.lives = self.config.LIVES
         self.stats = None
 
     def start(self):
-        while True:
+        self.time_controller.init_game_timing()
+        self.game_active = True
+        self.score = 0
+        self.lives = self.config.LIVES
+        self.stats = None
+
+        while self.game_active:
             self.time_controller.update_last_frame_time()
             self.handle_events()
             self.update()
+            self.update_difficulty()
             self.clock.tick(self.config.FPS)
+
+        #TODO - add new game
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -73,12 +84,13 @@ class Game:
 
         self.update_items()
         self.blade.draw()
-        self.fruit_spawner.update()
+        self.item_spawner.update()
         pygame.display.update()
 
     def update_difficulty(self):
-        ...
-        # self.fruit_spawner.
+        print(self.time_controller.total_elapsed_time)
+        self.item_spawner.intensity = min(1 + self.time_controller.total_elapsed_time // 8, 5)
+        self.item_spawner.interval = max(2.5 - self.time_controller.total_elapsed_time / 15, 1.5)
 
     def update_items(self):
         self.update_fruits()

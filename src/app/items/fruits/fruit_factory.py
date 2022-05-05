@@ -1,13 +1,16 @@
+import random
 from src.app.items.fruits.fruit_type import FruitType
-from src.app.items.fruits.fruit import Fruit
+from src.app.items.fruits.fruit import PlainFruit
 from pygame.math import Vector2
 
 
 class FruitFactory:
-    @staticmethod
-    def create(fruit_config, position: Vector2, velocity: Vector2):
-        match fruit_config.FRUIT_TYPE:
-            case FruitType.APPLE | FruitType.ORANGE:
-                return Fruit(fruit_config, position, velocity)
-            case FruitType.FREEZE_BANANA:
+    def __init__(self, config):
+        self.config = config
+
+    def create(self, fruit_type, position: Vector2, velocity: Vector2):
+        match fruit_type:
+            case FruitType.PLAIN:
+                return PlainFruit(random.choice(self.config.PLAIN.IMAGE_PATHS), position, velocity)
+            case FruitType.BONUS:
                 ...

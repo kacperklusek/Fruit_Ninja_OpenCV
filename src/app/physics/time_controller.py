@@ -19,16 +19,6 @@ class TimeController(Singleton):
     _init_time = 0
     _ratio = 1
 
-    # @property
-    # def ratio(cls):
-    #     return cls._ratio
-    #
-    # @ratio.setter
-    # def ratio(cls, ratio):
-    #     if not 0 < ratio <= cls.MAX_RATIO:
-    #         raise ValueError(f'ratio should be between 0 and {cls.MAX_RATIO}')
-    #     cls._ratio = ratio
-
     @classmethod
     def set_ratio(cls, ratio):
         if not 0 < ratio <= cls.MAX_RATIO:
