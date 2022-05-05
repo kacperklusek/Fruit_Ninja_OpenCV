@@ -33,11 +33,11 @@ class TimeController(Singleton):
 
     @property
     def last_frame_duration(self):
-        return self.__last_frame_duration
+        return self.__last_frame_duration * self.ratio
 
     @property
     def total_elapsed_time(self):
-        return time() - self.__start_time
+        return (time() - self.__start_time) * self.ratio
 
     def register_new_frame(self):
         curr_time = time()

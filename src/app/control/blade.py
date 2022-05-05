@@ -27,7 +27,7 @@ class Blade(pygame.sprite.Sprite):
 
     @property
     def points_history(self):
-        print(self.input_source.points_history)
+        # print(self.input_source.points_history)
         return self.input_source.points_history
 
     def draw(self):

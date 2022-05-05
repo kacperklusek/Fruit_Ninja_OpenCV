@@ -1,12 +1,14 @@
 import pygame
 from time import time
 
+from pygame.math import Vector2
 from src.app.control.blade import Blade
 from src.app.items.bomb import Bomb
 from src.app.items.fruit import Fruit
 from src.app.items.item import Item
 from src.app.items.items_spawner import ItemsSpawner
 from src.app.physics.time_controller import TimeController
+from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 
 from src.config import window_config, game_modes_config, game_config
 
@@ -43,6 +45,10 @@ class Game:
         self.stats = None
 
         self.last_fruit_kill_time = 0
+        self.prev_ratio = self.time_controller.ratio
+
+        self.freeze_start_time = 0
+        self.gravity_start_time = 0
 
     def start(self):
         self.time_controller.init()
@@ -58,7 +64,7 @@ class Game:
             self.update_difficulty()
             self.clock.tick(game_config.FPS)
 
-        #TODO - add new game
+        # TODO - add new game
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -77,6 +83,7 @@ class Game:
             self.game_active = False
 
         self.update_items()
+        self.update_bonus()
         self.blade.draw()
         self.item_spawner.update()
         pygame.display.update()
@@ -112,6 +119,8 @@ class Game:
                 if fruit.rect.collidepoint(self.blade[-1]):
                     fruit.kill()
                     self.handle_score_update()
+                    if not isinstance(fruit, PlainFruit):
+                        self.start_bonus(fruit)
             for bomb in Bomb.group:
                 if bomb.rect.collidepoint(self.blade[-1]):
                     self.handle_bomb_collision(bomb)
@@ -143,3 +152,21 @@ class Game:
         if self.lives <= Item.out_of_bounds:
             print("GAME OVER")
             self.game_active = False
+
+    def start_bonus(self, fruit):
+        print('self.start_bonus')
+        if isinstance(fruit, GravityFruit):
+            self.freeze_start_time = time()
+            Item.gravity_controller.g = Vector2(0, -600)
+            print('Gravity start')
+        elif isinstance(fruit, FreezeFruit):
+            self.gravity_start_time = time()
+            self.time_controller.ratio = .25
+            print('Freeze start')
+
+    def update_bonus(self):
+        curr_time = time()
+        if curr_time - self.freeze_start_time > 10:
+            self.time_controller.ratio = self.prev_ratio
+        if curr_time - self.gravity_start_time > 10:
+            Item.gravity_controller.g = Vector2(0, 600)

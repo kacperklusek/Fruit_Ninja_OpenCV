@@ -1,7 +1,10 @@
 import random
-from time import time
-from pygame.math import Vector2
 from random import randint
+from time import time
+
+from pygame import Vector2
+
+from src.app.items.item import Item
 from src.app.utils.enums.items import ItemType
 from src.app.items.item_factory import ItemFactory
 
@@ -55,4 +58,9 @@ class ItemsSpawner:
         # TODO spawn fruit based on item in the argument
         # FruitFactory.create(fruit_config, Vector2(randint(200, 600), 400), Vector2(randint(-5, 5), -randint(12, 17)))
         item = ItemFactory.create(fruit_type)
-        item.spawn(Vector2(randint(200, 600), 400), Vector2(randint(-100, 100), -randint(500, 700)))
+        if Item.gravity_controller.g.y > 0:
+            print('TYPE 1')
+            item.spawn(Vector2(randint(200, 600), 800), Vector2(randint(-100, 100), -randint(800, 1000)))
+        else:
+            print('TYPE 2')
+            item.spawn(Vector2(randint(200, 600), 0), Vector2(randint(-100, 100), randint(800, 1000)))
