@@ -1,85 +1,115 @@
 from collections import namedtuple
-from src.app.enums.input_source import InputSource
+from src.app.utils.enums.input_source import InputSource
+from src.app.utils.enums.game_mode import GameMode
 import os
-from src.app.items.fruits.fruit_type import FruitType
+import mediapipe as mp
 
 
-GlobalConfig = namedtuple('GlobalConfig', [
-    'game',
-    'blade',
-    'fruits',
-    'bomb'
-])
+HandLandmark = mp.solutions.hands.HandLandmark
 
-GameConfig = namedtuple('GameConfig', [
+
+def image_path(*parts):
+    return os.path.join('assets', 'graphics', *parts)
+
+
+WindowConfig = namedtuple('WindowConfig', [
     'TITLE',
     'WIDTH',
     'HEIGHT',
+    'BACKGROUND_PATH'
+])
+
+GameConfig = namedtuple('GameConfig', [
     'FPS',
-    'BACKGROUND_PATH',
-    'FRUIT_FREQUENCY',
-    'BOMB_FREQUENCY',
-    'LIVES',
-    'DIFFICULTY'
+    'INPUT_SOURCE'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
     'COLORS',
-    'VISIBILITY_DURATION',
-    'INPUT_SOURCE'
+    'VISIBILITY_DURATION'
 ])
 
-BombConfig = namedtuple('BombConfig', [
-    'SPAWN_PROBABILITY'
+HandInputConfig = namedtuple('HandInputConfig', [
+    'MIN_DETECTION_CONFIDENCE',
+    'MIN_TRACKING_CONFIDENCE'
 ])
 
-PlainFruitsConfig = namedtuple('PlainFruitsConfig', [
-    'IMAGE_PATHS'
+FingerInputConfig = namedtuple('FingerInputConfig', [
+    'FINGER_CODE',  # The number of the finger which will be tracked
+    'MIN_DETECTION_CONFIDENCE',
+    'MIN_TRACKING_CONFIDENCE'
 ])
 
-FruitsConfig = namedtuple('FruitsConfig', [
-    'PLAIN'
+MouseInputConfig = namedtuple('MouseInputConfig', [
+    'REFRESH_FREQUENCY'  # Something like DPI in a mouse
+])
+
+GameModeConfig = namedtuple('GameModeConfig', [
+    'MODE',
+    'LIVES',
+    'DIFFICULTY'
+    # TODO - add more params related to the game mode configuration
+])
+
+GameModesConfig = namedtuple('GameModesConfig', [
+    'ZEN',
+    'CLASSIC',
+    'ARCADE',
+    'MULTIPLAYER'
+])
+
+SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
+    'PLAIN_FRUIT',
+    'BOMB'
 ])
 
 
 game_config = GameConfig(
+    FPS=float('inf'),  # Unlimited
+    INPUT_SOURCE=InputSource.MOUSE
+)
+
+window_config = WindowConfig(
+    TITLE='Fruit ninja',
     WIDTH=800,
-    HEIGHT=400,
-    FPS=600,
-    BACKGROUND_PATH=os.path.join('assets', 'images', 'backgrounds', 'default.jpg'),
-    TITLE='Fruit Ninja',
-    FRUIT_FREQUENCY=70,
-    BOMB_FREQUENCY=300,
+    HEIGHT=600,
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg')
+)
+
+blade_config = BladeConfig(
+    COLORS=['white'],  # Todo - add gradient effect
+    VISIBILITY_DURATION=.25
+)
+
+spawn_frequency = SpawnFrequencyConfig(
+    PLAIN_FRUIT=5,
+    BOMB=1
+)
+
+classic_mode_config = GameModeConfig(
+    MODE=GameMode.CLASSIC,
     LIVES=6,
     DIFFICULTY=1
 )
 
-blade_config = BladeConfig(
-    COLORS=['White'],
-    VISIBILITY_DURATION=.2,
-    INPUT_SOURCE=InputSource.FINGER
+game_modes_config = GameModesConfig(
+    ZEN=None,  # TODO
+    CLASSIC=classic_mode_config,
+    ARCADE=None,  # TODO
+    MULTIPLAYER=None  # TODO
 )
 
-bomb_config = BombConfig(
-    SPAWN_PROBABILITY=3
+mouse_input_config = MouseInputConfig(
+    REFRESH_FREQUENCY=144
 )
 
-fruits_config = FruitsConfig(
-    PLAIN=PlainFruitsConfig(
-        IMAGE_PATHS=[
-            os.path.join('assets', 'images', 'items', 'fruits', f'{name}.png')
-            for name in (
-                'apple',
-                'orange',
-                'peach'
-            )
-        ]
-    )
+hand_input_config = HandInputConfig(
+    MIN_TRACKING_CONFIDENCE=.5,
+    MIN_DETECTION_CONFIDENCE=.5
 )
 
-global_config = GlobalConfig(
-    game=game_config,
-    blade=blade_config,
-    fruits=fruits_config,
-    bomb=bomb_config
+finger_input_config = FingerInputConfig(
+    FINGER_CODE=HandLandmark.INDEX_FINGER_TIP,
+    MIN_TRACKING_CONFIDENCE=.5,
+    MIN_DETECTION_CONFIDENCE=.5
 )

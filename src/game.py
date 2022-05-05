@@ -1,60 +1,54 @@
 import pygame
 
-from src.app.effects.blade import Blade
-from src.app.items.bombs.bomb import Bomb
-from src.app.items.fruits.fruit import Fruit
+from src.app.control.blade import Blade
+from src.app.items.bomb import Bomb
+from src.app.items.fruit import Fruit
 from src.app.items.item import Item
 from src.app.items.items_spawner import ItemsSpawner
 from src.app.physics.time_controller import TimeController
 
+from src.config import window_config, game_modes_config, game_config
+
 
 class Game:
-    def __init__(self, config):
-        # Data
-        self.config = config.game
-
+    def __init__(self):
         # Pygame
         pygame.init()
         self.background = pygame.transform.scale(
-            pygame.image.load(self.config.BACKGROUND_PATH), (self.config.WIDTH, self.config.HEIGHT)
+            pygame.image.load(window_config.BACKGROUND_PATH), (window_config.WIDTH, window_config.HEIGHT)
         )
-        self.screen = pygame.display.set_mode((self.config.WIDTH, self.config.HEIGHT))
+        self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT))
         self.clock = pygame.time.Clock()
-        self.surface = pygame.Surface((self.config.WIDTH, self.config.HEIGHT))
+        self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT))
         self.font = pygame.font.Font("freesansbold.ttf", 25)
-        pygame.display.set_caption(self.config.TITLE)
+        pygame.display.set_caption(window_config.TITLE)
 
         # Sprites
-        self.blade = Blade(config.blade, self.screen)
+        self.blade = Blade(self.screen, game_config.INPUT_SOURCE)
 
         # Utilities
         self.time_controller = TimeController()
-        self.item_spawner = ItemsSpawner(
-            config.fruits,
-            config.bomb,
-            self.time_controller,
-            self.config.DIFFICULTY
-        )
+        self.item_spawner = ItemsSpawner(game_modes_config.CLASSIC.DIFFICULTY)  # TODO - implement more game modes
 
         # Game state
         self.game_active = True
         self.score = 0
-        self.lives = self.config.LIVES
+        self.lives = game_modes_config.CLASSIC.LIVES
         self.stats = None
 
     def start(self):
-        self.time_controller.init_game_timing()
+        self.time_controller.init()
         self.game_active = True
         self.score = 0
-        self.lives = self.config.LIVES
+        self.lives = game_modes_config.CLASSIC.LIVES
         self.stats = None
 
         while self.game_active:
-            self.time_controller.update_last_frame_time()
+            self.time_controller.register_new_frame()
             self.handle_events()
             self.update()
             self.update_difficulty()
-            self.clock.tick(self.config.FPS)
+            self.clock.tick(game_config.FPS)
 
         #TODO - add new game
 
@@ -106,11 +100,11 @@ class Game:
         self.surface.blit(self.stats, self.stats.get_rect())
 
     def update_bombs(self):
-        Bomb.group.update(self.time_controller.get_last_frame_duration)
+        Bomb.group.update(self.time_controller.last_frame_duration)
         Bomb.group.draw(self.surface)
 
     def update_fruits(self):
-        Fruit.group.update(TimeController.get_last_frame_duration)
+        Fruit.group.update(self.time_controller.last_frame_duration)
         Fruit.group.draw(self.surface)
 
     def handle_bomb_collision(self, bomb):

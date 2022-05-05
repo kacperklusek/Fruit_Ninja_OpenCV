@@ -1,56 +1,45 @@
 from time import time
-
-
-class Singleton(object):
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if isinstance(cls._instance, cls):
-            raise Exception('ERROR!!!!!!')  #TODO
-        cls._instance = object.__new__(cls)
-        return cls._instance
+from src.app.utils.design_patterns import Singleton
 
 
 class TimeController(Singleton):
-    MAX_RATIO = 100
-    _last_frame_time = 0
-    _last_spawn_time = 0
-    _last_frame_duration = 0
-    _init_time = 0
-    _ratio = 1
+    MIN_RATIO = .25
+    MAX_RATIO = 10
 
-    @classmethod
-    def set_ratio(cls, ratio):
-        if not 0 < ratio <= cls.MAX_RATIO:
-            raise ValueError(f'ratio should be between 0 and {cls.MAX_RATIO}')
-        cls._ratio = ratio
+    def __init__(self):
+        self.__ratio = 1
+        self.__start_time = 0
+        self.__last_frame_time = 0
+        self.__last_frame_duration = 0
 
-    @classmethod
-    def init_game_timing(cls):
-        cls._init_time = time()
+    def init(self):
+        self.__start_time = self.__last_frame_time = time()
 
-    @classmethod
     @property
-    def total_elapsed_time(cls) -> float:
-        return time() - cls._init_time
+    def ratio(self):
+        return self.__ratio
 
-    @classmethod
-    def update_last_frame_time(cls):
+    @ratio.setter
+    def ratio(self, ratio):
+        if ratio <= 0:
+            raise ValueError(f'Time ratio should be greater than {self.MIN_RATIO}')
+        if ratio > self.MAX_RATIO:
+            raise ValueError(f'Time ratio shouldn\'t be greater than {self.MAX_RATIO}')
+        self.__ratio = ratio
+
+    @property
+    def last_frame_time(self):
+        return self.__last_frame_time
+
+    @property
+    def last_frame_duration(self):
+        return self.__last_frame_duration
+
+    @property
+    def total_elapsed_time(self):
+        return time() - self.__start_time
+
+    def register_new_frame(self):
         curr_time = time()
-        if cls._last_frame_time:
-            cls._last_frame_duration = curr_time - cls._last_frame_time
-        cls._last_frame_time = curr_time
-
-    @classmethod
-    def update_last_spawn_time(cls):
-        cls._last_spawn_time = time()
-
-    @classmethod
-    @property
-    def get_last_frame_duration(cls) -> float:
-        return cls._last_frame_duration * cls._ratio
-
-    @classmethod
-    @property
-    def get_interval_since_last_spawn(cls) -> float:
-        return time() - cls._last_spawn_time
+        self.__last_frame_duration = curr_time - self.__last_frame_time
+        self.__last_frame_time = curr_time
