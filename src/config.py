@@ -1,6 +1,7 @@
 from collections import namedtuple
 from src.app.enums.input_source import InputSource
-
+import os
+from src.app.items.fruits.fruit_type import FruitType
 
 GlobalConfig = namedtuple('GlobalConfig', [
     'game',
@@ -14,10 +15,11 @@ GameConfig = namedtuple('GameConfig', [
     'WIDTH',
     'HEIGHT',
     'FPS',
-    'BACKGROUND_COLOR',
+    'BACKGROUND_PATH',
     'FRUIT_FREQUENCY',
     'BOMB_FREQUENCY',
-    'LIFES'
+    'LIFES',
+    'DIFFICULTY'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -27,12 +29,14 @@ BladeConfig = namedtuple('BladeConfig', [
 ])
 
 FruitConfig = namedtuple('FruitConfig', [
-    'SPAWN_INTERVAL',
+    'SPAWN_PROBABILITY',
+    'IMAGE_PATH',
+    'FRUIT_TYPE',
     'FALLING_TIME'
 ])
 
 BombConfig = namedtuple('BombConfig', [
-    'SPAWN_INTERVAL',
+    'SPAWN_PROBABILITY',
     'FALLING_TIME'
 ])
 
@@ -41,11 +45,12 @@ game_config = GameConfig(
     WIDTH=800,
     HEIGHT=400,
     FPS=60,
-    BACKGROUND_COLOR='Black',
+    BACKGROUND_PATH=os.path.join('assets', 'images', 'backgrounds', 'default.jpg'),
     TITLE='Fruit Ninja',
     FRUIT_FREQUENCY=70,
     BOMB_FREQUENCY=300,
-    LIFES=3
+    LIFES=3,
+    DIFFICULTY=1
 )
 
 blade_config = BladeConfig(
@@ -55,12 +60,14 @@ blade_config = BladeConfig(
 )
 
 fruit_config = FruitConfig(
-    SPAWN_INTERVAL=70,
+    SPAWN_PROBABILITY=10,
+    IMAGE_PATH=os.path.join('assets', 'images', 'items', 'fruits', 'apple.png'),
+    FRUIT_TYPE=FruitType.APPLE,
     FALLING_TIME=2
 )
 
 bomb_config = BombConfig(
-    SPAWN_INTERVAL=300,
+    SPAWN_PROBABILITY=3,
     FALLING_TIME=2
 )
 
@@ -70,3 +77,7 @@ global_config = GlobalConfig(
     fruit=fruit_config,
     bomb=bomb_config
 )
+
+APPLE_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'apple.png')
+ORANGE_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'orange.png')
+PEACH_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'peach.png')

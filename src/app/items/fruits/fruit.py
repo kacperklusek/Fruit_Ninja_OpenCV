@@ -3,24 +3,16 @@ import pygame
 from pygame.math import Vector2
 
 from src.app.items.item import Item
-from src.app.enums.fruit_type import FruitType
 
 
 class Fruit(Item):
-    APPLE_IMG_PATH = os.path.join('assets', 'images', 'items', 'fruits', 'apple.png')
-
     group = pygame.sprite.Group()
 
-    def __init__(self, fruit_type: FruitType, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
-        Item.__init__(self, self.get_image_path(fruit_type), position, velocity)
+    def __init__(self, fruit_config, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
+        Item.__init__(self, fruit_config.IMAGE_PATH, position, velocity)
+        self.fruit_config = fruit_config
         self.group.add(self)
 
     def kill(self):
         self.group.remove(self)
         super().kill()
-
-    @classmethod
-    def get_image_path(cls, fruit_type: FruitType):
-        match fruit_type:
-            case FruitType.Apple: return cls.APPLE_IMG_PATH
-        return cls.APPLE_IMG_PATH

@@ -5,27 +5,34 @@ from src.app.items.bombs.bomb import Bomb
 from src.app.items.fruits.fruit import Fruit
 from src.app.items.item import Item
 from src.app.items.items_spawner import ItemsSpawner
+from src.app.physics.time_controller import TimeController
 
 
 class Game:
-    font = None
-    lives = None    # TODO - change this to the instance attribute
-
     def __init__(self, config):
         # Data
         self.config = config.game
 
         # Pygame
+        pygame.init()
+        self.background = pygame.transform.scale(
+            pygame.image.load(self.config.BACKGROUND_PATH), (self.config.WIDTH, self.config.HEIGHT)
+        )
         self.screen = pygame.display.set_mode((self.config.WIDTH, self.config.HEIGHT))
         self.clock = pygame.time.Clock()
         self.surface = pygame.Surface((self.config.WIDTH, self.config.HEIGHT))
+        self.font = pygame.font.Font("freesansbold.ttf", 25)
         pygame.display.set_caption(self.config.TITLE)
 
         # Sprites
         self.blade = Blade(config.blade, self.screen)
 
-        # Fruits
-        self.fruit_spawner = ItemsSpawner(config.fruit, config.bomb)
+        # Utilities
+        self.time_controller = TimeController()
+        self.fruit_spawner = ItemsSpawner(config.fruit,
+                                          config.bomb,
+                                          self.time_controller,
+                                          self.config.DIFFICULTY)
 
         # Game state
         self.game_active = True
@@ -33,38 +40,11 @@ class Game:
         self.lives = self.config.LIFES
         self.stats = None
 
-        # Initialize the game
-        self.init()
-
-    def init(self):
-        pygame.init()
-        self.font = pygame.font.Font("freesansbold.ttf", 25)
-
     def start(self):
         while True:
-            self.surface.fill(self.config.BACKGROUND_COLOR)
+            self.time_controller.update_last_frame_time()
             self.handle_events()
-
-            # TODO - extract this method to handle_collisions
-            # check collision and remove colliding
-            if self.blade:
-                for fruit in Fruit.group:
-                    if fruit.rect.collidepoint(self.blade[-1]):
-                        fruit.kill()
-                        self.score += 1
-                for bomb in Bomb.group:
-                    if bomb.rect.collidepoint(self.blade[-1]):
-                        self.handle_bomb_collision(bomb)
-
-            if self.lives <= Item.out_of_bounds:
-                self.game_active = False
-
-            if self.game_active:
-                self.fruit_spawner.handle_spawning()
-
-            self.update_items()
-            self.blade.draw()
-            pygame.display.update()
+            self.update()
             self.clock.tick(self.config.FPS)
 
     def handle_events(self):
@@ -74,14 +54,31 @@ class Game:
                 pygame.quit()
                 exit()
 
-    def handle_bomb_collision(self, bomb):
-        for fruit in Fruit.group:
-            fruit.kill()
-        bomb.kill()
-        self.lives -= 1
+    def update(self):
+        self.surface.blit(self.background, (0, 0))
+
+        # TODO - extract this method to handle_collisions
+        # check collision and remove colliding
+        if self.blade:
+            for fruit in Fruit.group:
+                if fruit.rect.collidepoint(self.blade[-1]):
+                    fruit.kill()
+                    self.score += 1
+            for bomb in Bomb.group:
+                if bomb.rect.collidepoint(self.blade[-1]):
+                    self.handle_bomb_collision(bomb)
+
         if self.lives <= Item.out_of_bounds:
-            print("GAME OVER")
             self.game_active = False
+
+        self.update_items()
+        self.blade.draw()
+        self.fruit_spawner.update()
+        pygame.display.update()
+
+    def update_difficulty(self):
+        ...
+        # self.fruit_spawner.
 
     def update_items(self):
         self.update_fruits()
@@ -97,9 +94,18 @@ class Game:
         self.surface.blit(self.stats, self.stats.get_rect())
 
     def update_bombs(self):
-        Bomb.group.update()
+        Bomb.group.update(self.time_controller.get_last_frame_duration)
         Bomb.group.draw(self.surface)
 
     def update_fruits(self):
-        Fruit.group.update()
+        Fruit.group.update(TimeController.get_last_frame_duration)
         Fruit.group.draw(self.surface)
+
+    def handle_bomb_collision(self, bomb):
+        for fruit in Fruit.group:
+            fruit.kill()
+        bomb.kill()
+        self.lives -= 1
+        if self.lives <= Item.out_of_bounds:
+            print("GAME OVER")
+            self.game_active = False

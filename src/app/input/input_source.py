@@ -95,7 +95,7 @@ class FingerInput(CameraInput):
         self.finger_code = finger_code
 
     def get_coords(self, results):
-        coords = results.multi_hand_landmarks[0].landmark[self.finger_code]
+        coords = results.multi_hand_landmarks[-1].landmark[self.finger_code]
         return (1 - coords.x) * game_config.WIDTH, coords.y * game_config.HEIGHT
 
 
