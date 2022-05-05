@@ -32,8 +32,9 @@ class Blade(pygame.sprite.Sprite):
 
     def draw(self):
         self.surface.fill(self.EMPTY_COLOR)
-        if len(self.points_history) > 1:
-            pygame.draw.lines(self.surface, config.COLORS[0], False, self.points_history, len(self))
+        points = self.points_history[:]
+        if len(points) > 1:
+            pygame.draw.lines(self.surface, config.COLORS[0], False, points, len(self))
             self.screen.blit(self.surface, (0, 0))
 
     def change_input_source(self, input_source_type):

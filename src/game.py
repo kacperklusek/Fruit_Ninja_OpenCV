@@ -1,4 +1,5 @@
 import pygame
+from time import time
 
 from src.app.control.blade import Blade
 from src.app.items.bomb import Bomb
@@ -11,6 +12,9 @@ from src.config import window_config, game_modes_config, game_config
 
 
 class Game:
+    COMBO_TIME_DIFF = 0.2
+    COMBO_FACTOR = 2
+
     def __init__(self):
         # Pygame
         pygame.init()
@@ -33,8 +37,12 @@ class Game:
         # Game state
         self.game_active = True
         self.score = 0
+
         self.lives = game_modes_config.CLASSIC.LIVES
+        self.combo = 0
         self.stats = None
+
+        self.last_fruit_kill_time = 0
 
     def start(self):
         self.time_controller.init()
@@ -62,18 +70,10 @@ class Game:
     def update(self):
         self.surface.blit(self.background, (0, 0))
 
-        # TODO - extract this method to handle_collisions
-        # check collision and remove colliding
-        if self.blade:
-            for fruit in Fruit.group:
-                if fruit.rect.collidepoint(self.blade[-1]):
-                    fruit.kill()
-                    self.score += 1
-            for bomb in Bomb.group:
-                if bomb.rect.collidepoint(self.blade[-1]):
-                    self.handle_bomb_collision(bomb)
+        self.handle_collisions()
+        self.check_combo_finish()
 
-        if self.lives <= Item.out_of_bounds:
+        if Item.out_of_bounds >= self.lives:
             self.game_active = False
 
         self.update_items()
@@ -82,7 +82,6 @@ class Game:
         pygame.display.update()
 
     def update_difficulty(self):
-        print(self.time_controller.total_elapsed_time)
         self.item_spawner.intensity = min(1 + self.time_controller.total_elapsed_time // 8, 5)
         self.item_spawner.interval = max(2.5 - self.time_controller.total_elapsed_time / 15, 1.5)
 
@@ -106,6 +105,35 @@ class Game:
     def update_fruits(self):
         Fruit.group.update(self.time_controller.last_frame_duration)
         Fruit.group.draw(self.surface)
+
+    def handle_collisions(self):
+        if self.blade:
+            for fruit in Fruit.group:
+                if fruit.rect.collidepoint(self.blade[-1]):
+                    fruit.kill()
+                    self.handle_score_update()
+            for bomb in Bomb.group:
+                if bomb.rect.collidepoint(self.blade[-1]):
+                    self.handle_bomb_collision(bomb)
+
+    def handle_score_update(self):
+        curr_time = time()
+        if curr_time - self.last_fruit_kill_time <= self.COMBO_TIME_DIFF:
+            if self.combo == 0:
+                self.score -= 1
+                self.combo += 1
+            self.combo += 1
+        else:
+            self.score += 1
+        self.last_fruit_kill_time = curr_time
+
+    # checks if combo has finished
+    def check_combo_finish(self):
+        if self.combo > 0 and time() - self.last_fruit_kill_time > self.COMBO_TIME_DIFF:
+            self.score += self.combo * self.COMBO_FACTOR
+            # TODO display combo info on the screen for certain amount of time
+            print(f"COMBOOOOO {self.combo} !!!!!")
+            self.combo = 0
 
     def handle_bomb_collision(self, bomb):
         for fruit in Fruit.group:
