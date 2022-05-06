@@ -2,7 +2,7 @@ from time import time
 from src.app.utils.design_patterns import Singleton
 
 
-class TimeController(Singleton):
+class TimeController(metaclass=Singleton):
     MIN_RATIO = .25
     MAX_RATIO = 10
 
@@ -21,7 +21,8 @@ class TimeController(Singleton):
 
     @ratio.setter
     def ratio(self, ratio):
-        if ratio <= 0:
+        print(f'Update from {self.ratio} to {ratio}')
+        if ratio <= self.MIN_RATIO:
             raise ValueError(f'Time ratio should be greater than {self.MIN_RATIO}')
         if ratio > self.MAX_RATIO:
             raise ValueError(f'Time ratio shouldn\'t be greater than {self.MAX_RATIO}')

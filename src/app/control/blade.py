@@ -1,7 +1,8 @@
 import pygame
 from src.config import blade_config as config
 from src.app.utils.enums.input_source import InputSource
-from src.app.control.input_controller import FingerInput, HandInput, MouseInput
+from src.app.control.input_controller import FingerInput, HandInput, MouseInput, InputPoint
+from src.app.utils.point import Point
 
 
 class Blade(pygame.sprite.Sprite):
@@ -27,8 +28,19 @@ class Blade(pygame.sprite.Sprite):
 
     @property
     def points_history(self):
-        # print(self.input_source.points_history)
-        return self.input_source.points_history
+        if isinstance(self.input_source, MouseInput):
+            return self.input_source.points_history
+        else:
+            result = []
+            history = self.input_source.points_history
+            if history: result.append(history[0])
+
+            for i in range(1, len(history)):
+                x = (history[i].x + history[i - 1].x) / 2
+                y = (history[i].y + history[i - 1].y) / 2
+                result.append(Point(x, y))
+                result.append(history[i])
+            return result
 
     def draw(self):
         self.surface.fill(self.EMPTY_COLOR)

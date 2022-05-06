@@ -1,12 +1,12 @@
 import random
-from random import randint
 from time import time
 
 from pygame import Vector2
 
-from src.app.items.item import Item
+from src.config import window_config
 from src.app.utils.enums.items import ItemType
 from src.app.items.item_factory import ItemFactory
+from src.app.physics.gravity_controller import GravityController
 
 
 class ItemsSpawner:
@@ -17,6 +17,7 @@ class ItemsSpawner:
         self._items_to_spawn = []
         self._intensity = init_difficulty
         self.last_spawn_time = 0
+        self.gravity_controller = GravityController()
 
     @property
     def interval(self):
@@ -53,14 +54,17 @@ class ItemsSpawner:
 
             self.last_spawn_time = curr_time
 
-    @staticmethod
-    def spawn_item(fruit_type):
-        # TODO spawn fruit based on item in the argument
+    def spawn_item(self, fruit_type):
         # FruitFactory.create(fruit_config, Vector2(randint(200, 600), 400), Vector2(randint(-5, 5), -randint(12, 17)))
         item = ItemFactory.create(fruit_type)
-        if Item.gravity_controller.g.y > 0:
-            print('TYPE 1')
-            item.spawn(Vector2(randint(200, 600), 800), Vector2(randint(-100, 100), -randint(800, 1000)))
+
+        print(self.gravity_controller.gravity)
+
+        x = window_config.WIDTH * (random.random() * .5 + .25)
+        v_x = random.randint(-window_config.WIDTH // 10, window_config.WIDTH // 10)
+        v_y = random.randint(1.2 * window_config.HEIGHT, int(1.5 * window_config.HEIGHT))
+
+        if self.gravity_controller.gravity.y > 0:
+            item.spawn(Vector2(x, 1.1 * window_config.HEIGHT), Vector2(v_x, -v_y))
         else:
-            print('TYPE 2')
-            item.spawn(Vector2(randint(200, 600), 0), Vector2(randint(-100, 100), randint(800, 1000)))
+            item.spawn(Vector2(x, -.1 * window_config.HEIGHT), Vector2(v_x, v_y))

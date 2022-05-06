@@ -6,7 +6,7 @@ from src.config import window_config
 
 
 class Item(pygame.sprite.Sprite):
-    gravity_controller = GravityController(Vector2(0, 600))
+    gravity_controller = GravityController()
     out_of_bounds = 0
 
     def __init__(self, image: str):
@@ -35,7 +35,7 @@ class Item(pygame.sprite.Sprite):
         self.update_position()
 
     def apply_gravity(self, elapsed_time):
-        self.velocity += self.gravity_controller.g * elapsed_time
+        self.velocity += self.gravity_controller.gravity * elapsed_time
         self.position += self.velocity * elapsed_time
 
     def update_position(self):
@@ -47,8 +47,8 @@ class Item(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     def check_screen_boundaries(self):
-        if self.gravity_controller.g.y > 0 and self.position.y > window_config.HEIGHT + 100 and self.velocity.y > 0 \
-                or self.gravity_controller.g.y < 0 and self.position.y < -100 and self.velocity.y > 0:
+        if (self.gravity_controller.gravity.y > 0 and self.position.y > window_config.HEIGHT and self.velocity.y > 0) \
+                or (self.gravity_controller.gravity.y < 0 and self.position.y < 0 and self.velocity.y < 0):
             self.handle_out_of_bounds()
 
     def handle_out_of_bounds(self):
