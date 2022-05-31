@@ -3,6 +3,7 @@ from src.config import blade_config as config
 from src.app.utils.enums.input_source import InputSource
 from src.app.control.input_controller import FingerInput, HandInput, MouseInput, InputPoint
 from src.app.utils.point import Point
+from src.config import game_config
 
 
 class Blade(pygame.sprite.Sprite):
@@ -62,3 +63,6 @@ class Blade(pygame.sprite.Sprite):
                 return FingerInput()
             case InputSource.MOUSE:
                 return MouseInput()
+
+    def collides(self, obj):
+        return any(map(obj.rect.collidepoint, self[-1 if game_config.INPUT_SOURCE == InputSource.MOUSE else 5:]))

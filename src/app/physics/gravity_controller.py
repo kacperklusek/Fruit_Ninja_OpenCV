@@ -12,5 +12,4 @@ class GravityController(metaclass=Singleton):
 
     @gravity.setter
     def gravity(self, new_gravity: Vector2):
-        print(f'Updated gravity {self.gravity}')
         self.__g = new_gravity

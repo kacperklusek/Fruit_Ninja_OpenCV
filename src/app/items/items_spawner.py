@@ -43,6 +43,15 @@ class ItemsSpawner:
                 ItemType.GRAVITY_FRUIT,
                 ItemType.BOMB,
                 ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB,
                 ItemType.BOMB
             ])
         else:
@@ -61,8 +70,6 @@ class ItemsSpawner:
     def spawn_item(self, item_type):
         # FruitFactory.create(fruit_config, Vector2(randint(200, 600), 400), Vector2(randint(-5, 5), -randint(12, 17)))
         item = ItemFactory.create(item_type)
-
-        print(self.gravity_controller.gravity)
 
         x = window_config.WIDTH * (random.random() * .5 + .25)
         v_x = random.randint(-window_config.WIDTH // 10, window_config.WIDTH // 10)
