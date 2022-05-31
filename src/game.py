@@ -13,6 +13,7 @@ from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.physics.gravity_controller import GravityController
 from src.app.utils.enums.input_source import InputSource
 from src.app.effects.sounds import SoundController
+from src.app.menu.menu import MainMenu
 
 
 from src.config import window_config, game_modes_config, game_config
@@ -65,6 +66,9 @@ class Game:
         # Screen Shaking
         self.screen_shake = 0
 
+        # Menu
+        self.menu = MainMenu(self)
+
     def start(self):
         self.time_controller.init()
         self.game_active = True
@@ -89,29 +93,31 @@ class Game:
                 exit()
 
     def update(self):
-        render_offset = [0, 0]
-        if self.screen_shake:
-            self.screen_shake -= 1
-            render_offset = [randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2,
-                             randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2]
 
-        self.surface.blit(self.background, render_offset)
-        self.update_items()
-
-        if self.game_active:
-            if Item.out_of_bounds >= self.lives:
-                self.game_active = False
-                SoundController.play_game_over_sound()
-
-            self.handle_collisions()
-            self.check_combo_finish()
-            self.update_bonus()
-            self.item_spawner.update()
-        else:
-            text = self.font.render('Game over', True, 'White')
-            self.screen.blit(text, (window_config.WIDTH // 2, window_config.HEIGHT // 2))
+        # render_offset = [0, 0]
+        # if self.screen_shake:
+        #     self.screen_shake -= 1
+        #     render_offset = [randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2,
+        #                      randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2]
+        #
+        # self.surface.blit(self.background, render_offset)
+        # self.update_items()
+        #
+        # if self.game_active:
+        #     if Item.out_of_bounds >= self.lives:
+        #         self.game_active = False
+        #         SoundController.play_game_over_sound()
+        #
+        #     self.handle_collisions()
+        #     self.check_combo_finish()
+        #     self.update_bonus()
+        #     self.item_spawner.update()
+        # else:
+        #     text = self.font.render('Game over', True, 'White')
+        #     self.screen.blit(text, (window_config.WIDTH // 2, window_config.HEIGHT // 2))
 
         self.blade.draw()
+        self.menu.display()
         pygame.display.update()
 
     def update_difficulty(self):

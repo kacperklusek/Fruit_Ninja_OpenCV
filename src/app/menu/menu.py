@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from src.config import game_config
-import pygame
+from src.app.menu.buttons import NewGameButton, DojoButton, QuitButton
+from src.config import window_config
+from pygame.math import Vector2
 
 
 class Menu(ABC):  # TODO
-    def __init__(self, blade):
-        self.blade = blade
-        self.is_displayed = False
+    def __init__(self, game):
+        self.game = game
 
     @abstractmethod
     def display(self):
@@ -16,8 +16,12 @@ class Menu(ABC):  # TODO
 class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+        self.new_game_button = NewGameButton(Vector2(window_config.WIDTH / 4, window_config.HEIGHT * 3 / 4))
+        self.dojo_button = NewGameButton(Vector2(window_config.WIDTH / 2, window_config.HEIGHT * 3 / 4))
+        self.quit_button = NewGameButton(Vector2(window_config.WIDTH * 3 / 4, window_config.HEIGHT * 3 / 4))
 
     # TODO - maybe implement own @override decorator
     def display(self):
-        while self.is_displayed:
-            ...
+        self.new_game_button.update(self.game.screen)
+        self.dojo_button.update(self.game.screen)
+        self.quit_button.update(self.game.screen)
