@@ -1,5 +1,6 @@
 import pygame
 from time import time
+from random import randint
 
 from pygame.math import Vector2
 from src.app.control.blade import Blade
@@ -11,6 +12,7 @@ from src.app.physics.time_controller import TimeController
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.physics.gravity_controller import GravityController
 from src.app.utils.enums.input_source import InputSource
+from src.app.effects.sounds import SoundController
 
 
 from src.config import window_config, game_modes_config, game_config
@@ -19,6 +21,8 @@ from src.config import window_config, game_modes_config, game_config
 class Game:
     COMBO_TIME_DIFF = 0.2
     COMBO_FACTOR = 2
+    SCREEN_SHAKE_DURATION = 55
+    SCREEN_SHAKE_OFFSET = 10
 
     def __init__(self):
         # Pygame
@@ -58,12 +62,17 @@ class Game:
         self.gravity_bonus_enabled = False
         self.freeze_bonus_enabled = False
 
+        # Screen Shaking
+        self.screen_shake = 0
+
     def start(self):
         self.time_controller.init()
         self.game_active = True
         self.score = 0
         self.lives = game_modes_config.CLASSIC.LIVES
         self.stats = None
+
+        SoundController.play_game_start_sound()
 
         while True:
             self.handle_events()
@@ -80,12 +89,19 @@ class Game:
                 exit()
 
     def update(self):
-        self.surface.blit(self.background, (0, 0))
+        render_offset = [0, 0]
+        if self.screen_shake:
+            self.screen_shake -= 1
+            render_offset = [randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2,
+                             randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2]
+
+        self.surface.blit(self.background, render_offset)
         self.update_items()
 
         if self.game_active:
             if Item.out_of_bounds >= self.lives:
                 self.game_active = False
+                SoundController.play_game_over_sound()
 
             self.handle_collisions()
             self.check_combo_finish()
@@ -131,9 +147,13 @@ class Game:
                     self.handle_score_update()
                     if not isinstance(fruit, PlainFruit):
                         self.start_bonus(fruit)
+                    SoundController.play_splatter_sound()
+
             for bomb in Bomb.group:
                 if any(map(bomb.rect.collidepoint, self.blade[-self.blade_collision_points:])):
                     self.handle_bomb_collision(bomb)
+                    SoundController.play_boom_sound()
+                    self.screen_shake = self.SCREEN_SHAKE_DURATION
 
     def handle_score_update(self):
         curr_time = time()
@@ -159,9 +179,6 @@ class Game:
             fruit.kill()
         bomb.kill()
         self.lives -= 1
-        if self.lives <= Item.out_of_bounds:
-            print("GAME OVER")
-            self.game_active = False
 
     def start_bonus(self, fruit):
         if isinstance(fruit, GravityFruit):

@@ -7,6 +7,7 @@ from src.config import window_config
 from src.app.utils.enums.items import ItemType
 from src.app.items.item_factory import ItemFactory
 from src.app.physics.gravity_controller import GravityController
+from src.app.effects.sounds import SoundController
 
 
 class ItemsSpawner:
@@ -39,7 +40,10 @@ class ItemsSpawner:
         if int(random.random() * (1 + self.BONUS_FRUIT_CHANCE)) == 1:
             return random.choice([
                 ItemType.FREEZE_FRUIT,
-                ItemType.GRAVITY_FRUIT
+                ItemType.GRAVITY_FRUIT,
+                ItemType.BOMB,
+                ItemType.BOMB,
+                ItemType.BOMB
             ])
         else:
             return ItemType.PLAIN_FRUIT
@@ -49,14 +53,14 @@ class ItemsSpawner:
         if curr_time - self.last_spawn_time >= self._interval:
             self._items_to_spawn = [self.choose_fruit_type() for _ in range(int(self._intensity))]
 
-            for fruit_type in self._items_to_spawn:
-                self.spawn_item(fruit_type)
+            for item_type in self._items_to_spawn:
+                self.spawn_item(item_type)
 
             self.last_spawn_time = curr_time
 
-    def spawn_item(self, fruit_type):
+    def spawn_item(self, item_type):
         # FruitFactory.create(fruit_config, Vector2(randint(200, 600), 400), Vector2(randint(-5, 5), -randint(12, 17)))
-        item = ItemFactory.create(fruit_type)
+        item = ItemFactory.create(item_type)
 
         print(self.gravity_controller.gravity)
 
@@ -68,3 +72,5 @@ class ItemsSpawner:
             item.spawn(Vector2(x, 1.1 * window_config.HEIGHT), Vector2(v_x, -v_y))
         else:
             item.spawn(Vector2(x, -.1 * window_config.HEIGHT), Vector2(v_x, v_y))
+
+        SoundController.play_throw_sound()
