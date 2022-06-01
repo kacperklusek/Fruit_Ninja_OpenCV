@@ -1,6 +1,7 @@
 import random
 from time import time
 
+import pygame.time
 from pygame import Vector2
 
 from src.config import window_config
@@ -41,16 +42,6 @@ class ItemsSpawner:
             return random.choice([
                 ItemType.FREEZE_FRUIT,
                 ItemType.GRAVITY_FRUIT,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
-                ItemType.BOMB,
                 ItemType.BOMB,
                 ItemType.BOMB
             ])

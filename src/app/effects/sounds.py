@@ -51,4 +51,8 @@ class SoundController:  # TODO
 
     @classmethod
     def play_menu_sound(cls):
-        cls._menu_sound.play()
+        cls._menu_sound.play(-1)
+
+    @classmethod
+    def stop_menu_sound(cls):
+        cls._menu_sound.stop()
