@@ -24,6 +24,10 @@ class Game:
     COMBO_FACTOR = 2
     SCREEN_SHAKE_DURATION = 100
     SCREEN_SHAKE_OFFSET = 70
+    MAX_SPAWNER_INTENSITY = 6
+    MIN_SPAWNER_INTERVAL = 1.5
+    MIN_SPAWNER_INTENSITY = 1
+    MAX_SPAWNER_INTERVAL = 2.5
 
     def __init__(self):
         # Pygame
@@ -115,6 +119,7 @@ class Game:
         self.curr_menu.display()
 
     def start_game(self, game_mode: GameModeConfig):
+        self.time_controller.start()
         SoundController.stop_menu_sound()
         self.set_mode(game_mode)
 
@@ -159,8 +164,11 @@ class Game:
         pygame.display.update()
 
     def update_difficulty(self):
-        self.item_spawner.intensity = min(1 + self.time_controller.total_elapsed_time // 8, 5)
-        self.item_spawner.interval = max(2.5 - self.time_controller.total_elapsed_time / 15, 1.5)
+        print(self.time_controller.total_elapsed_time)
+        self.item_spawner.intensity = \
+            min(self.MIN_SPAWNER_INTENSITY + self.time_controller.total_elapsed_time // 8, self.MAX_SPAWNER_INTENSITY)
+        self.item_spawner.interval = \
+            max(self.MAX_SPAWNER_INTERVAL - self.time_controller.total_elapsed_time / 15, self.MIN_SPAWNER_INTERVAL)
 
     def update_items(self):
         self.update_fruits()
@@ -210,7 +218,6 @@ class Game:
             self.score += 1
         self.last_fruit_kill_time = curr_time
 
-    # checks if combo has finished
     def check_combo_finish(self):
         if self.combo > 0 and time() - self.last_fruit_kill_time > self.COMBO_TIME_DIFF:
             self.score += self.combo * self.COMBO_FACTOR
@@ -236,7 +243,6 @@ class Game:
 
     def update_bonus(self):
         curr_time = time()
-
         if self.gravity_bonus_enabled and curr_time - self.gravity_start_time > 10:
             self.gravity_bonus_enabled = False
             self.freeze_start_time = time()
