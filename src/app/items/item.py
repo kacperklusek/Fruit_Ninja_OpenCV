@@ -1,5 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
+
 import random
 from pygame.math import Vector2
 from src.app.controllers.gravity_controller import GravityController
@@ -9,20 +10,18 @@ from src.app.effects.visual import TrailShadow
 
 
 class Item(Sprite):
-    out_of_bounds = 0
-
-    def __init__(self, image: str):  # TODO - think what to do with this surface
+    def __init__(self, image_path: str):
         Sprite.__init__(self)
-        self.img_path = image
+        self.image_path = image_path
         self.gravity_controller = GravityController()
         self.velocity = Vector2(0, 0)
         self.position = Vector2(0, 0)
-        self.original_image = ImageLoader.load_png(self.img_path, 100)
+        self.original_image = ImageLoader.load_png(self.image_path, -1, 100)
         self.image = self.original_image
-        self.rect = self.image.get_rect()
-        self.rect.center = self.image.get_rect().center
-        self.rect.x = 0
-        self.rect.y = 0
+        self.rect = self.image.get_rect()  # TODO
+        self.rect.center = self.image.get_rect().center  # TODO
+        self.rect.x = 0  # TODO
+        self.rect.y = 0  # TODO
         self.rotation_speed = (random.random() - 0.5)
         self.angle = random.randint(0, 360)
         self.trail_shadow = None
@@ -45,7 +44,7 @@ class Item(Sprite):
         self.rotate()
         self.apply_gravity(elapsed_time)
         if self.item_out_of_bounds():
-            self.handle_out_of_bounds()
+            self.kill()
         self.update_position()
 
     def apply_gravity(self, elapsed_time):
@@ -61,16 +60,6 @@ class Item(Sprite):
         self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     def item_out_of_bounds(self):
-        return \
-            (self.gravity_controller.gravity.y > 0 and self.position.y > window_config.HEIGHT and self.velocity.y > 0) \
-            or (self.gravity_controller.gravity.y < 0 and self.position.y < 0 and self.velocity.y < 0)
-
-    def handle_out_of_bounds(self):
-        self.kill()
-        Item.out_of_bounds += 1
-        print("out of bounds")
-
-    @classmethod
-    def reset(cls):
-        cls.out_of_bounds = 0
-
+        gravity_y = self.gravity_controller.gravity.y
+        return (gravity_y > 0 and self.position.y > window_config.HEIGHT and self.velocity.y > 0) \
+            or (gravity_y < 0 and self.position.y < 0 and self.velocity.y < 0)

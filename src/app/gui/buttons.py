@@ -7,7 +7,7 @@ from typing import Union
 from abc import abstractmethod
 from src.app.utils.image_loader import ImageLoader
 from src.app.control.input_controller import MouseInput
-from src.app.menu.bars import ProgressBar
+from src.app.gui.bars import ProgressBar
 from src.app.utils.enums import Orientation
 from .common import MenuElement
 

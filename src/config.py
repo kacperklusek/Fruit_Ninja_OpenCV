@@ -1,17 +1,11 @@
 from collections import namedtuple
-
-import pygame
+import mediapipe as mp
+import os
 
 from src.app.utils.enums import InputSource
-from src.app.utils.enums import GameMode
-import os
-import mediapipe as mp
 
 
 HandLandmark = mp.solutions.hands.HandLandmark
-
-pygame.init()
-FONT = pygame.font.Font("freesansbold.ttf", 25)
 
 
 def image_path(*parts):
@@ -22,14 +16,15 @@ WindowConfig = namedtuple('WindowConfig', [
     'TITLE',
     'WIDTH',
     'HEIGHT',
-    'BACKGROUND_PATH',
     'ICON_PATH',
-    'FONT'
+    'BACKGROUND_PATH'
 ])
 
 GameConfig = namedtuple('GameConfig', [
     'FPS',
-    'INPUT_SOURCE'
+    'INPUT_SOURCE',
+    'FONT',
+    'FONT_SIZE'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -52,18 +47,9 @@ MouseInputConfig = namedtuple('MouseInputConfig', [
     'REFRESH_FREQUENCY'  # Something like DPI in a mouse
 ])
 
-GameModeConfig = namedtuple('GameModeConfig', [
-    'MODE',
-    'LIVES',
-    'DIFFICULTY'
-    # TODO - add more params related to the game mode configuration
-])
-
-GameModesConfig = namedtuple('GameModesConfig', [
-    'ZEN',
-    'CLASSIC',
-    'ARCADE',
-    'MULTIPLAYER'
+ClassicModeConfig = namedtuple('ClassicModeConfig', [
+    'LIVES',  # TODO - rename to lives
+    'BACKGROUND_PATH'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -100,19 +86,26 @@ SoundConfig = namedtuple('SoundConfig', [
     'THROW', 'THROW_VOLUME'
 ])
 
+HealthBarConfig = namedtuple('HealthBarConfig', [
+    'GET_HEALTH_ICON',
+    'GET_FAILED_HEALTH_ICON',
+    'HEALTHS_COUNT'
+])
+
 
 game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
-    INPUT_SOURCE=InputSource.MOUSE
+    INPUT_SOURCE=InputSource.MOUSE,
+    FONT=os.path.join('assets', 'fonts', 'go3v2.ttf'),
+    FONT_SIZE=25
 )
 
 window_config = WindowConfig(
     TITLE='Fruit ninja',
     WIDTH=800,
     HEIGHT=600,
-    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
     ICON_PATH=image_path('icon.png'),
-    FONT=FONT
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg')
 )
 
 blade_config = BladeConfig(
@@ -125,17 +118,9 @@ spawn_frequency = SpawnFrequencyConfig(
     BOMB=1
 )
 
-classic_mode_config = GameModeConfig(
-    MODE=GameMode.CLASSIC,
-    LIVES=6,
-    DIFFICULTY=1
-)
-
-game_modes_config = GameModesConfig(
-    ZEN=None,  # TODO
-    CLASSIC=classic_mode_config,
-    ARCADE=None,  # TODO
-    MULTIPLAYER=None  # TODO
+classic_mode_config = ClassicModeConfig(
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    LIVES=6
 )
 
 mouse_input_config = MouseInputConfig(
@@ -151,6 +136,12 @@ finger_input_config = FingerInputConfig(
     FINGER_CODE=HandLandmark.INDEX_FINGER_TIP,
     MIN_TRACKING_CONFIDENCE=.5,
     MIN_DETECTION_CONFIDENCE=.5
+)
+
+health_bar_config = HealthBarConfig(
+    GET_HEALTH_ICON=lambda i: image_path('gui', 'health', f'xf{i}.png'),
+    GET_FAILED_HEALTH_ICON=lambda i: image_path('gui', 'health', f'x{i}.png'),
+    HEALTHS_COUNT=3
 )
 
 menu_config = MenuConfig(
@@ -181,7 +172,7 @@ menu_config = MenuConfig(
     ZEN_DUEL_OUTER_IMAGE=image_path('gui', 'buttons', 'zen-duel.png')
 )
 
-general_volume = 0.0
+general_volume = 0.1
 lower_volume = 0.05
 sound_config = SoundConfig(
     BOOM=os.path.join('assets', 'sounds', 'boom.mp3'), BOOM_VOLUME=1,
@@ -191,3 +182,4 @@ sound_config = SoundConfig(
     START=os.path.join('assets', 'sounds', 'start.mp3'), START_VOLUME=general_volume,
     THROW=os.path.join('assets', 'sounds', 'throw.mp3'), THROW_VOLUME=lower_volume
 )
+

@@ -1,5 +1,5 @@
 import random
-from src.app.utils.enums import ItemType, PlainFruitType
+from src.app.utils.enums import ItemType, FruitType
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.items.bomb import Bomb
 
@@ -12,14 +12,14 @@ class ItemFactory:
                 return ItemFactory.create_plain_fruit()
             case ItemType.BOMB:
                 return ItemFactory.create_bomb()
-            case ItemType.FREEZE_FRUIT:
-                return FreezeFruit()
-            case ItemType.GRAVITY_FRUIT:
-                return GravityFruit()
+            # case ItemType.FREEZE_FRUIT:
+            #     return FreezeFruit()
+            # case ItemType.GRAVITY_FRUIT:
+            #     return GravityFruit()
 
     @staticmethod
     def create_plain_fruit():
-        fruit_type = random.choice(PlainFruitType.values())
+        fruit_type = random.choice(FruitType.values())
         return PlainFruit(fruit_type)
 
     @staticmethod

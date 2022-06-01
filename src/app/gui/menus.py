@@ -1,13 +1,15 @@
 import pygame.display
+from pygame.font import Font
 
-from src.app.menu.buttons import TimedButton, FruitButton
-from src.app.menu.images import Image
-from src.app.menu.labels import ScoreLabel
-from src.config import window_config, menu_config, classic_mode_config
+from src.app.gui.buttons import TimedButton, FruitButton
+from src.app.gui.images import Image
+from src.app.gui.labels import ScoreLabel
+from src.config import window_config, menu_config, game_config
 from pygame.math import Vector2
 from pygame.color import Color
 from enum import Enum, auto
 from .common import MenuElement
+from ..utils.enums import GameMode
 
 
 class MenuInput(Enum):
@@ -259,13 +261,13 @@ class OriginalModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case OriginalMenuInput.CLASSIC:
-                self.game.start_game(classic_mode_config)
+                self.game.start_game(GameMode.CLASSIC)
             case OriginalMenuInput.ARCADE:
-                pass  # TODO
+                self.game.start_game(GameMode.ARCADE)
             case OriginalMenuInput.ZEN:
-                pass  # TODO
+                self.game.start_game(GameMode.ZEN)
             case OriginalMenuInput.BACK:
-                # Reset back button state to ensure that it won't be checked after reentering the menu
+                # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
                 self.switch_menu(MenuInput.MAIN)
 
@@ -317,11 +319,11 @@ class MultiplayerModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case MultiplayerMenuInput.CLASSIC_ATTACK:
-                pass  # TODO
+                self.game.start_game(GameMode.CLASSIC_ATTACK)
             case MultiplayerMenuInput.ZEN_DUEL:
-                pass  # TODO
+                self.game.start_game(GameMode.ZEN_DUEL)
             case MultiplayerMenuInput.BACK:
-                # Reset back button state to ensure that it won't be checked after reentering the menu
+                # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
                 self.switch_menu(MenuInput.MAIN)
 
@@ -338,9 +340,9 @@ class MultiplayerModeMenu(Menu):
 class GameOverMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
+        self.font = Font(game_config.FONT, game_config.FONT_SIZE)
         self.back_button = create_back_button(game, self.menu_surface)
-        self.game_over_text = window_config.FONT.render('Game over', True, 'White')
-        self.score_text = window_config.FONT.render(f'Your Score: {game.score}', True, 'White')
+        self.game_over_text = self.font.render('Game over', True, 'White')
         self.game_over_label = ScoreLabel(
             self.game_over_text,
             Vector2(
@@ -348,15 +350,8 @@ class GameOverMenu(Menu):
                 self.menu_surface.get_height() // 2 - self.game_over_text.get_height() // 2
             )
         )
-        self.score_label = ScoreLabel(
-            self.score_text,
-            Vector2(
-                self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
-                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width()//2
-            )
-        )
 
-        self.add_elements(self.back_button, self.game_over_label, self.score_label)
+        self.add_elements(self.back_button, self.game_over_label)
 
     def update(self):
         self.elements.remove(self.score_label)

@@ -12,17 +12,16 @@ class ExtendedEnum(Enum):
 
 
 class ItemType(ExtendedEnum):  # TODO -maybe change all properties to auto()
-    PLAIN_FRUIT = 'PLAIN_FRUIT'
-    FREEZE_FRUIT = 'FREEZE_FRUIT'
-    GRAVITY_FRUIT = 'GRAVITY_FRUIT'
-    BOMB = 'BOMB'
+    PLAIN_FRUIT = auto()
+    BOMB = auto()
+    # TODO - add bonus fruits
 
 
-class PlainFruitType(ExtendedEnum):
+class FruitType(ExtendedEnum):
     APPLE = 'apple'
-    BANANA = 'banana'
-    BASAHA = 'basaha'  # TODO - change to strawberry
     PEACH = 'peach'
+    BANANA = 'banana'
+    STRAWBERRY = 'strawberry'
     WATERMELON = 'watermelon'
 
 
@@ -32,13 +31,14 @@ class InputSource(Enum):
     MOUSE = 'mouse'
 
 
-class GameMode(ExtendedEnum):
-    ZEN = 'Zen'
-    CLASSIC = 'Classic'
-    ARCADE = 'Arcade'
-    MULTIPLAYER = 'Multiplayer'
-
-
 class Orientation(Enum):
     HORIZONTAL = auto()
     VERTICAL = auto()
+
+
+class GameMode(Enum):
+    CLASSIC = auto()
+    ARCADE = auto()
+    ZEN = auto()
+    CLASSIC_ATTACK = auto()
+    ZEN_DUEL = auto()

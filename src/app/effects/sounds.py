@@ -25,9 +25,6 @@ class SoundController:  # TODO
     _menu_sound = mixer.Sound(sound_config.MENU)
     _menu_sound.set_volume(sound_config.MENU_VOLUME)
 
-    def __init__(self):
-        ...
-
     @classmethod
     def play_throw_sound(cls):
         cls._throw_sound.play()
