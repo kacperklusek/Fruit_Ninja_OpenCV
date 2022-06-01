@@ -37,7 +37,7 @@ class ItemsSpawner:
     def intensity(self, intensity):
         self._intensity = intensity
 
-    def choose_fruit_type(self):
+    def choose_item_type(self):
         if int(random.random() * (1 + self.BONUS_FRUIT_CHANCE)) == 1:
             return random.choice([
                 ItemType.FREEZE_FRUIT,
@@ -51,7 +51,7 @@ class ItemsSpawner:
     def update(self):
         curr_time = time()
         if curr_time - self.last_spawn_time >= self._interval:
-            self._items_to_spawn = [self.choose_fruit_type() for _ in range(int(self._intensity))]
+            self._items_to_spawn = [self.choose_item_type() for _ in range(int(self._intensity))]
 
             for item_type in self._items_to_spawn:
                 self.spawn_item(item_type)

@@ -1,11 +1,14 @@
 import time
 import threading
 
+from src.app.controllers.time_controller import TimeController
 
-class Interval:  # I don't know if it will be useful
+
+class Interval:
     def __init__(self, callback, interval, *args, **kwargs):
         self.callback = callback
         self.interval = interval
+        self.time_controller = TimeController()
         self.thread = threading.Thread(target=self.run, args=args, kwargs=kwargs)
         self.is_running = True
         self.thread.start()
@@ -15,7 +18,7 @@ class Interval:  # I don't know if it will be useful
             start_time = time.time()
             self.callback(*args, **kwargs)
             end_time = time.time()
-            sleep_time = self.interval - (end_time - start_time)
+            sleep_time = self.interval / self.time_controller.ratio - (end_time - start_time)
             if sleep_time > 0:
                 time.sleep(sleep_time)
 

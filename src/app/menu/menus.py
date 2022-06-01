@@ -1,10 +1,13 @@
 import pygame.display
 
 from src.app.menu.buttons import TimedButton, FruitButton
+from src.app.menu.images import Image
 from src.app.menu.labels import ScoreLabel
 from src.config import window_config, menu_config, classic_mode_config
 from pygame.math import Vector2
+from pygame.color import Color
 from enum import Enum, auto
+from .common import MenuElement
 
 
 class MenuInput(Enum):
@@ -36,18 +39,22 @@ class GameOverMenuInputEnum(Enum):
     BACK = auto()
 
 
-def create_back_button(self, game):
+def create_back_button(game, menu_surface):
+    back_button_width = window_config.WIDTH * .2
+    back_button_height = .25 * back_button_width
+
     return TimedButton(
         game,
         menu_config.BACK_BUTTON_IMAGE,
         Vector2(
             menu_config.BACK_BUTTON_HOVER_DURATION,
-            self.menu_surface.get_height() - self.BACK_BUTTON_HEIGHT
+            menu_surface.get_height() - back_button_height
         ),
+        Color(255, 255, 255),
         menu_config.BACK_BUTTON_HOVER_DURATION,
         menu_config.HOVER_STOP_TOLERANCE,
-        self.BACK_BUTTON_WIDTH,
-        self.BACK_BUTTON_HEIGHT
+        back_button_width,
+        back_button_height,
     )
 
 
@@ -77,8 +84,9 @@ class Menu:
             self.QUIT_BUTTON_SIZE
         )
 
-        self.animated_elements = [self.quit_button]
-        self.elements = [*self.animated_elements]
+        self.background_elements: [MenuElement] = []
+        self.animated_elements: [MenuElement] = [self.quit_button]
+        self.elements: [MenuElement] = [*self.animated_elements]
         self.run_display = True
 
     def add_animated_elements(self, *elements):
@@ -88,20 +96,26 @@ class Menu:
     def add_elements(self, *elements):
         self.elements.extend(elements)
 
+    def add_background_elements(self, *elements):
+        """Saves elements that will be blit on the game surface (in the background)"""
+        self.background_elements.extend(elements)
+
     def animate(self):
         for element in self.animated_elements:
             element.animate()
 
     def blit_elements(self):
+        for element in self.background_elements:
+            element.blit(self.game.surface)
         for element in self.elements:
             element.blit(self.menu_surface)
 
     def update_screen(self):
-        self.game.surface.blit(self.game.background, (0, 0))
-        self.game.screen.blit(self.game.surface, (0, 0))
-        self.blit_elements()
-        self.game.screen.blit(self.menu_surface, self.menu_surface_position)
         self.menu_surface.fill(pygame.Color(0, 0, 0, 0))
+        self.game.surface.blit(self.game.background, (0, 0))
+        self.blit_elements()
+        self.game.screen.blit(self.game.surface, (0, 0))
+        self.game.screen.blit(self.menu_surface, self.menu_surface_position)
         self.blade.draw()
         pygame.display.update()
 
@@ -129,6 +143,9 @@ class Menu:
 class MainMenu(Menu):
     ORIGINAL_BUTTON_SIZE = window_config.WIDTH * .3
     MULTIPLAYER_BUTTON_SIZE = window_config.WIDTH * .25
+    FRUIT_TEXT_IMAGE_WIDTH = window_config.WIDTH * .4
+    NINJA_TEXT_IMAGE_WIDTH = window_config.WIDTH * .2
+    NEW_TEXT_IMAGE_WIDTH = MULTIPLAYER_BUTTON_SIZE * .4
 
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -152,7 +169,33 @@ class MainMenu(Menu):
             ),
             self.MULTIPLAYER_BUTTON_SIZE
         )
+        self.backdrop_image = Image(
+            menu_config.BACKDROP_IMAGE,
+            Vector2(0, 0),
+            window_config.WIDTH
+        )
+        self.fruit_text_image = Image(
+            menu_config.FRUIT_TEXT_IMAGE,
+            Vector2(menu_config.PADDING, menu_config.PADDING),
+            self.FRUIT_TEXT_IMAGE_WIDTH
+        )
+        self.ninja_text_image = Image(
+            menu_config.NINJA_TEXT_IMAGE,
+            Vector2(
+                2 * menu_config.PADDING + self.FRUIT_TEXT_IMAGE_WIDTH,
+                menu_config.PADDING + self.fruit_text_image.height / 2
+            ),
+            self.NINJA_TEXT_IMAGE_WIDTH
+        )
+        self.new_text_image = Image(
+            menu_config.NEW_TEXT_IMAGE,
+            self.multiplayer_button.position + Vector2(self.multiplayer_button.width / 4, -self.multiplayer_button.height / 2),
+            self.NEW_TEXT_IMAGE_WIDTH
+        )
+
         self.add_animated_elements(self.original_button, self.multiplayer_button)
+        self.add_background_elements(self.backdrop_image, self.fruit_text_image, self.ninja_text_image)
+        self.add_elements(self.new_text_image)
 
     def handle_input(self):
         Menu.handle_input(self)
@@ -174,8 +217,6 @@ class OriginalModeMenu(Menu):
     CLASSIC_BUTTON_SIZE = window_config.WIDTH * .25
     ARCADE_BUTTON_SIZE = window_config.WIDTH * .25
     ZEN_BUTTON_SIZE = window_config.WIDTH * .25
-    BACK_BUTTON_WIDTH = 160
-    BACK_BUTTON_HEIGHT = 40
 
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -209,7 +250,7 @@ class OriginalModeMenu(Menu):
             ),
             self.ZEN_BUTTON_SIZE
         )
-        self.back_button = create_back_button(self, game)
+        self.back_button = create_back_button(game, self.menu_surface)
 
         self.add_animated_elements(self.classic_button, self.arcade_button, self.zen_button)
         self.add_elements(self.back_button)
@@ -244,8 +285,6 @@ class MultiplayerModeMenu(Menu):
     CLASSIC_ATTACK_BUTTON_SIZE = window_config.WIDTH * .25
     ZEN_DUEL_BUTTON_SIZE = window_config.WIDTH * .25
     BACK_BUTTON_SIZE = window_config.WIDTH * .2
-    BACK_BUTTON_WIDTH = 160
-    BACK_BUTTON_HEIGHT = 40
 
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -269,7 +308,7 @@ class MultiplayerModeMenu(Menu):
             ),
             self.ZEN_DUEL_BUTTON_SIZE
         )
-        self.back_button = create_back_button(self, game)
+        self.back_button = create_back_button(game, self.menu_surface)
 
         self.add_animated_elements(self.classic_attack_button, self.zen_duel_button)
         self.add_elements(self.back_button)
@@ -297,12 +336,9 @@ class MultiplayerModeMenu(Menu):
 
 
 class GameOverMenu(Menu):
-    BACK_BUTTON_WIDTH = 160
-    BACK_BUTTON_HEIGHT = 40
-
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.back_button = create_back_button(self, game)
+        self.back_button = create_back_button(game, self.menu_surface)
         self.game_over_text = window_config.FONT.render('Game over', True, 'White')
         self.score_text = window_config.FONT.render(f'Your Score: {game.score}', True, 'White')
         self.game_over_label = ScoreLabel(
@@ -319,6 +355,7 @@ class GameOverMenu(Menu):
                 self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width()//2
             )
         )
+
         self.add_elements(self.back_button, self.game_over_label, self.score_label)
 
     def update(self):

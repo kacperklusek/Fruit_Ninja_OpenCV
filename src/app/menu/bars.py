@@ -7,6 +7,8 @@ from .common import MenuElement
 
 
 class ProgressBar(MenuElement):
+    BORDER_RADIUS = 10
+
     def __init__(self,
                  width: Union[int, float],
                  height: Union[int, float],
@@ -39,4 +41,4 @@ class ProgressBar(MenuElement):
             self.bar = pygame.transform.scale(self.bar, (self.width, self._bar_size))
 
     def blit(self, surface):
-        pygame.draw.rect(surface, self.color, self.bar.get_rect(topleft=self.position))
+        pygame.draw.rect(surface, self.color, self.bar.get_rect(topleft=self.position), 0, self.BORDER_RADIUS)

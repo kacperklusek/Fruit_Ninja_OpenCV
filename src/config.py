@@ -13,6 +13,7 @@ HandLandmark = mp.solutions.hands.HandLandmark
 pygame.init()
 FONT = pygame.font.Font("freesansbold.ttf", 25)
 
+
 def image_path(*parts):
     return os.path.join('assets', 'graphics', *parts)
 
@@ -22,6 +23,7 @@ WindowConfig = namedtuple('WindowConfig', [
     'WIDTH',
     'HEIGHT',
     'BACKGROUND_PATH',
+    'ICON_PATH',
     'FONT'
 ])
 
@@ -74,6 +76,11 @@ MenuConfig = namedtuple('MenuConfig', [
     'BACK_BUTTON_HOVER_DURATION',
     'HOVER_STOP_TOLERANCE',
     'BACK_BUTTON_IMAGE',
+    'FRUIT_TEXT_IMAGE',
+    'NINJA_TEXT_IMAGE',
+    'INFO_TEXT_IMAGE',
+    'NEW_TEXT_IMAGE',
+    'BACKDROP_IMAGE',
     'ORIGINAL_INNER_IMAGE', 'ORIGINAL_OUTER_IMAGE',
     'MULTIPLAYER_INNER_IMAGE', 'MULTIPLAYER_OUTER_IMAGE',
     'QUIT_INNER_IMAGE', 'QUIT_OUTER_IMAGE',
@@ -104,6 +111,7 @@ window_config = WindowConfig(
     WIDTH=800,
     HEIGHT=600,
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    ICON_PATH=image_path('icon.png'),
     FONT=FONT
 )
 
@@ -147,25 +155,30 @@ finger_input_config = FingerInputConfig(
 
 menu_config = MenuConfig(
     PADDING=20,
-    BACK_BUTTON_HOVER_DURATION=.5,
+    BACK_BUTTON_HOVER_DURATION=.75,
     HOVER_STOP_TOLERANCE=.2,
-    BACK_BUTTON_IMAGE=image_path('gui', 'back-button.png'),
+    FRUIT_TEXT_IMAGE=image_path('gui', 'logo-fruit.png'),
+    NINJA_TEXT_IMAGE=image_path('gui', 'logo-ninja.png'),
+    INFO_TEXT_IMAGE=image_path('gui', 'info-text.png'),
+    NEW_TEXT_IMAGE=image_path('gui', 'new-text.png'),
+    BACKDROP_IMAGE=image_path('gui', 'logo-backdrop.png'),
+    BACK_BUTTON_IMAGE=image_path('gui', 'buttons', 'back.png'),
     ORIGINAL_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
-    ORIGINAL_OUTER_IMAGE=image_path('gui', 'circles', 'original.png'),
+    ORIGINAL_OUTER_IMAGE=image_path('gui', 'buttons', 'original.png'),
     MULTIPLAYER_INNER_IMAGE=image_path('items', 'fruits', 'peach.png'),
-    MULTIPLAYER_OUTER_IMAGE=image_path('gui', 'circles', 'multiplayer.png'),
+    MULTIPLAYER_OUTER_IMAGE=image_path('gui', 'buttons', 'multiplayer.png'),
     QUIT_INNER_IMAGE=image_path('items', 'bombs', 'bomb.png'),
-    QUIT_OUTER_IMAGE=image_path('gui', 'circles', 'quit.png'),
+    QUIT_OUTER_IMAGE=image_path('gui', 'buttons', 'quit.png'),
     CLASSIC_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
-    CLASSIC_OUTER_IMAGE=image_path('gui', 'circles', 'classic.png'),
+    CLASSIC_OUTER_IMAGE=image_path('gui', 'buttons', 'classic.png'),
     ARCADE_INNER_IMAGE=image_path('items', 'fruits', 'banana.png'),
-    ARCADE_OUTER_IMAGE=image_path('gui', 'circles', 'arcade.png'),
+    ARCADE_OUTER_IMAGE=image_path('gui', 'buttons', 'arcade.png'),
     ZEN_INNER_IMAGE=image_path('items', 'fruits', 'apple.png'),
-    ZEN_OUTER_IMAGE=image_path('gui', 'circles', 'zen.png'),
+    ZEN_OUTER_IMAGE=image_path('gui', 'buttons', 'zen.png'),
     CLASSIC_ATTACK_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
-    CLASSIC_ATTACK_OUTER_IMAGE=image_path('gui', 'circles', 'classic-attack.png'),
+    CLASSIC_ATTACK_OUTER_IMAGE=image_path('gui', 'buttons', 'classic-attack.png'),
     ZEN_DUEL_INNER_IMAGE=image_path('items', 'fruits', 'apple.png'),
-    ZEN_DUEL_OUTER_IMAGE=image_path('gui', 'circles', 'zen-duel.png')
+    ZEN_DUEL_OUTER_IMAGE=image_path('gui', 'buttons', 'zen-duel.png')
 )
 
 general_volume = 0.1

@@ -13,7 +13,7 @@ from src.app.controllers.time_controller import TimeController
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController
-from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, GameOverMenu, MenuInput
+from src.app.menu.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, GameOverMenu, MenuInput
 
 from src.config import window_config, game_config, GameModeConfig
 
@@ -35,7 +35,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font("freesansbold.ttf", 25)  # TODO - move to config
         self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT), pygame.RESIZABLE)
-        self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT))
+        self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
         self.background = pygame.transform.scale(
             pygame.image.load(window_config.BACKGROUND_PATH),
             (window_config.WIDTH, window_config.HEIGHT)
@@ -74,7 +74,7 @@ class Game:
         self.original_menu = OriginalModeMenu(self)
         self.multiplayer_menu = MultiplayerModeMenu(self)
         self.game_over_menu = GameOverMenu(self)
-        self.curr_menu = self.main_menu
+        self.curr_menu = self.original_menu
 
         # Screen Shaking
         self.screen_shake = 0
@@ -85,6 +85,7 @@ class Game:
     def init():
         pygame.init()
         pygame.mouse.set_visible(False)
+        pygame.display.set_icon(pygame.image.load(window_config.ICON_PATH))
         pygame.display.set_caption(window_config.TITLE)
 
     def exit(self):
@@ -125,9 +126,9 @@ class Game:
         self.set_mode(game_mode)
         self.game_active = True
         self.score = 0
+        self.screen_shake = 0
         self.stats = None
         Item.reset()
-
 
     def start_game(self, game_mode: GameModeConfig):
         SoundController.stop_menu_sound()
@@ -191,10 +192,14 @@ class Game:
         self.surface.blit(self.stats, self.stats.get_rect())
 
     def update_bombs(self):
+        for bomb in Bomb.group:
+            if bomb.trail_shadow: bomb.trail_shadow.blit(self.surface)  # TODO - improve this
         Bomb.group.update(self.time_controller.last_frame_duration)
         Bomb.group.draw(self.surface)
 
     def update_fruits(self):
+        for fruit in Fruit.group:
+            if fruit.trail_shadow: fruit.trail_shadow.blit(self.surface)  # TODO - improve this
         Fruit.group.update(self.time_controller.last_frame_duration)
         Fruit.group.draw(self.surface)
 

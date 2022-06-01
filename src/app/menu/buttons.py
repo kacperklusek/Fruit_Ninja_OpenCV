@@ -1,8 +1,9 @@
 import time
 
 import pygame
-from typing import Union
 from pygame.math import Vector2
+from pygame.color import Color
+from typing import Union
 from abc import abstractmethod
 from src.app.utils.image_loader import ImageLoader
 from src.app.control.input_controller import MouseInput
@@ -24,12 +25,26 @@ class Button(MenuElement):
     def rect(self):
         pass
 
+    @property
+    @abstractmethod
+    def width(self):
+        pass
+
+    @property
+    @abstractmethod
+    def height(self):
+        pass
+
 
 class TimedButton(Button):
+    PROGRESS_BAR_WIDTH_RATIO = .95
+    PROGRESS_BAR_HEIGHT_RATIO = .1
+
     def __init__(self,
                  game,
                  image_path: str,
                  position: Vector2,
+                 progress_bar_color: Color,
                  hover_duration: Union[int, float] = 2,
                  hover_stop_tolerance: Union[int, float] = .25,
                  width: Union[int, float] = -1,
@@ -42,13 +57,20 @@ class TimedButton(Button):
         self.hover_start_time = float('inf')
         self.hover_stop_time = float('inf')
         self.is_hovering = False
-        self.progress_bar = ProgressBar(.9 * width, .1 * height, Orientation.HORIZONTAL, position + Vector2(.05 * width, 0), pygame.color.Color(0, 0, 0))
+
+        self.progress_bar = ProgressBar(
+            self.PROGRESS_BAR_WIDTH_RATIO * width,
+            max(self.PROGRESS_BAR_HEIGHT_RATIO * height, 1),
+            Orientation.HORIZONTAL,
+            position + Vector2(((1 - self.PROGRESS_BAR_WIDTH_RATIO) * self.width) / 2, .1 * self.height),
+            progress_bar_color
+        )
 
     @property
     def checked(self):
         # Do not apply timeout while using the MouseInput controller
-        if isinstance(self.game.blade.input_source, MouseInput):
-            return self.game.blade.collides(self)
+        # if isinstance(self.game.blade.input_source, MouseInput):  # TODO - uncomment this line after the game is finished
+        #     return self.game.blade.collides(self)
 
         curr_time = time.time()
         if not self.game.blade.collides(self):
@@ -67,7 +89,15 @@ class TimedButton(Button):
 
     @property
     def rect(self):
-        return self.image.get_rect(topleft=self.position)
+        return self.image.get_rect(topleft=self.position + Vector2(self.height / 2, self.height / 2))
+
+    @property
+    def width(self):
+        return self.image.get_width()
+
+    @property
+    def height(self):
+        return self.image.get_height()
 
     def blit(self, surface):
         surface.blit(self.image, self.position)
@@ -108,6 +138,14 @@ class FruitButton(Button):
     @property
     def rect(self):
         return self.inner_image.get_rect(center=self.position)
+
+    @property
+    def width(self):
+        return self.outer_image.get_width()
+
+    @property
+    def height(self):
+        return self.outer_image.get_height()
 
     def animate(self):
         # Rotate the inner image
