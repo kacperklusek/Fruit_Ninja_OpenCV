@@ -1,6 +1,6 @@
 import pygame.display
 
-from src.app.menu.buttons import FruitButton
+from src.app.menu.buttons import Button, FruitButton
 from src.config import window_config, menu_config
 from pygame.math import Vector2
 from enum import Enum, auto
@@ -18,12 +18,14 @@ class MainMenuInputEnum(Enum):
 
 
 class OriginalMenuInputEnum(Enum):
+    BACK = auto()
     CLASSIC = auto()
     ARCADE = auto()
     ZEN = auto()
 
 
 class MultiplayerMenuInputEnum(Enum):
+    BACK = auto()
     CLASSIC_ATTACK = auto()
     ZEN_DUEL = auto()
 
@@ -78,7 +80,7 @@ class Menu:
         self.blit_elements()
         self.game.screen.blit(self.menu_surface, self.menu_surface_position)
         self.menu_surface.fill(pygame.Color(0, 0, 0, 0))
-        self.game.blade.draw()
+        self.blade.draw()
         pygame.display.update()
 
     def handle_input(self):
@@ -92,6 +94,10 @@ class Menu:
             self.handle_input()
             self.animate()
             self.update_screen()
+
+    def switch_menu(self, target_menu: MenuEnum):
+        self.run_display = False
+        self.game.display_menu(target_menu)
 
 
 class MainMenu(Menu):
@@ -124,16 +130,14 @@ class MainMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case MainMenuInputEnum.ORIGINAL:
-                self.game.display_menu(MenuEnum.ORIGINAL)
-                self.run_display = False
+                self.switch_menu(MenuEnum.ORIGINAL)
             case MainMenuInputEnum.MULTIPLAYER:
-                self.game.display_menu(MenuEnum.MULTIPLAYER)
-                self.run_display = False
+                self.switch_menu(MenuEnum.MULTIPLAYER)
 
     def get_input(self):
-        if self.game.blade.collides(self.original_button):
+        if self.blade.collides(self.original_button):
             return MainMenuInputEnum.ORIGINAL
-        if self.game.blade.collides(self.multiplayer_button):
+        if self.blade.collides(self.multiplayer_button):
             return MainMenuInputEnum.MULTIPLAYER
         return None
 
@@ -142,6 +146,8 @@ class OriginalModeMenu(Menu):
     CLASSIC_BUTTON_SIZE = window_config.WIDTH * .25
     ARCADE_BUTTON_SIZE = window_config.WIDTH * .25
     ZEN_BUTTON_SIZE = window_config.WIDTH * .25
+    BACK_BUTTON_WIDTH = 160
+    BACK_BUTTON_HEIGHT = 40
 
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -172,29 +178,48 @@ class OriginalModeMenu(Menu):
             ),
             self.ZEN_BUTTON_SIZE
         )
+        self.back_button = Button(
+            menu_config.BACK_BUTTON_IMAGE,
+            Vector2(
+                0,
+                self.menu_surface.get_height() - self.BACK_BUTTON_HEIGHT
+            ),
+            self.BACK_BUTTON_WIDTH,
+            self.BACK_BUTTON_HEIGHT
+        )
         self.add_animated_elements(self.classic_button, self.arcade_button, self.zen_button)
+        self.add_elements(self.back_button)
 
     def handle_input(self):
         Menu.handle_input(self)
         match self.get_input():
-            case MainMenuInputEnum.ORIGINAL:
+            case OriginalMenuInputEnum.CLASSIC:
                 pass  # TODO
-            case MainMenuInputEnum.MULTIPLAYER:
+            case OriginalMenuInputEnum.ARCADE:
                 pass  # TODO
+            case OriginalMenuInputEnum.ZEN:
+                pass  # TODO
+            case OriginalMenuInputEnum.BACK:
+                self.switch_menu(MenuEnum.MAIN)
 
     def get_input(self):
-        if self.game.blade.collides(self.classic_button):
+        if self.blade.collides(self.classic_button):
             return OriginalMenuInputEnum.CLASSIC
-        if self.game.blade.collides(self.arcade_button):
+        if self.blade.collides(self.arcade_button):
             return OriginalMenuInputEnum.ARCADE
-        if self.game.blade.collides(self.zen_button):
+        if self.blade.collides(self.zen_button):
             return OriginalMenuInputEnum.ZEN
+        if self.blade.collides(self.back_button):
+            return OriginalMenuInputEnum.BACK
         return None
 
 
 class MultiplayerModeMenu(Menu):
     CLASSIC_ATTACK_BUTTON_SIZE = window_config.WIDTH * .25
     ZEN_DUEL_BUTTON_SIZE = window_config.WIDTH * .25
+    BACK_BUTTON_SIZE = window_config.WIDTH * .2
+    BACK_BUTTON_WIDTH = 160
+    BACK_BUTTON_HEIGHT = 40
 
     def __init__(self, game):
         Menu.__init__(self, game)
@@ -216,19 +241,34 @@ class MultiplayerModeMenu(Menu):
             ),
             self.ZEN_DUEL_BUTTON_SIZE
         )
+        self.back_button = Button(
+            menu_config.BACK_BUTTON_IMAGE,
+            Vector2(
+                0,
+                self.menu_surface.get_height() - self.BACK_BUTTON_HEIGHT
+            ),
+            self.BACK_BUTTON_WIDTH,
+            self.BACK_BUTTON_HEIGHT
+        )
         self.add_animated_elements(self.classic_attack_button, self.zen_duel_button)
+        self.add_elements(self.back_button)
 
     def handle_input(self):
         Menu.handle_input(self)
+        print(self.back_button.position)
         match self.get_input():
             case MultiplayerMenuInputEnum.CLASSIC_ATTACK:
                 pass  # TODO
             case MultiplayerMenuInputEnum.ZEN_DUEL:
                 pass  # TODO
+            case MultiplayerMenuInputEnum.BACK:
+                self.switch_menu(MenuEnum.MAIN)
 
     def get_input(self):
-        if self.game.blade.collides(self.classic_attack_button):
+        if self.blade.collides(self.classic_attack_button):
             return MultiplayerMenuInputEnum.CLASSIC_ATTACK
-        if self.game.blade.collides(self.zen_duel_button):
+        if self.blade.collides(self.zen_duel_button):
             return MultiplayerMenuInputEnum.ZEN_DUEL
+        if self.blade.collides(self.back_button):
+            return MultiplayerMenuInputEnum.BACK
         return None

@@ -65,6 +65,7 @@ SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
 
 MenuConfig = namedtuple('MenuConfig', [
     'PADDING',
+    'BACK_BUTTON_IMAGE',
     'ORIGINAL_INNER_IMAGE', 'ORIGINAL_OUTER_IMAGE',
     'MULTIPLAYER_INNER_IMAGE', 'MULTIPLAYER_OUTER_IMAGE',
     'QUIT_INNER_IMAGE', 'QUIT_OUTER_IMAGE',
@@ -137,6 +138,7 @@ finger_input_config = FingerInputConfig(
 
 menu_config = MenuConfig(
     PADDING=20,
+    BACK_BUTTON_IMAGE=image_path('gui', 'back-button.png'),
     ORIGINAL_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
     ORIGINAL_OUTER_IMAGE=image_path('gui', 'circles', 'original.png'),
     MULTIPLAYER_INNER_IMAGE=image_path('items', 'fruits', 'peach.png'),

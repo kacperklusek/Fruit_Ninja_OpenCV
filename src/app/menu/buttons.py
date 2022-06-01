@@ -3,11 +3,27 @@ from typing import Union
 from pygame.math import Vector2
 from src.app.utils.image_loader import ImageLoader
 
+# TODO - refactor these 2 classes
+class Button:
+    def __init__(self, image_path: str, position: Vector2, width: Union[int, float] = -1, height: Union[int, float] = -1):
+        self.image = ImageLoader.load_png(image_path, width, height)
+        self.position = position
+
+    @property
+    def rect(self):
+        rect = self.image.get_rect()
+        rect.y = self.position.y
+        rect.x = self.position.x
+        return rect
+
+    def blit(self, surface):
+        surface.blit(self.image, self.position)
+
 
 class FruitButton:
-    def __init__(self, inner_image: str, outer_image: str, position: Vector2, size: Union[int, float] = 200):  # TODO - add type hints to every method
-        self.original_inner_image = ImageLoader.load_png(inner_image, size * .35)
-        self.original_outer_image = ImageLoader.load_png(outer_image, size)
+    def __init__(self, inner_image_path: str, outer_image_path: str, position: Vector2, size: Union[int, float] = -1):  # TODO - add type hints to every method
+        self.original_inner_image = ImageLoader.load_png(inner_image_path, size * .35)
+        self.original_outer_image = ImageLoader.load_png(outer_image_path, size)
         self.inner_image = self.original_inner_image
         self.outer_image = self.original_outer_image
         self.inner_width, self.inner_height = self.inner_image.get_size()
