@@ -1,5 +1,5 @@
 import random
-from src.app.utils.enums.items import ItemType, PlainFruitType
+from src.app.utils.enums import ItemType, PlainFruitType
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.items.bomb import Bomb
 

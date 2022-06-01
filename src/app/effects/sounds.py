@@ -38,7 +38,6 @@ class SoundController:  # TODO
 
     @classmethod
     def play_game_over_sound(cls):
-        print('over')
         cls._game_over_sound.play()
 
     @classmethod

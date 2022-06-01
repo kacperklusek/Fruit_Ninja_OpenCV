@@ -1,6 +1,6 @@
 import pygame
 from src.config import blade_config as config
-from src.app.utils.enums.input_source import InputSource
+from src.app.utils.enums import InputSource
 from src.app.control.input_controller import FingerInput, HandInput, MouseInput, InputPoint
 from src.app.utils.point import Point
 from src.config import game_config
@@ -51,6 +51,8 @@ class Blade(pygame.sprite.Sprite):
         points = self.points_history[:]
         if len(points) > 1:
             pygame.draw.lines(self.surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
+            for point in points:
+                pygame.draw.circle(self.surface, 'red', point, 4)  # TODO - remove this line after
             self.screen.blit(self.surface, (0, 0))
 
     def change_input_source(self, input_source_type):

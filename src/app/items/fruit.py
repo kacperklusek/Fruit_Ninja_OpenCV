@@ -3,7 +3,7 @@ from pygame.math import Vector2
 from src.config import image_path
 
 from src.app.items.item import Item
-from src.app.utils.enums.items import PlainFruitType
+from src.app.utils.enums import PlainFruitType
 
 
 def fruit_image_path(fruit_name):

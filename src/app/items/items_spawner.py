@@ -5,7 +5,7 @@ import pygame.time
 from pygame import Vector2
 
 from src.config import window_config
-from src.app.utils.enums.items import ItemType
+from src.app.utils.enums import ItemType
 from src.app.items.item_factory import ItemFactory
 from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController

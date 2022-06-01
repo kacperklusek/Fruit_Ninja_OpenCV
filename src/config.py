@@ -2,8 +2,8 @@ from collections import namedtuple
 
 import pygame
 
-from src.app.utils.enums.input_source import InputSource
-from src.app.utils.enums.game_mode import GameMode
+from src.app.utils.enums import InputSource
+from src.app.utils.enums import GameMode
 import os
 import mediapipe as mp
 
@@ -71,6 +71,8 @@ SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
 
 MenuConfig = namedtuple('MenuConfig', [
     'PADDING',
+    'BACK_BUTTON_HOVER_DURATION',
+    'HOVER_STOP_TOLERANCE',
     'BACK_BUTTON_IMAGE',
     'ORIGINAL_INNER_IMAGE', 'ORIGINAL_OUTER_IMAGE',
     'MULTIPLAYER_INNER_IMAGE', 'MULTIPLAYER_OUTER_IMAGE',
@@ -145,6 +147,8 @@ finger_input_config = FingerInputConfig(
 
 menu_config = MenuConfig(
     PADDING=20,
+    BACK_BUTTON_HOVER_DURATION=.5,
+    HOVER_STOP_TOLERANCE=.2,
     BACK_BUTTON_IMAGE=image_path('gui', 'back-button.png'),
     ORIGINAL_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
     ORIGINAL_OUTER_IMAGE=image_path('gui', 'circles', 'original.png'),

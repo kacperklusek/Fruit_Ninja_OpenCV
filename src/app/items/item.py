@@ -54,3 +54,8 @@ class Item(pygame.sprite.Sprite):
     def handle_out_of_bounds(self):
         self.kill()
         Item.out_of_bounds += 1
+
+    @classmethod
+    def reset(cls):
+        cls.out_of_bounds = 0
+
