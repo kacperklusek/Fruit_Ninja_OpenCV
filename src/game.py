@@ -6,7 +6,7 @@ from random import randint
 from pygame.math import Vector2
 from src.app.control.blade import Blade
 from src.app.items.bomb import Bomb
-from src.app.items.fruit import Fruit
+from src.app.items.fruit import Fruit, SlicedFruit
 from src.app.items.item import Item
 from src.app.items.items_spawner import ItemsSpawner
 from src.app.controllers.time_controller import TimeController
@@ -202,6 +202,8 @@ class Game:
             if fruit.trail_shadow: fruit.trail_shadow.blit(self.surface)  # TODO - improve this
         Fruit.group.update(self.time_controller.last_frame_duration)
         Fruit.group.draw(self.surface)
+        SlicedFruit.group.update(self.time_controller.last_frame_duration)
+        SlicedFruit.group.draw(self.surface)
 
     def handle_collisions(self):
         if self.blade:

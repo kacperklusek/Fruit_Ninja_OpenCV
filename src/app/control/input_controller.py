@@ -25,7 +25,7 @@ class InputController(ABC):
 
     @property
     def points_history(self):
-        return list(map(lambda point: point.coords, self._points_history))
+        return list(map(lambda point: point.coords, self._points_history.copy()))
 
     def start_tracking(self):
         if self.thread: return

@@ -127,7 +127,7 @@ spawn_frequency = SpawnFrequencyConfig(
 
 classic_mode_config = GameModeConfig(
     MODE=GameMode.CLASSIC,
-    LIVES=1,
+    LIVES=6,
     DIFFICULTY=1
 )
 
@@ -181,7 +181,7 @@ menu_config = MenuConfig(
     ZEN_DUEL_OUTER_IMAGE=image_path('gui', 'buttons', 'zen-duel.png')
 )
 
-general_volume = 0.1
+general_volume = 0.0
 lower_volume = 0.05
 sound_config = SoundConfig(
     BOOM=os.path.join('assets', 'sounds', 'boom.mp3'), BOOM_VOLUME=1,
