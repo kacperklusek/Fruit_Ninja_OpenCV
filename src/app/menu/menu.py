@@ -1,7 +1,7 @@
 import pygame.display
 
 from src.app.menu.buttons import Button, FruitButton
-from src.config import window_config, menu_config
+from src.config import window_config, menu_config, classic_mode_config
 from pygame.math import Vector2
 from enum import Enum, auto
 
@@ -194,7 +194,7 @@ class OriginalModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case OriginalMenuInputEnum.CLASSIC:
-                pass  # TODO
+                self.game.start_game(classic_mode_config)
             case OriginalMenuInputEnum.ARCADE:
                 pass  # TODO
             case OriginalMenuInputEnum.ZEN:

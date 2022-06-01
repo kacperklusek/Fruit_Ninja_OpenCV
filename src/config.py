@@ -161,7 +161,7 @@ general_volume = 0.1
 lower_volume = 0.05
 sound_config = SoundConfig(
     BOOM=os.path.join('assets', 'sounds', 'boom.mp3'), BOOM_VOLUME=1,
-    MENU=os.path.join('assets', 'sounds', 'menu.mp3'), MENU_VOLUME=general_volume,
+    MENU=os.path.join('assets', 'sounds', 'menu.mp3'), MENU_VOLUME=lower_volume,
     OVER=os.path.join('assets', 'sounds', 'over.mp3'), OVER_VOLUME=general_volume,
     SPLATTER=os.path.join('assets', 'sounds', 'splatter.mp3'), SPLATTER_VOLUME=lower_volume,
     START=os.path.join('assets', 'sounds', 'start.mp3'), START_VOLUME=general_volume,

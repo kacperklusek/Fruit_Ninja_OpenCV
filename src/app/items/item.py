@@ -6,11 +6,11 @@ from src.config import window_config
 
 
 class Item(pygame.sprite.Sprite):
-    gravity_controller = GravityController()
     out_of_bounds = 0
 
     def __init__(self, image: str):
         pygame.sprite.Sprite.__init__(self)
+        self.gravity_controller = GravityController()
         self.velocity = Vector2(0, 0)
         self.position = Vector2(0, 0)
         self.original_image = pygame.image.load(image).convert_alpha()
