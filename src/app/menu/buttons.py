@@ -19,7 +19,6 @@ class Button:
     def blit(self, surface):
         surface.blit(self.image, self.position)
 
-
 class FruitButton:
     def __init__(self, inner_image_path: str, outer_image_path: str, position: Vector2, size: Union[int, float] = -1):  # TODO - add type hints to every method
         self.original_inner_image = ImageLoader.load_png(inner_image_path, size * .35)

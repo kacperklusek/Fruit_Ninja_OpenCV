@@ -1,6 +1,7 @@
 import pygame.display
 
 from src.app.menu.buttons import Button, FruitButton
+from src.app.menu.labels import ScoreLabel
 from src.config import window_config, menu_config, classic_mode_config
 from pygame.math import Vector2
 from enum import Enum, auto
@@ -10,6 +11,7 @@ class MenuEnum(Enum):
     MAIN = auto()
     ORIGINAL = auto()
     MULTIPLAYER = auto()
+    GAME_OVER = auto()
 
 
 class MainMenuInputEnum(Enum):
@@ -29,6 +31,8 @@ class MultiplayerMenuInputEnum(Enum):
     CLASSIC_ATTACK = auto()
     ZEN_DUEL = auto()
 
+class GameOverMenuInputEnum(Enum):
+    BACK = auto()
 
 class Menu:
     QUIT_BUTTON_SIZE = window_config.WIDTH * .15
@@ -90,6 +94,7 @@ class Menu:
     def display(self):
         self.run_display = True
         while self.run_display:
+            self.update()
             self.game.handle_events()
             self.handle_input()
             self.animate()
@@ -98,6 +103,9 @@ class Menu:
     def switch_menu(self, target_menu: MenuEnum):
         self.run_display = False
         self.game.display_menu(target_menu)
+
+    def update(self):
+        ...
 
 
 class MainMenu(Menu):
@@ -271,4 +279,61 @@ class MultiplayerModeMenu(Menu):
             return MultiplayerMenuInputEnum.ZEN_DUEL
         if self.blade.collides(self.back_button):
             return MultiplayerMenuInputEnum.BACK
+        return None
+
+
+class GameOverMenu(Menu):
+    BACK_BUTTON_WIDTH = 160
+    BACK_BUTTON_HEIGHT = 40
+
+    def __init__(self, game):
+        Menu.__init__(self, game)
+        self.back_button = Button(
+            menu_config.BACK_BUTTON_IMAGE,
+            Vector2(
+                0,
+                self.menu_surface.get_height() - self.BACK_BUTTON_HEIGHT
+            ),
+            self.BACK_BUTTON_WIDTH,
+            self.BACK_BUTTON_HEIGHT
+        )
+        self.game_over_text = window_config.FONT.render('Game over', True, 'White')
+        self.score_text = window_config.FONT.render(f'Your Score: {game.score}', True, 'White')
+        self.game_over_label = ScoreLabel(
+            self.game_over_text,
+            Vector2(
+                self.menu_surface.get_width() // 2 - self.game_over_text.get_width() // 2,
+                self.menu_surface.get_height() // 2 - self.game_over_text.get_height() // 2
+            )
+        )
+        self.score_label = ScoreLabel(
+            self.score_text,
+            Vector2(
+                self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
+                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width()//2
+            )
+        )
+        self.add_elements(self.back_button, self.game_over_label, self.score_label)
+
+    def update(self):
+        self.elements.remove(self.score_label)
+        self.score_text = window_config.FONT.render(f'Your Score: {self.game.score}', True, 'White')
+        self.score_label = ScoreLabel(
+            self.score_text,
+            Vector2(
+                self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
+                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width() // 2
+            )
+        )
+        self.add_elements(self.score_label)
+
+    def handle_input(self):
+        Menu.handle_input(self)
+        match self.get_input():
+            case GameOverMenuInputEnum.BACK:
+                self.switch_menu(MenuEnum.MAIN)
+
+    def get_input(self):
+        if self.blade.collides(self.back_button):
+            return GameOverMenuInputEnum.BACK
         return None

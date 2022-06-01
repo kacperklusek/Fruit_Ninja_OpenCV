@@ -1,4 +1,7 @@
 from collections import namedtuple
+
+import pygame
+
 from src.app.utils.enums.input_source import InputSource
 from src.app.utils.enums.game_mode import GameMode
 import os
@@ -7,6 +10,8 @@ import mediapipe as mp
 
 HandLandmark = mp.solutions.hands.HandLandmark
 
+pygame.init()
+FONT = pygame.font.Font("freesansbold.ttf", 25)
 
 def image_path(*parts):
     return os.path.join('assets', 'graphics', *parts)
@@ -16,7 +21,8 @@ WindowConfig = namedtuple('WindowConfig', [
     'TITLE',
     'WIDTH',
     'HEIGHT',
-    'BACKGROUND_PATH'
+    'BACKGROUND_PATH',
+    'FONT'
 ])
 
 GameConfig = namedtuple('GameConfig', [
@@ -88,14 +94,15 @@ SoundConfig = namedtuple('SoundConfig', [
 
 game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
-    INPUT_SOURCE=InputSource.HAND
+    INPUT_SOURCE=InputSource.MOUSE
 )
 
 window_config = WindowConfig(
     TITLE='Fruit ninja',
     WIDTH=800,
     HEIGHT=600,
-    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg')
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    FONT=FONT
 )
 
 blade_config = BladeConfig(
@@ -110,7 +117,7 @@ spawn_frequency = SpawnFrequencyConfig(
 
 classic_mode_config = GameModeConfig(
     MODE=GameMode.CLASSIC,
-    LIVES=6,
+    LIVES=1,
     DIFFICULTY=1
 )
 

@@ -13,7 +13,7 @@ from src.app.controllers.time_controller import TimeController
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController
-from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuEnum
+from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, GameOverMenu, MenuEnum
 
 from src.config import window_config, game_modes_config, game_config, GameModeConfig
 
@@ -33,7 +33,6 @@ class Game:
         # Pygame
         self.init()
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font("freesansbold.ttf", 25)  # TODO - move to config
         self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT), pygame.RESIZABLE)
         self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT))
         self.background = pygame.transform.scale(
@@ -52,13 +51,6 @@ class Game:
         self.gravity_controller = GravityController(Vector2(0, 600))
         self.item_spawner = None
 
-        # Menus
-        self.main_menu = MainMenu(self)
-        self.original_menu = OriginalModeMenu(self)
-        self.multiplayer_menu = MultiplayerModeMenu(self)
-        self.curr_menu = self.main_menu
-
-        # TODO - refactor code below
         # Game state
         self.game_active = True
         self.score = 0
@@ -75,10 +67,16 @@ class Game:
         self.gravity_bonus_enabled = False
         self.freeze_bonus_enabled = False
 
+        # Menus
+        self.main_menu = MainMenu(self)
+        self.original_menu = OriginalModeMenu(self)
+        self.multiplayer_menu = MultiplayerModeMenu(self)
+        self.game_over_menu = GameOverMenu(self)
+        self.curr_menu = self.main_menu
+
         # Screen Shaking
         self.screen_shake = 0
 
-        # TODO - refactor code above
         self.init()
 
     @staticmethod
@@ -110,6 +108,8 @@ class Game:
                 self.curr_menu = self.original_menu
             case MenuEnum.MULTIPLAYER:
                 self.curr_menu = self.multiplayer_menu
+            case MenuEnum.GAME_OVER:
+                self.curr_menu = self.game_over_menu
             case _:
                 return
         self.curr_menu.display()
@@ -157,14 +157,13 @@ class Game:
             self.update_bonus()
             self.item_spawner.update()
         else:
-            text = self.font.render('Game over', True, 'White')
-            self.screen.blit(text, (window_config.WIDTH // 2, window_config.HEIGHT // 2))
+            self.game_over_menu.update()
+            self.display_menu(MenuEnum.GAME_OVER)
 
         self.blade.draw()
         pygame.display.update()
 
     def update_difficulty(self):
-        print(self.time_controller.total_elapsed_time)
         self.item_spawner.intensity = \
             min(self.MIN_SPAWNER_INTENSITY + self.time_controller.total_elapsed_time // 8, self.MAX_SPAWNER_INTENSITY)
         self.item_spawner.interval = \
@@ -177,7 +176,7 @@ class Game:
         self.screen.blit(self.surface, (0, 0))
 
     def update_score_and_hp(self):
-        self.stats = self.font.render(f'score: {self.score}  \
+        self.stats = window_config.FONT.render(f'score: {self.score}  \
         <3: {max(0, self.lives - Item.out_of_bounds)}',
                                       True,
                                       'White')
@@ -251,3 +250,4 @@ class Game:
         if self.freeze_bonus_enabled and curr_time - self.freeze_start_time > 10:
             self.time_controller.ratio = self.prev_ratio
             self.freeze_bonus_enabled = False
+
