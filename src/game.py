@@ -15,7 +15,7 @@ from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController
 from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuInput
 
-from src.config import window_config, game_modes_config, game_config, GameModeConfig
+from src.config import window_config, game_config, GameModeConfig
 
 
 class Game:

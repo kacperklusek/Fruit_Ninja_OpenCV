@@ -90,7 +90,7 @@ SoundConfig = namedtuple('SoundConfig', [
 
 game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
-    INPUT_SOURCE=InputSource.MOUSE
+    INPUT_SOURCE=InputSource.HAND
 )
 
 window_config = WindowConfig(

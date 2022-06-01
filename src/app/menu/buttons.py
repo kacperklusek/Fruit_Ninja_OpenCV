@@ -5,6 +5,9 @@ from typing import Union
 from pygame.math import Vector2
 from abc import abstractmethod
 from src.app.utils.image_loader import ImageLoader
+from src.app.control.input_controller import MouseInput
+from src.app.menu.bars import ProgressBar
+from src.app.utils.enums import Orientation
 from .common import MenuElement
 
 
@@ -39,9 +42,14 @@ class TimedButton(Button):
         self.hover_start_time = float('inf')
         self.hover_stop_time = float('inf')
         self.is_hovering = False
+        self.progress_bar = ProgressBar(.9 * width, .1 * height, Orientation.HORIZONTAL, position + Vector2(.05 * width, 0), pygame.color.Color(0, 0, 0))
 
     @property
     def checked(self):
+        # Do not apply timeout while using the MouseInput controller
+        if isinstance(self.game.blade.input_source, MouseInput):
+            return self.game.blade.collides(self)
+
         curr_time = time.time()
         if not self.game.blade.collides(self):
             if curr_time - self.hover_stop_time > self.hover_stop_tolerance:
@@ -63,6 +71,11 @@ class TimedButton(Button):
 
     def blit(self, surface):
         surface.blit(self.image, self.position)
+
+        if self.is_hovering:
+            progress = min(max((time.time() - self.hover_start_time) / self.hover_duration, 0), 1)
+            self.progress_bar.update(progress)
+            self.progress_bar.blit(surface)
 
     def reset(self):
         self.is_hovering = False

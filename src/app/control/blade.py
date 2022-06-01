@@ -50,8 +50,8 @@ class Blade(pygame.sprite.Sprite):
         points = self.points_history[:]
         if len(points) > 1:
             pygame.draw.lines(self.surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
-            # for point in points:
-                # pygame.draw.circle(self.surface, 'red', point, 4)  # TODO - remove this line alter
+            for point in points:
+                pygame.draw.circle(self.surface, 'red', point, 4)  # TODO - remove this line after
             self.screen.blit(self.surface, (0, 0))
 
     def change_input_source(self, input_source_type):

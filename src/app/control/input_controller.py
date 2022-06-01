@@ -141,8 +141,11 @@ class MouseInput(InputController):
             start_time = time.time()
 
             # Save mouse position only if mouse cursor is inside the game window
-            if pygame.mouse.get_focused():
+            if pygame.mouse.get_focused() and pygame.mouse.get_pressed()[0]:
+                pygame.mouse.set_visible(False)
                 self.add_to_history(pygame.mouse.get_pos())
+            else:
+                pygame.mouse.set_visible(True)
             callback()
 
             end_time = time.time()
