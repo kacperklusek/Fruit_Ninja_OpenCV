@@ -1,6 +1,6 @@
 import pygame
 from src.config import blade_config as config
-from src.app.utils.enums.input_source import InputSource
+from src.app.utils.enums import InputSource
 from src.app.control.input_controller import FingerInput, HandInput, MouseInput, InputPoint
 from src.app.utils.point import Point
 from src.config import game_config

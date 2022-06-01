@@ -1,59 +1,119 @@
+import time
+
 import pygame
 from typing import Union
 from pygame.math import Vector2
+from abc import abstractmethod
 from src.app.utils.image_loader import ImageLoader
+from .common import MenuElement
 
-# TODO - refactor these 2 classes
-class Button:
-    def __init__(self, image_path: str, position: Vector2, width: Union[int, float] = -1, height: Union[int, float] = -1):
+
+class Button(MenuElement):
+    def __init__(self, game):
+        self.game = game
+
+    @property
+    def checked(self):
+        return self.game.blade.collides(self)
+
+    @property
+    @abstractmethod
+    def rect(self):
+        pass
+
+
+class TimedButton(Button):
+    def __init__(self,
+                 game,
+                 image_path: str,
+                 position: Vector2,
+                 hover_duration: Union[int, float] = 2,
+                 hover_stop_tolerance: Union[int, float] = .25,
+                 width: Union[int, float] = -1,
+                 height: Union[int, float] = -1):
+        Button.__init__(self, game)
         self.image = ImageLoader.load_png(image_path, width, height)
+        self.hover_duration = hover_duration
+        self.hover_stop_tolerance = hover_stop_tolerance
         self.position = position
+        self.hover_start_time = float('inf')
+        self.hover_stop_time = float('inf')
+        self.is_hovering = False
+
+    @property
+    def checked(self):
+        curr_time = time.time()
+        if not self.game.blade.collides(self):
+            if curr_time - self.hover_stop_time > self.hover_stop_tolerance:
+                self.reset()
+            elif self.hover_stop_time == float('inf'):
+                self.hover_stop_time = curr_time
+            return False
+
+        self.hover_stop_time = float('inf')
+        if not self.is_hovering:
+            self.is_hovering = True
+            self.hover_start_time = curr_time
+
+        return curr_time - self.hover_start_time >= self.hover_duration
 
     @property
     def rect(self):
-        rect = self.image.get_rect()
-        rect.y = self.position.y
-        rect.x = self.position.x
-        return rect
+        return self.image.get_rect(topleft=self.position)
 
     def blit(self, surface):
         surface.blit(self.image, self.position)
 
+    def reset(self):
+        self.is_hovering = False
+        self.hover_start_time = float('inf')
+        self.hover_stop_time = float('inf')
 
-class FruitButton:
-    def __init__(self, inner_image_path: str, outer_image_path: str, position: Vector2, size: Union[int, float] = -1):  # TODO - add type hints to every method
+
+class FruitButton(Button):
+    def __init__(self,
+                 blade,
+                 inner_image_path: str,
+                 outer_image_path: str,
+                 position: Vector2,
+                 size: Union[int, float] = -1,
+                 inner_rotation_speed: Union[int, float] = .2,
+                 outer_rotation_speed: Union[int, float] = -.05,
+                 inner_initial_angle: Union[int, float] = 0,
+                 outer_initial_angle: Union[int, float] = 0):  # TODO - add type hints to every method parameters
+        Button.__init__(self, blade)
         self.original_inner_image = ImageLoader.load_png(inner_image_path, size * .35)
         self.original_outer_image = ImageLoader.load_png(outer_image_path, size)
         self.inner_image = self.original_inner_image
         self.outer_image = self.original_outer_image
-        self.inner_width, self.inner_height = self.inner_image.get_size()
-        self.outer_width, self.outer_height = self.outer_image.get_size()
-        self.inner_angle = 0
-        self.outer_angle = 0
-        self.inner_rotation_speed = .2
-        self.outer_rotation_speed = .05
+        self.inner_current_angle = inner_initial_angle
+        self.outer_current_angle = outer_initial_angle
+        self.inner_rotation_speed = inner_rotation_speed
+        self.outer_rotation_speed = outer_rotation_speed
         self.position = position
 
     @property
     def rect(self):
-        rect = self.inner_image.get_rect()
-        rect.x = self.position.x - self.inner_image.get_width() / 2
-        rect.y = self.position.y - self.inner_image.get_height() / 2
-        return rect
+        return self.inner_image.get_rect(center=self.position)
 
     def animate(self):
         # Rotate the inner image
-        self.inner_angle = (self.inner_angle + self.inner_rotation_speed) % 360
-        self.inner_image = pygame.transform.rotate(self.original_inner_image, self.inner_angle)
-
+        self.inner_image, self.inner_current_angle = self.rotate(
+            self.original_inner_image, self.inner_current_angle, self.inner_rotation_speed
+        )
         # Rotate the outer image
-        self.outer_angle = (self.outer_angle - self.outer_rotation_speed) % 360
-        self.outer_image = pygame.transform.rotate(self.original_outer_image, self.outer_angle)
+        self.outer_image, self.outer_current_angle = self.rotate(
+            self.original_outer_image, self.outer_current_angle, self.outer_rotation_speed
+        )
+
+    @staticmethod
+    def rotate(image, curr_angle, rotation_speed):
+        new_angle = (curr_angle + rotation_speed) % 360
+        return pygame.transform.rotate(image, new_angle), new_angle
 
     def blit(self, surface):
-        surface.blit(self.inner_image,
-                    self.position - Vector2(self.inner_image.get_width() / 2, self.inner_image.get_height() / 2))
+        self._blit_centered(self.inner_image, surface)
+        self._blit_centered(self.outer_image, surface)
 
-        # TODO - remove duplicated code
-        surface.blit(self.outer_image,
-                    self.position - Vector2(self.outer_image.get_width() / 2, self.outer_image.get_height() / 2))
+    def _blit_centered(self, image, surface):
+        surface.blit(image, self.position - Vector2(image.get_width() // 2, image.get_height() // 2))

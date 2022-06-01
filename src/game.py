@@ -12,7 +12,7 @@ from src.app.controllers.time_controller import TimeController
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
 from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController
-from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuEnum
+from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuInput
 
 from src.config import window_config, game_modes_config, game_config
 
@@ -96,16 +96,17 @@ class Game:
             if event.type == pygame.QUIT:
                 self.exit()
 
-    def display_menu(self, menu: MenuEnum):
+    def display_menu(self, menu: MenuInput):
         match menu:
-            case MenuEnum.MAIN:
+            case MenuInput.MAIN:
                 self.curr_menu = self.main_menu
-            case MenuEnum.ORIGINAL:
+            case MenuInput.ORIGINAL:
                 self.curr_menu = self.original_menu
-            case MenuEnum.MULTIPLAYER:
+            case MenuInput.MULTIPLAYER:
                 self.curr_menu = self.multiplayer_menu
             case _:
                 return
+
         self.curr_menu.display()
 
     # TODO - refactor code below
