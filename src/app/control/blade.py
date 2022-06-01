@@ -8,7 +8,6 @@ from src.config import game_config
 
 class Blade(pygame.sprite.Sprite):
     EMPTY_COLOR = pygame.Color(0, 0, 0, 0)
-    APPROXIMATION_POINTS = 100
 
     def __init__(self, screen, input_source):
         pygame.sprite.Sprite.__init__(self)
@@ -43,11 +42,16 @@ class Blade(pygame.sprite.Sprite):
                 result.append(history[i])
             return result
 
+    def destroy(self):
+        self.input_source.end_tracking()
+
     def draw(self):
         self.surface.fill(self.EMPTY_COLOR)
         points = self.points_history[:]
         if len(points) > 1:
             pygame.draw.lines(self.surface, config.COLORS[0], False, points, len(self))
+            for point in points:
+                pygame.draw.circle(self.surface, 'red', point, 4)  # TODO - remove this line alter
             self.screen.blit(self.surface, (0, 0))
 
     def change_input_source(self, input_source_type):

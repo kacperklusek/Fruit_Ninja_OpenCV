@@ -1,8 +1,8 @@
 from time import time
-from src.app.utils.design_patterns import Singleton
+from src.app.utils.singleton import SingletonMeta
 
 
-class TimeController(metaclass=Singleton):
+class TimeController(metaclass=SingletonMeta):
     MIN_RATIO = .25
     MAX_RATIO = 10
 
@@ -12,7 +12,7 @@ class TimeController(metaclass=Singleton):
         self.__last_frame_time = 0
         self.__last_frame_duration = 0
 
-    def init(self):
+    def start(self):
         self.__start_time = self.__last_frame_time = time()
 
     @property

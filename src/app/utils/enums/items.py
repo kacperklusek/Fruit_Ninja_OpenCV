@@ -13,4 +13,4 @@ class PlainFruitType(ExtendedEnum):
     BANANA = 'banana'
     BASAHA = 'basaha'
     PEACH = 'peach'
-    SANDIA = 'sandia'
+    WATERMELON = 'watermelon'

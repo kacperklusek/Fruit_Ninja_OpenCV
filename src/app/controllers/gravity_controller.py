@@ -1,10 +1,10 @@
 from pygame.math import Vector2
-from src.app.utils.design_patterns import Singleton
+from src.app.utils.singleton import SingletonMeta
 
 
-class GravityController(metaclass=Singleton):
-    def __init__(self):
-        self.__g = Vector2(0, 0)
+class GravityController(metaclass=SingletonMeta):
+    def __init__(self, initial_gravity: Vector2 = None):
+        self.__g = initial_gravity
 
     @property
     def gravity(self):

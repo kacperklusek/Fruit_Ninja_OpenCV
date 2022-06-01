@@ -63,10 +63,16 @@ SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
     'BOMB'
 ])
 
-MainMenuConfig = namedtuple('MainMenuConfig', [
-    'NEW_GAME_INNER_IMAGE', 'NEW_GAME_OUTER_IMAGE',
-    'DOJO_INNER_IMAGE', 'DOJO_OUTER_IMAGE',  # TODO - look for the arcade and classic images instead of dojo
-    'QUIT_INNER_IMAGE', 'QUIT_OUTER_IMAGE'
+MenuConfig = namedtuple('MenuConfig', [
+    'PADDING',
+    'ORIGINAL_INNER_IMAGE', 'ORIGINAL_OUTER_IMAGE',
+    'MULTIPLAYER_INNER_IMAGE', 'MULTIPLAYER_OUTER_IMAGE',
+    'QUIT_INNER_IMAGE', 'QUIT_OUTER_IMAGE',
+    'CLASSIC_INNER_IMAGE', 'CLASSIC_OUTER_IMAGE',
+    'ARCADE_INNER_IMAGE', 'ARCADE_OUTER_IMAGE',
+    'ZEN_INNER_IMAGE', 'ZEN_OUTER_IMAGE',
+    'CLASSIC_ATTACK_INNER_IMAGE', 'CLASSIC_ATTACK_OUTER_IMAGE',
+    'ZEN_DUEL_INNER_IMAGE', 'ZEN_DUEL_OUTER_IMAGE'
 ])
 
 SoundConfig = namedtuple('SoundConfig', [
@@ -129,13 +135,24 @@ finger_input_config = FingerInputConfig(
     MIN_DETECTION_CONFIDENCE=.5
 )
 
-main_menu_config = MainMenuConfig(
-    NEW_GAME_INNER_IMAGE=image_path('items', 'fruits', 'sandia.png'),  # TODO - change watermelon image names from sandia
-    NEW_GAME_OUTER_IMAGE=image_path('gui', 'new-game.png'),
-    DOJO_INNER_IMAGE=image_path('items', 'fruits', 'apple.png'),
-    DOJO_OUTER_IMAGE=image_path('gui', 'dojo.png'),
+menu_config = MenuConfig(
+    PADDING=20,
+    ORIGINAL_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
+    ORIGINAL_OUTER_IMAGE=image_path('gui', 'circles', 'original.png'),
+    MULTIPLAYER_INNER_IMAGE=image_path('items', 'fruits', 'peach.png'),
+    MULTIPLAYER_OUTER_IMAGE=image_path('gui', 'circles', 'multiplayer.png'),
     QUIT_INNER_IMAGE=image_path('items', 'bombs', 'bomb.png'),
-    QUIT_OUTER_IMAGE=image_path('gui', 'quit.png')
+    QUIT_OUTER_IMAGE=image_path('gui', 'circles', 'quit.png'),
+    CLASSIC_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
+    CLASSIC_OUTER_IMAGE=image_path('gui', 'circles', 'classic.png'),
+    ARCADE_INNER_IMAGE=image_path('items', 'fruits', 'banana.png'),
+    ARCADE_OUTER_IMAGE=image_path('gui', 'circles', 'arcade.png'),
+    ZEN_INNER_IMAGE=image_path('items', 'fruits', 'apple.png'),
+    ZEN_OUTER_IMAGE=image_path('gui', 'circles', 'zen.png'),
+    CLASSIC_ATTACK_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),
+    CLASSIC_ATTACK_OUTER_IMAGE=image_path('gui', 'circles', 'classic-attack.png'),
+    ZEN_DUEL_INNER_IMAGE=image_path('items', 'fruits', 'apple.png'),
+    ZEN_DUEL_OUTER_IMAGE=image_path('gui', 'circles', 'zen-duel.png')
 )
 
 general_volume = 0.1

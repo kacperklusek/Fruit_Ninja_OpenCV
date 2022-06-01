@@ -1,6 +1,6 @@
 import pygame
+import sys
 from time import time
-from random import randint
 
 from pygame.math import Vector2
 from src.app.control.blade import Blade
@@ -8,13 +8,11 @@ from src.app.items.bomb import Bomb
 from src.app.items.fruit import Fruit
 from src.app.items.item import Item
 from src.app.items.items_spawner import ItemsSpawner
-from src.app.physics.time_controller import TimeController
+from src.app.controllers.time_controller import TimeController
 from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
-from src.app.physics.gravity_controller import GravityController
-from src.app.utils.enums.input_source import InputSource
+from src.app.controllers.gravity_controller import GravityController
 from src.app.effects.sounds import SoundController
-from src.app.menu.menu import MainMenu
-
+from src.app.menu.menu import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuEnum
 
 from src.config import window_config, game_modes_config, game_config
 
@@ -27,25 +25,31 @@ class Game:
 
     def __init__(self):
         # Pygame
-        pygame.init()
-        self.background = pygame.transform.scale(
-            pygame.image.load(window_config.BACKGROUND_PATH), (window_config.WIDTH, window_config.HEIGHT)
-        )
-        self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT))
+        self.init()
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font("freesansbold.ttf", 25)  # TODO - move to config
+        self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT), pygame.RESIZABLE)
         self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT))
-        self.font = pygame.font.Font("freesansbold.ttf", 25)
-        pygame.display.set_caption(window_config.TITLE)
+        self.background = pygame.transform.scale(
+            pygame.image.load(window_config.BACKGROUND_PATH),
+            (window_config.WIDTH, window_config.HEIGHT)
+        )
 
         # Sprites
         self.blade = Blade(self.screen, game_config.INPUT_SOURCE)
 
         # Utilities
         self.time_controller = TimeController()
-        self.gravity_controller = GravityController()
+        self.gravity_controller = GravityController(Vector2(0, 600))
         self.item_spawner = ItemsSpawner(game_modes_config.CLASSIC.DIFFICULTY)  # TODO - implement more game modes
-        self.gravity_controller.gravity = Vector2(0, 600)
 
+        # Menus
+        self.main_menu = MainMenu(self)
+        self.original_menu = OriginalModeMenu(self)
+        self.multiplayer_menu = MultiplayerModeMenu(self)
+        self.curr_menu = self.main_menu
+
+        # TODO - refactor code below
         # Game state
         self.game_active = True
         self.score = 0
@@ -66,62 +70,98 @@ class Game:
         # Screen Shaking
         self.screen_shake = 0
 
-        # Menu
-        self.menu = MainMenu(self)
+        # TODO - refactor code above
+        self.init()
 
-    def start(self):
-        self.time_controller.init()
-        self.game_active = True
-        self.score = 0
-        self.lives = game_modes_config.CLASSIC.LIVES
-        self.stats = None
+    @staticmethod
+    def init():
+        pygame.init()
+        # pygame.mouse.set_visible(False)
+        pygame.display.set_caption(window_config.TITLE)
 
-        SoundController.play_game_start_sound()
+    def exit(self):
+        self.blade.destroy()
+        pygame.quit()
+        sys.exit()
 
-        while True:
-            self.handle_events()
-            self.time_controller.register_new_frame()
-            self.update()
-            self.update_difficulty()
-            self.clock.tick(game_config.FPS)
+    # def start(self):
+    #     self.time_controller.start()
+    #
+    # def update(self):
+    #     self.blade.draw()
+    #     pygame.display.update()
 
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.blade.input_source.end_tracking()
-                pygame.quit()
-                exit()
+                self.exit()
+
+    def display_menu(self, menu: MenuEnum):
+        match menu:
+            case MenuEnum.MAIN:
+                self.curr_menu = self.main_menu
+            case MenuEnum.ORIGINAL:
+                self.curr_menu = self.original_menu
+            case MenuEnum.MULTIPLAYER:
+                self.curr_menu = self.multiplayer_menu
+            case _:
+                return
+        self.curr_menu.display()
+
+    # TODO - refactor code below
+    def start(self):
+        SoundController.play_game_start_sound()
+        self.curr_menu.display()
+
+
+
+        # self.game_active = True
+        # self.score = 0
+        # self.lives = game_modes_config.CLASSIC.LIVES
+        # self.stats = None
+        #
+        # SoundController.play_game_start_sound()
+        #
+        # while True:
+        #     self.handle_events()
+        #     self.time_controller.register_new_frame()
+        #     self.update()
+        #     self.update_difficulty()
+        #     self.clock.tick(game_config.FPS)
+
+
 
     def update(self):
-        render_offset = [0, 0]
-        if self.screen_shake:
-            self.screen_shake -= 1
-            render_offset = [randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2,
-                             randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2]
-
-        self.surface.blit(self.background, render_offset)
-        self.screen.blit(self.surface, (0, 0))
-
-        if self.game_started:
-            self.update_items()
-            if self.game_active:
-                if Item.out_of_bounds >= self.lives:
-                    self.game_active = False
-                    SoundController.play_game_over_sound()
-
-                self.handle_collisions()
-                self.check_combo_finish()
-                self.update_bonus()
-                self.item_spawner.update()
-            else:
-                text = self.font.render('Game over', True, 'White')
-                self.screen.blit(text, (window_config.WIDTH // 2, window_config.HEIGHT // 2))
-        else:
-            self.menu.display()
-
-
-        self.blade.draw()
-        pygame.display.update()
+        ...
+        # render_offset = [0, 0]
+        # if self.screen_shake:
+        #     self.screen_shake -= 1
+        #     render_offset = [randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2,
+        #                      randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET//2]
+        #
+        # self.surface.blit(self.background, render_offset)
+        # self.screen.blit(self.surface, (0, 0))
+        #
+        # if self.game_started:
+        #     self.update_items()
+        #     if self.game_active:
+        #         if Item.out_of_bounds >= self.lives:
+        #             self.game_active = False
+        #             SoundController.play_game_over_sound()
+        #
+        #         self.handle_collisions()
+        #         self.check_combo_finish()
+        #         self.update_bonus()
+        #         self.item_spawner.update()
+        #     else:
+        #         text = self.font.render('Game over', True, 'White')
+        #         self.screen.blit(text, (window_config.WIDTH // 2, window_config.HEIGHT // 2))
+        # else:
+        #     self.menu.display()
+        #
+        #
+        # self.blade.draw()
+        # pygame.display.update()
 
     def update_difficulty(self):
         self.item_spawner.intensity = min(1 + self.time_controller.total_elapsed_time // 8, 5)

@@ -1,7 +1,7 @@
 import pygame
 import random
 from pygame.math import Vector2
-from src.app.physics.gravity_controller import GravityController
+from src.app.controllers.gravity_controller import GravityController
 from src.config import window_config
 
 
