@@ -90,7 +90,7 @@ SoundConfig = namedtuple('SoundConfig', [
 
 game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
-    INPUT_SOURCE=InputSource.HAND
+    INPUT_SOURCE=InputSource.MOUSE
 )
 
 window_config = WindowConfig(
@@ -140,7 +140,7 @@ finger_input_config = FingerInputConfig(
 
 menu_config = MenuConfig(
     PADDING=20,
-    BACK_BUTTON_HOVER_DURATION=1,
+    BACK_BUTTON_HOVER_DURATION=.5,
     HOVER_STOP_TOLERANCE=.2,
     BACK_BUTTON_IMAGE=image_path('gui', 'back-button.png'),
     ORIGINAL_INNER_IMAGE=image_path('items', 'fruits', 'watermelon.png'),

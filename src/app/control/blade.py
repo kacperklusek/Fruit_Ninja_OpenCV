@@ -15,7 +15,6 @@ class Blade(pygame.sprite.Sprite):
         self.screen = screen
         self.input_source = self.create_input_source(input_source)
         self.surface = pygame.Surface((screen.get_width(), screen.get_height()), flags=pygame.SRCALPHA)
-
         self.input_source.start_tracking()
 
     def __len__(self):
