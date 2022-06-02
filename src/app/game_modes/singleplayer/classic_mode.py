@@ -3,7 +3,7 @@ from pygame.math import Vector2
 from .common import SinglePlayerMode
 from src.app.items.items_spawner import ClassicModeItemSpawner
 from src.app.controllers.gravity_controller import GravityController
-from src.app.gui.bars import HealthBar
+from src.app.gui.bars import HealthBar, ScoreBar
 from src.config import classic_mode_config, window_config
 
 
@@ -19,6 +19,7 @@ class ClassicMode(SinglePlayerMode):
         self.gravity_controller = GravityController(Vector2(0, 600))
         self.item_spawner = ClassicModeItemSpawner(self.fruits, self.bombs)
         self.health_bar = HealthBar(classic_mode_config.LIVES)
+        self.score_bar = ScoreBar(self.score_controller)
 
         # Current state
         self.lives = classic_mode_config.LIVES
@@ -44,7 +45,11 @@ class ClassicMode(SinglePlayerMode):
     def update(self):
         SinglePlayerMode.update(self)
         self.update_difficulty()
+        self.score_controller.check_combo_finished()
         self.item_spawner.update()
+
+        # TODO check if passing surface this way is correct
+        self.score_bar.blit(self.game.surface)
         self.health_bar.blit(self.game.surface)
 
     def handle_out_of_bounds(self):

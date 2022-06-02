@@ -59,5 +59,4 @@ class SinglePlayerMode(ABC):
 
     def update(self):
         self.handle_collisions()
-        self.score_controller.check_combo_finished()
         self.blit()

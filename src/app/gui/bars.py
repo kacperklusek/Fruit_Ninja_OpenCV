@@ -5,7 +5,10 @@ from typing import Union
 from src.app.utils.enums import Orientation
 from src.app.utils.image_loader import ImageLoader
 from .common import MenuElement
-from src.config import health_bar_config, window_config
+from src.config import health_bar_config, window_config, game_config
+from pygame.font import Font
+
+from ..controllers.score_controller import ScoreController
 
 
 class ProgressBar(MenuElement):
@@ -100,8 +103,20 @@ class HealthBar(MenuElement):
 
 
 class ScoreBar:
-    def __init__(self):
-        self.score = 0
+    SCORE_POSITION = Vector2(0, 0)
 
+    def __init__(self, score_controller: ScoreController):
+        self.score = 0
+        self.font = Font(game_config.FONT, game_config.FONT_SIZE)
+        self.score_controller = score_controller
+        self.score_controller.add_observer(self)
+
+    def blit(self, surface):
+        surface.blit(
+            self.font.render(f'Your Score: {self.score}', True, 'White'),
+            self.SCORE_POSITION)
+
+    def update_score(self, score):
+        self.score = score
 
 
