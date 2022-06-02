@@ -4,6 +4,7 @@ import pygame
 import sys
 
 from src.app.controllers.blade import Blade
+from src.app.gui.labels import ComboLabel
 from src.app.utils.enums import GameMode
 from src.app.effects.sounds import SoundController
 from src.app.controllers.time_controller import TimeController
@@ -12,6 +13,13 @@ from src.app.gui.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, G
     SinglePlayerGameOverMenu
 
 from src.config import window_config, game_config
+
+
+
+
+from pygame.math import Vector2
+
+
 
 
 class Game:
@@ -51,6 +59,8 @@ class Game:
         # Screen Shaking
         self.render_offset = [0, 0]
         self.remaining_screen_shake_duration = 0
+
+        self.combo = ComboLabel(4, Vector2(200, 200))
 
     @staticmethod
     def init():
@@ -96,7 +106,6 @@ class Game:
     def start_game(self, curr_game: GameMode):
         self.reset()
         SoundController.stop_menu_sound()
-        print('start')
 
         match curr_game:
             case GameMode.CLASSIC:
@@ -126,6 +135,7 @@ class Game:
             self.apply_screen_shake()
 
         self.screen.blit(self.background_surface, self.render_offset)
+        self.combo.blit(self.background_surface)  # TODO - REMOVE ME
         self.curr_game.update()
         self.blade.draw()
 

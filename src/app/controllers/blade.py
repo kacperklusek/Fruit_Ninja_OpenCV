@@ -72,4 +72,4 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
                 return MouseInput()
 
     def collides(self, obj):
-        return any(map(obj.rect.collidepoint, self[-1 if game_config.INPUT_SOURCE == InputSource.MOUSE else 5:]))
+        return any(map(obj.rect.collidepoint, self.input_source.get_points_for_collision()))

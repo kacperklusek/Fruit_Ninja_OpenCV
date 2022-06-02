@@ -55,7 +55,6 @@ class Item(Sprite):
 
         if self.item_out_of_bounds():
             if 'out_of_bounds_handler' in kwargs:
-                print('out of bounds', self)
                 kwargs['out_of_bounds_handler']()
             self.kill()
             return

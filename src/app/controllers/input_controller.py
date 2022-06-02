@@ -1,7 +1,7 @@
 import time
 import pygame
-import threading
 import mediapipe as mp
+from threading import Lock, Thread
 from cv2 import cv2
 from functools import reduce
 from collections import deque
@@ -21,22 +21,28 @@ class InputPoint:
 class InputController(ABC):
     def __init__(self):
         self.thread = None
+        self._mutex = Lock()
         self._points_history = deque()
 
     @property
     def points_history(self):
-        return list(map(lambda point: point.coords, self._points_history.copy()))
+        self._mutex.acquire(True)
+        history = list(map(lambda point: point.coords, self._points_history))
+        self._mutex.release()
+        return history
 
     def start_tracking(self):
         if self.thread: return
-        self.thread = threading.Thread(target=self.run, args=(self.update_blade,))
+        self.thread = Thread(target=self.run, args=(self.update_blade,))
         self.thread.start()
 
     def end_tracking(self):
         self.thread.join()
 
     def add_to_history(self, coords):
+        self._mutex.acquire(True)
         self._points_history.append(InputPoint(Point(*coords), time.time()))
+        self._mutex.release()
 
     def clear_history(self):
         self._points_history.clear()
@@ -45,6 +51,10 @@ class InputController(ABC):
         while self._points_history and \
                 time.time() - self._points_history[0].time_added >= blade_config.VISIBILITY_DURATION:
             self._points_history.popleft()
+
+    @abstractmethod
+    def get_points_for_collision(self):
+        pass
 
     @abstractmethod
     def run(self, callback):
@@ -94,6 +104,19 @@ class CameraInput(InputController, ABC):
     @abstractmethod
     def get_coords(self, results):
         pass
+
+    def get_points_for_collision(self):
+        current_time = time.time()
+        if len(self._points_history) >= 5:
+            points = self._points_history[-5:]
+        else:
+            points = self._points_history[:]
+
+        while current_time - points[0].time_added > blade_config.VALIDITY_DURATION_FOR_COLLISION:
+            points.popleft()
+
+        return points
+
 
 
 class FingerInput(CameraInput):
@@ -155,3 +178,11 @@ class MouseInput(InputController):
             sleep_time = self.interval - (end_time - start_time)
             if sleep_time > 0:
                 time.sleep(sleep_time)
+
+    def get_points_for_collision(self):
+        current_time = time.time()
+        if len(self.points_history) == 0 or \
+                current_time - self._points_history[-1].time_added > blade_config.VALIDITY_DURATION_FOR_COLLISION:
+            return []
+        else:
+            return [self.points_history[-1]]

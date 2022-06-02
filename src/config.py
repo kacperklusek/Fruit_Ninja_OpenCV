@@ -29,7 +29,8 @@ GameConfig = namedtuple('GameConfig', [
 
 BladeConfig = namedtuple('BladeConfig', [
     'COLORS',
-    'VISIBILITY_DURATION'
+    'VISIBILITY_DURATION',
+    'VALIDITY_DURATION_FOR_COLLISION'
 ])
 
 HandInputConfig = namedtuple('HandInputConfig', [
@@ -55,6 +56,11 @@ SinglePlayerModeConfig = namedtuple('SinglePlayerModeConfig', [
 ClassicModeConfig = namedtuple('ClassicModeConfig', [
     'LIVES',  # TODO - rename to lives
     'BACKGROUND_PATH'
+])
+
+ZenModeConfig = namedtuple('ClassicModeConfig', [
+    'BACKGROUND_PATH',
+    'TIME'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -97,6 +103,11 @@ HealthBarConfig = namedtuple('HealthBarConfig', [
     'HEALTHS_COUNT'
 ])
 
+EffectsConfig = namedtuple('EffectsConfig', [
+    'DISPLAY_ITEM_TRAIL',
+    'COMBO_FONT_SIZE'
+])
+
 
 game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
@@ -113,13 +124,15 @@ window_config = WindowConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg')
 )
 
-effects_config = namedtuple('EffectsConfig', [
-    'DISPLAY_ITEM_TRAIL'
-])
-
 blade_config = BladeConfig(
     COLORS=['white'],  # Todo - add gradient effect
-    VISIBILITY_DURATION=.25
+    VISIBILITY_DURATION=.25,
+    VALIDITY_DURATION_FOR_COLLISION=.1
+)
+
+effects_config = EffectsConfig(
+    DISPLAY_ITEM_TRAIL=True,
+    COMBO_FONT_SIZE=20
 )
 
 spawn_frequency = SpawnFrequencyConfig(
@@ -135,6 +148,11 @@ single_player_mode_config = SinglePlayerModeConfig(
 classic_mode_config = ClassicModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
     LIVES=6
+)
+
+zen_mode_config = ZenModeConfig(
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    TIME=90
 )
 
 mouse_input_config = MouseInputConfig(

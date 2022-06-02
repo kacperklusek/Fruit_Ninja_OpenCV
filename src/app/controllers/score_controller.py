@@ -1,5 +1,8 @@
 import time
 
+from src.app.gui.labels import ComboLabel
+from src.app.items.fruit import Fruit
+
 
 class ScoreController:
     COMBO_TIME_DIFF = .2
@@ -10,6 +13,7 @@ class ScoreController:
         self.combo = 0
         self._score = 0
         self.observers = []
+        self.last_fruit_kill_position = None
 
     def add_observer(self, observer):
         if observer not in self.observers:
@@ -33,7 +37,7 @@ class ScoreController:
         self.combo = 0
         self.score = 0
 
-    def register_fruit_cut(self):
+    def register_fruit_cut(self, fruit: Fruit):
         self.score += 1
 
         curr_time = time.time()
@@ -41,15 +45,16 @@ class ScoreController:
             self.combo += 1 if self.combo > 0 else 2
 
         self.last_fruit_kill_time = curr_time
+        self.last_fruit_kill_position = fruit.position
 
-    def check_combo_finished(self):
+    def check_combo_finished(self, surface):
         curr_time = time.time()
         if curr_time - self.last_fruit_kill_time > self.COMBO_TIME_DIFF:
             if self.combo >= self.MIN_FRUITS_COUNT:
-                self.display_combo()
+                self.display_combo(surface)
                 self.score += self.combo
             self.combo = 0
 
-    def display_combo(self):
-        print(f'COMBO {self.combo}')
-
+    def display_combo(self, surface):
+        label = ComboLabel(self.combo, self.last_fruit_kill_position)
+        label.blit(surface)

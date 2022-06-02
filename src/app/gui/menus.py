@@ -3,7 +3,7 @@ from pygame.font import Font
 
 from src.app.gui.buttons import TimedButton, FruitButton
 from src.app.gui.images import Image
-from src.app.gui.labels import ScoreLabel
+from src.app.gui.labels import Label
 from src.config import window_config, menu_config, game_config
 from pygame.math import Vector2
 from pygame.color import Color
@@ -348,7 +348,7 @@ class GameOverMenu(Menu):
         Menu.__init__(self, game)
         self.back_button = create_back_button(game, self.menu_surface)
         self.game_over_text = self.font.render('Game over', True, 'White')
-        self.game_over_label = ScoreLabel(
+        self.game_over_label = Label(
             self.game_over_text,
             Vector2(
                 self.menu_surface.get_width() // 2 - self.game_over_text.get_width() // 2,
@@ -375,13 +375,14 @@ class SinglePlayerGameOverMenu(GameOverMenu):
     def __init__(self, game, score):
         GameOverMenu.__init__(self, game)
         self.score_text = self.font.render(f'Your Score: {score}', True, 'White')
-        self.score_label = ScoreLabel(
+        self.score_label = Label(
             self.score_text,
             Vector2(
                 self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
                 self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width() // 2
             )
         )
+
         self.add_elements(self.score_label)
 
 

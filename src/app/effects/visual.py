@@ -7,6 +7,7 @@ from pygame.sprite import Sprite, Group
 from typing import Union
 from collections import deque
 from src.app.utils.timeouts import Interval
+from threading import Lock
 
 
 class TrailPart:
@@ -54,7 +55,8 @@ class Trail(Sprite):
         self.item = item
         self.size = size if size > 0 else min(item.width, item.height) / 3
         self.parts = deque()
-        self.interval = Interval(self.__add_part, self.ADD_PART_INTERVAL)
+        self.mutex = Lock()
+        self.interval = Interval(self.__add_part, self.ADD_PART_INTERVAL, self.mutex)
 
         # Dummy variables required by the Sprite class
         self.image = Surface((0, 0))
@@ -62,8 +64,10 @@ class Trail(Sprite):
         group.add(self)
 
     def blit(self, surface):
+        self.mutex.acquire(True)
         for part in self.parts:
             part.blit(surface)
+        self.mutex.release()
 
     def update(self, **kwargs):
         if self.item.is_killed:

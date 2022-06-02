@@ -8,7 +8,7 @@ from abc import abstractmethod
 from src.app.utils.image_loader import ImageLoader
 from src.app.gui.bars import ProgressBar
 from src.app.utils.enums import Orientation
-from .common import MenuElement
+from .common import MenuElement, AnimatedMenuElement
 
 
 class Button(MenuElement):
@@ -112,7 +112,7 @@ class TimedButton(Button):
         self.hover_stop_time = float('inf')
 
 
-class FruitButton(Button):
+class FruitButton(Button, AnimatedMenuElement):
     def __init__(self,
                  blade,
                  inner_image_path: str,
