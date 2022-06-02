@@ -5,6 +5,7 @@ from pygame.sprite import Group
 
 from abc import ABC, abstractmethod
 from src.app.controllers.time_controller import TimeController
+from src.app.effects.sounds import SoundController
 from src.app.effects.visual import Trail
 from src.config import window_config, effects_config
 
@@ -45,6 +46,7 @@ class GameModeCommon(ABC):
         self.game.screen.blit(self.hud_surface, (0, 0))
 
     def handle_fruit_collision(self, fruit):
+        SoundController.play_splatter_sound()
         fruit.slice(self.effects, effects_config.DISPLAY_ITEM_TRAIL)
         fruit.kill()
 

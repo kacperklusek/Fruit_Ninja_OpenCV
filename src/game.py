@@ -78,6 +78,7 @@ class Game:
                 self.exit()
 
     def display_menu(self, menu: MenuInput):
+        self.blade.clear()
         match menu:
             case MenuInput.MAIN:
                 self.curr_menu = self.main_menu
@@ -95,7 +96,7 @@ class Game:
     def start_game(self, curr_game: GameMode):
         self.reset()
         SoundController.stop_menu_sound()
-        SoundController.play_game_start_sound()
+        print('start')
 
         match curr_game:
             case GameMode.CLASSIC:
@@ -103,6 +104,9 @@ class Game:
             case _:
                 print('COMING SOON')  # TODO
                 return
+
+        self.curr_game.start_game()
+        SoundController.play_game_start_sound()
 
         while self.game_active:
             self.update_game()

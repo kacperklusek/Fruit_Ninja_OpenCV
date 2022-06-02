@@ -47,8 +47,7 @@ class SinglePlayerMode(GameModeCommon, ABC):
             fruit.kill()  # TODO - add splash effect
 
     def blit_items(self):
-        self._fruits.update()  # out_of_bounds_handler=self.handle_out_of_bounds)  # TODO - fix handle out of bounds
-
+        self._fruits.update(out_of_bounds_handler=self.handle_out_of_bounds)
         self._bombs.update()
         self._fruits.draw(self.items_surface)
         self._bombs.draw(self.items_surface)
@@ -59,3 +58,6 @@ class SinglePlayerMode(GameModeCommon, ABC):
         self.handle_collisions()
         self.blit_items()
         self.game.screen.blit(self.items_surface, (0, 0))
+
+    def game_over(self):
+        self.game.game_over()

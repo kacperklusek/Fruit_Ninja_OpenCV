@@ -38,6 +38,9 @@ class InputController(ABC):
     def add_to_history(self, coords):
         self._points_history.append(InputPoint(Point(*coords), time.time()))
 
+    def clear_history(self):
+        self._points_history.clear()
+
     def update_blade(self):
         while self._points_history and \
                 time.time() - self._points_history[0].time_added >= blade_config.VISIBILITY_DURATION:

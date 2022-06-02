@@ -58,6 +58,9 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
         self.input_source.end_tracking()
         self.input_source = self.create_input_source(input_source_type)
 
+    def clear(self):
+        self.input_source.clear_history()
+
     @staticmethod
     def create_input_source(input_source_type):
         match input_source_type:
