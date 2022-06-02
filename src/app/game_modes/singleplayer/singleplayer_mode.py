@@ -37,6 +37,10 @@ class SinglePlayerMode(GameModeCommon, ABC):
             if self.blade.collides(fruit):
                 self.handle_fruit_collision(fruit)
 
+    def handle_fruit_collision(self, fruit):
+        GameModeCommon.handle_fruit_collision(self, fruit)
+        self.score_controller.register_fruit_cut(fruit)
+
     def handle_bomb_collision(self, bomb):
         self.game.notify_bomb_collision()
         self.kill_fruits()

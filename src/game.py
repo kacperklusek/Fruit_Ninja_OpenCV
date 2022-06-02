@@ -4,6 +4,7 @@ import pygame
 import sys
 
 from src.app.controllers.blade import Blade
+from src.app.game_modes.singleplayer.zen_mode import ZenMode
 from src.app.gui.labels import ComboLabel
 from src.app.utils.enums import GameMode
 from src.app.effects.sounds import SoundController
@@ -110,6 +111,8 @@ class Game:
         match curr_game:
             case GameMode.CLASSIC:
                 self.curr_game = ClassicMode(self)
+            case GameMode.ZEN:
+                self.curr_game = ZenMode(self)
             case _:
                 print('COMING SOON')  # TODO
                 return
@@ -135,7 +138,6 @@ class Game:
             self.apply_screen_shake()
 
         self.screen.blit(self.background_surface, self.render_offset)
-        self.combo.blit(self.background_surface)  # TODO - REMOVE ME
         self.curr_game.update()
         self.blade.draw()
 

@@ -103,7 +103,7 @@ class HealthBar(MenuElement):
         ]
 
 
-class ScoreBar:
+class ScoreBar(MenuElement):
     SCORE_POSITION = Vector2(menu_config.PADDING, menu_config.PADDING)
 
     def __init__(self, score_controller: ScoreController):
@@ -119,3 +119,22 @@ class ScoreBar:
 
     def update_score(self, score):
         self.score = score
+
+
+class TimeBar(MenuElement):
+    TIME_POSITION = Vector2(window_config.WIDTH - menu_config.PADDING, menu_config.PADDING)
+
+    def __init__(self, time):
+        self.total_time = time
+        self.time_left = time
+        self.font = Font(game_config.FONT, game_config.FONT_SIZE)
+
+    def blit(self, surface):
+        text = self.font.render(
+            f'Time left: {self.time_left//60}:{"0" if self.time_left%60 < 10 else ""}{self.time_left%60}',
+            True, 'White')
+        surface.blit(
+            text, self.TIME_POSITION - Vector2(text.get_width(), 0))
+
+    def update_time(self, elapsed_time):
+        self.time_left = int(self.total_time - elapsed_time)
