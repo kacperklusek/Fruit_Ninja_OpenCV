@@ -1,4 +1,5 @@
 import time
+from pygame.sprite import Group
 
 from src.app.gui.labels import ComboLabel
 from src.app.items.fruit import Fruit
@@ -8,11 +9,12 @@ class ScoreController:
     COMBO_TIME_DIFF = .2
     MIN_FRUITS_COUNT = 3
 
-    def __init__(self):
-        self.last_fruit_kill_time = 0
+    def __init__(self, combo_group: Group):
         self.combo = 0
         self._score = 0
         self.observers = []
+        self.combo_group = combo_group
+        self.last_fruit_kill_time = 0
         self.last_fruit_kill_position = None
 
     def add_observer(self, observer):
@@ -47,14 +49,13 @@ class ScoreController:
         self.last_fruit_kill_time = curr_time
         self.last_fruit_kill_position = fruit.position
 
-    def check_combo_finished(self, surface):
+    def check_combo_finished(self):
         curr_time = time.time()
         if curr_time - self.last_fruit_kill_time > self.COMBO_TIME_DIFF:
             if self.combo >= self.MIN_FRUITS_COUNT:
-                self.display_combo(surface)
+                self.display_combo()
                 self.score += self.combo
             self.combo = 0
 
-    def display_combo(self, surface):
-        label = ComboLabel(self.combo, self.last_fruit_kill_position)
-        label.blit(surface)
+    def display_combo(self):
+        ComboLabel(self.combo, self.last_fruit_kill_position, self.combo_group)

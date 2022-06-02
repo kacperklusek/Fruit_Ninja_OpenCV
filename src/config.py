@@ -105,7 +105,8 @@ HealthBarConfig = namedtuple('HealthBarConfig', [
 
 EffectsConfig = namedtuple('EffectsConfig', [
     'DISPLAY_ITEM_TRAIL',
-    'COMBO_FONT_SIZE'
+    'COMBO_FONT_SIZE',
+    'COMBO_DISPLAY_DURATION'
 ])
 
 
@@ -132,7 +133,8 @@ blade_config = BladeConfig(
 
 effects_config = EffectsConfig(
     DISPLAY_ITEM_TRAIL=True,
-    COMBO_FONT_SIZE=20
+    COMBO_FONT_SIZE=40,
+    COMBO_DISPLAY_DURATION=2
 )
 
 spawn_frequency = SpawnFrequencyConfig(

@@ -53,6 +53,10 @@ class Animation:
     def keyframes(self):
         return self._keyframes
 
+    @property
+    def finished(self):
+        return not self.next_keyframe
+
     @keyframes.setter
     def keyframes(self, keyframes_list):
         self._keyframes = keyframes_list

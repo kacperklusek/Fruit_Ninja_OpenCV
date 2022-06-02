@@ -11,7 +11,7 @@ from src.config import single_player_mode_config
 class SinglePlayerMode(GameModeCommon, ABC):
     def __init__(self, game):
         GameModeCommon.__init__(self, game)
-        self.score_controller = ScoreController()
+        self.score_controller = ScoreController(self.combo)
         self.items_surface = Surface((
             single_player_mode_config.BOARD_WIDTH,
             single_player_mode_config.BOARD_HEIGHT

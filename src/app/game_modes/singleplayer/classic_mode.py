@@ -45,7 +45,7 @@ class ClassicMode(SinglePlayerMode):
 
     def update(self):
         SinglePlayerMode.update(self)
-        self.score_controller.check_combo_finished(self.effects_surface)
+        self.score_controller.check_combo_finished()
         self.update_difficulty()
         self.item_spawner.update()
 
@@ -54,6 +54,6 @@ class ClassicMode(SinglePlayerMode):
 
     def update_difficulty(self):
         gameplay_time = self.time_controller.total_elapsed_time
-        self.item_spawner.intensity = int(gameplay_time // 20) + 2
+        self.item_spawner.intensity = int(gameplay_time // 20) + 6
         self.item_spawner.interval = .5 + max((1000 - gameplay_time) / 500, 0)
         self.item_spawner.bomb_probability = min(.15 + gameplay_time / 2000, .3)
