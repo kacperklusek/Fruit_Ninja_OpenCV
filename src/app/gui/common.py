@@ -32,6 +32,7 @@ class Animation:
         self._thread = None
         self._last_frame_time = 0
         self._refresh_interval = 1 / fps
+        self._finished = False
 
     def __len__(self):
         return len(self.keyframes)
@@ -55,7 +56,7 @@ class Animation:
 
     @property
     def finished(self):
-        return not self.next_keyframe
+        return self._finished
 
     @keyframes.setter
     def keyframes(self, keyframes_list):
@@ -75,7 +76,9 @@ class Animation:
         while self.next_keyframe:
             curr_time = time.time()
             percent = (curr_time - self._start_time) / self.duration
-            if percent >= 1: return
+            if percent >= 1:
+                self._finished = True
+                return
 
             frame_duration_percent = self.next_keyframe.start_percent - self.current_keyframe.start_percent
             current_frame_percent = (percent - self.current_keyframe.start_percent) / frame_duration_percent
