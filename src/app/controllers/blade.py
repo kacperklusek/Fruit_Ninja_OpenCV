@@ -1,21 +1,20 @@
 import pygame
 from src.config import blade_config as config
 from src.app.utils.enums import InputSource
-from src.app.control.input_controller import FingerInput, HandInput, MouseInput, InputPoint
+from src.app.controllers.input_controller import FingerInput, HandInput, MouseInput
 from src.app.utils.point import Point
-from src.config import game_config
+from src.config import game_config, window_config
 
 
-class Blade(pygame.sprite.Sprite):
+class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade to the effects directory and move the logic to some controller
     EMPTY_COLOR = pygame.Color(0, 0, 0, 0)
     BLADE_WIDTH = 5
 
-    def __init__(self, screen, input_source):
+    def __init__(self, game, input_source):
         pygame.sprite.Sprite.__init__(self)
-        self.screen = screen
+        self.game = game
         self.input_source = self.create_input_source(input_source)
-        self.surface = pygame.Surface((screen.get_width(), screen.get_height()), flags=pygame.SRCALPHA)
-
+        self.blade_surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
         self.input_source.start_tracking()
 
     def __len__(self):
@@ -47,13 +46,13 @@ class Blade(pygame.sprite.Sprite):
         self.input_source.end_tracking()
 
     def draw(self):
-        self.surface.fill(self.EMPTY_COLOR)
+        self.blade_surface.fill(self.EMPTY_COLOR)
         points = self.points_history[:]
         if len(points) > 1:
-            pygame.draw.lines(self.surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
+            pygame.draw.lines(self.blade_surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
             for point in points:
-                pygame.draw.circle(self.surface, 'red', point, 4)  # TODO - remove this line after
-            self.screen.blit(self.surface, (0, 0))
+                pygame.draw.circle(self.blade_surface, 'red', point, 4)  # TODO - remove this line after improving collision points
+        self.game.screen.blit(self.blade_surface, (0, 0))
 
     def change_input_source(self, input_source_type):
         self.input_source.end_tracking()

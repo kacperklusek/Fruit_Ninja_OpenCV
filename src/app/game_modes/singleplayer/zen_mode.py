@@ -1,4 +1,4 @@
-from .common import SinglePlayerMode
+from .singleplayer_mode import SinglePlayerMode
 
 
 class ZenMode(SinglePlayerMode):

@@ -4,9 +4,9 @@ from pygame.sprite import Sprite, Group
 import random
 from pygame.math import Vector2
 from src.app.controllers.gravity_controller import GravityController
+from src.app.controllers.time_controller import TimeController
 from src.config import window_config
 from src.app.utils.image_loader import ImageLoader
-from src.app.effects.visual import TrailShadow
 
 
 class Item(Sprite):
@@ -14,6 +14,7 @@ class Item(Sprite):
         Sprite.__init__(self)
         self.image_path = image_path
         self.gravity_controller = GravityController()
+        self.time_controller = TimeController()
         self.velocity = Vector2(0, 0)
         self.position = Vector2(0, 0)
         self.original_image = ImageLoader.load_png(self.image_path, -1, 100)
@@ -22,10 +23,10 @@ class Item(Sprite):
         self.rect.center = self.image.get_rect().center  # TODO
         self.rect.x = 0  # TODO
         self.rect.y = 0  # TODO
-        self.rotation_speed = (random.random() - 0.5)
-        self.angle = random.randint(0, 360)
-        self.trail_shadow = None
+        self.angular_velocity = 0
+        self.angle = 0
         self.group = group
+        self.is_killed = False
 
     @property
     def width(self):
@@ -35,35 +36,39 @@ class Item(Sprite):
     def height(self):
         return self.image.get_height()
 
-    def spawn(self, position: Vector2, velocity=Vector2(0, 0)):
+    def throw(self, position: Vector2, velocity=Vector2(0, 0), angle=None, angular_velocity=None):
         self.group.add(self)
+        self.angle = angle or random.randint(0, 360)
+        self.angular_velocity = angular_velocity or random.random() - .5
         self.position = position
         self.velocity = velocity
-        self.trail_shadow = TrailShadow(self)
         self.update_position()
 
     def kill(self):
+        self.is_killed = True
         self.group.remove(self)
         Sprite.kill(self)
 
-    def update(self, elapsed_time, handle_out_of_bounds=lambda: None):
+    def update(self, **kwargs):
         self.rotate()
-        self.apply_gravity(elapsed_time)
-        if self.item_out_of_bounds():
-            handle_out_of_bounds()
-            self.kill()
         self.update_position()
 
-    def apply_gravity(self, elapsed_time):
-        self.velocity += self.gravity_controller.gravity * elapsed_time
-        self.position += self.velocity * elapsed_time
+        if self.item_out_of_bounds():
+            if 'out_of_bounds_handler' in kwargs:
+                print('out of bounds', self)
+                kwargs['out_of_bounds_handler']()
+            self.kill()
+            return
 
     def update_position(self):
+        elapsed_time = self.time_controller.last_frame_duration
+        self.velocity += self.gravity_controller.gravity * elapsed_time
+        self.position += self.velocity * elapsed_time
         self.rect.x = self.position.x - self.image.get_width() / 2
         self.rect.y = self.position.y - self.image.get_height() / 2
 
     def rotate(self):
-        self.angle = (self.angle + self.rotation_speed) % 360
+        self.angle = (self.angle + self.angular_velocity) % 360
         self.image = pygame.transform.rotate(self.original_image, self.angle)
 
     def item_out_of_bounds(self):

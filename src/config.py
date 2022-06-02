@@ -24,7 +24,7 @@ GameConfig = namedtuple('GameConfig', [
     'FPS',
     'INPUT_SOURCE',
     'FONT',
-    'FONT_SIZE'
+    'FONT_SIZE',
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -45,6 +45,11 @@ FingerInputConfig = namedtuple('FingerInputConfig', [
 
 MouseInputConfig = namedtuple('MouseInputConfig', [
     'REFRESH_FREQUENCY'  # Something like DPI in a mouse
+])
+
+SinglePlayerModeConfig = namedtuple('SinglePlayerModeConfig', [
+    'BOARD_WIDTH',
+    'BOARD_HEIGHT'
 ])
 
 ClassicModeConfig = namedtuple('ClassicModeConfig', [
@@ -108,6 +113,10 @@ window_config = WindowConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg')
 )
 
+effects_config = namedtuple('EffectsConfig', [
+    'DISPLAY_ITEM_TRAIL'
+])
+
 blade_config = BladeConfig(
     COLORS=['white'],  # Todo - add gradient effect
     VISIBILITY_DURATION=.25
@@ -118,9 +127,14 @@ spawn_frequency = SpawnFrequencyConfig(
     BOMB=1
 )
 
+single_player_mode_config = SinglePlayerModeConfig(
+    BOARD_WIDTH=window_config.WIDTH,
+    BOARD_HEIGHT=window_config.HEIGHT
+)
+
 classic_mode_config = ClassicModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
-    LIVES=3
+    LIVES=6
 )
 
 mouse_input_config = MouseInputConfig(

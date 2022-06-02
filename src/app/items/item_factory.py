@@ -1,7 +1,7 @@
 import random
 from pygame.sprite import Group
 from src.app.utils.enums import ItemType, FruitType
-from src.app.items.fruit import PlainFruit, GravityFruit, FreezeFruit
+from src.app.items.fruit import PlainFruit  #, GravityFruit, FreezeFruit
 from src.app.items.bomb import Bomb
 
 

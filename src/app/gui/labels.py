@@ -1,5 +1,3 @@
-from typing import Union
-
 from pygame import Vector2
 from pygame.surface import SurfaceType, Surface
 

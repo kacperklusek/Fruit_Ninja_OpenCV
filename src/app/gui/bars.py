@@ -5,9 +5,8 @@ from typing import Union
 from src.app.utils.enums import Orientation
 from src.app.utils.image_loader import ImageLoader
 from .common import MenuElement
-from src.config import health_bar_config, window_config, game_config
+from src.config import health_bar_config, window_config, game_config, menu_config
 from pygame.font import Font
-
 from ..controllers.score_controller import ScoreController
 
 
@@ -95,15 +94,17 @@ class HealthBar(MenuElement):
             HealthIcon(
                 health_bar_config.GET_HEALTH_ICON(i % health_bar_config.HEALTHS_COUNT + 1),
                 health_bar_config.GET_FAILED_HEALTH_ICON(i % health_bar_config.HEALTHS_COUNT + 1),
-                Vector2(window_config.WIDTH - (lives - i) *
-                        (self.ICON_WIDTH + self.ICON_PADDING), 0)
+                Vector2(
+                    window_config.WIDTH - (lives - i) * (self.ICON_WIDTH + self.ICON_PADDING) - menu_config.PADDING,
+                    menu_config.PADDING
+                )
             )
             for i in range(lives)
         ]
 
 
 class ScoreBar:
-    SCORE_POSITION = Vector2(0, 0)
+    SCORE_POSITION = Vector2(menu_config.PADDING, menu_config.PADDING)
 
     def __init__(self, score_controller: ScoreController):
         self.score = 0
@@ -118,5 +119,3 @@ class ScoreBar:
 
     def update_score(self, score):
         self.score = score
-
-

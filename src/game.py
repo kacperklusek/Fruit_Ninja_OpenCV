@@ -3,9 +3,8 @@ from random import randint
 import pygame
 import sys
 
-from src.app.control.blade import Blade
+from src.app.controllers.blade import Blade
 from src.app.utils.enums import GameMode
-from src.app.items.fruit import SlicedFruit
 from src.app.effects.sounds import SoundController
 from src.app.controllers.time_controller import TimeController
 from src.app.game_modes.singleplayer.classic_mode import ClassicMode
@@ -26,7 +25,7 @@ class Game:
         self.font = Font(game_config.FONT, game_config.FONT_SIZE)
 
         self.screen = pygame.display.set_mode((window_config.WIDTH, window_config.HEIGHT), pygame.RESIZABLE)
-        self.surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
+        self.background_surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
         self.background = pygame.transform.scale(
             pygame.image.load(window_config.BACKGROUND_PATH),
             (window_config.WIDTH, window_config.HEIGHT)
@@ -36,11 +35,11 @@ class Game:
         self.time_controller = TimeController()
 
         # Input
-        self.blade = Blade(self.screen, game_config.INPUT_SOURCE)
+        self.blade = Blade(self, game_config.INPUT_SOURCE)
 
         # Game state
         self.game_active = True  # TODO
-        self.game_mode = None
+        self.curr_game = None
 
         # Menus
         self.main_menu = MainMenu(self)
@@ -87,28 +86,34 @@ class Game:
             case MenuInput.MULTIPLAYER:
                 self.curr_menu = self.multiplayer_menu
             case MenuInput.SINGLE_PLAYER_GAME_OVER_MENU:
-                self.curr_menu = SinglePlayerGameOverMenu(self, self.game_mode.score)
+                self.curr_menu = SinglePlayerGameOverMenu(self, self.curr_game.score)
             case _:
                 return
 
         self.curr_menu.display()
 
-    def start_game(self, game_mode):    # TODO add parent class for single and multiplayer gamemode
+    def start_game(self, curr_game: GameMode):
         self.reset()
-        self.game_mode = game_mode
-
         SoundController.stop_menu_sound()
         SoundController.play_game_start_sound()
 
+        match curr_game:
+            case GameMode.CLASSIC:
+                self.curr_game = ClassicMode(self)
+            case _:
+                print('COMING SOON')  # TODO
+                return
+
         while self.game_active:
-            self.game_update()
+            self.update_game()
+            self.clock.tick(game_config.FPS)
 
     def game_over(self):
         SoundController.play_game_over_sound()
         self.game_active = False
-        self.display_menu(MenuInput.SINGLE_PLAYER_GAME_OVER_MENU) # TODO match game mode
+        self.display_menu(MenuInput.SINGLE_PLAYER_GAME_OVER_MENU)  # TODO match game mode
 
-    def game_update(self):
+    def update_game(self):
         self.time_controller.register_new_frame()
         self.handle_events()
 
@@ -116,18 +121,11 @@ class Game:
         if self.remaining_screen_shake_duration:
             self.apply_screen_shake()
 
-        self.surface.blit(self.background, self.render_offset)
-        self.blit_sliced_fruits()
-        self.game_mode.update()
-        self.screen.blit(self.surface, (0, 0))
+        self.screen.blit(self.background_surface, self.render_offset)
+        self.curr_game.update()
         self.blade.draw()
 
-        self.clock.tick(game_config.FPS)
         pygame.display.update()
-
-    def blit_sliced_fruits(self):
-        SlicedFruit.group.update(self.time_controller.last_frame_duration)
-        SlicedFruit.group.draw(self.surface)
 
     def notify_bomb_collision(self):
         self.remaining_screen_shake_duration = self.SCREEN_SHAKE_DURATION

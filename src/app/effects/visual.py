@@ -1,7 +1,9 @@
 import time
 import pygame
+from pygame import Surface
 from pygame.color import Color
 from pygame.math import Vector2
+from pygame.sprite import Sprite, Group
 from typing import Union
 from collections import deque
 from src.app.utils.timeouts import Interval
@@ -40,26 +42,47 @@ class TrailPart:
         self.color.update(r, g, b, alpha)
 
 
-class TrailShadow:
+class Trail(Sprite):
+    MAX_ALPHA = 50
     PARTS_COUNT = 10
+    INITIAL_COLOR = Color(255, 255, 255, 0)
     ADD_PART_INTERVAL = .01
 
-    def __init__(self, sprite):
-        self.sprite = sprite
+    def __init__(self, item, group: Group, size: Union[float, int] = -1):
+        Sprite.__init__(self)
+        self.group = group
+        self.item = item
+        self.size = size if size > 0 else min(item.width, item.height) / 3
         self.parts = deque()
         self.interval = Interval(self.__add_part, self.ADD_PART_INTERVAL)
 
+        # Dummy variables required by the Sprite class
+        self.image = Surface((0, 0))
+        self.rect = self.image.get_rect()
+        group.add(self)
+
     def blit(self, surface):
-        self.update()
-        for part in self.parts.copy():
+        for part in self.parts:
             part.blit(surface)
 
-    def update(self):
+    def update(self, **kwargs):
+        if self.item.is_killed:
+            self.remove()
+            return
+
         while self.parts and self.parts[0].size <= 0:
             self.parts.popleft()
             # Add the new trail part if the interval is finished
             if not self.interval:
                 self.__add_part()
+
+        self.blit(kwargs['surface'])
+
+    def remove(self):
+        if self.interval:
+            self.interval.clear()
+        self.parts.clear()
+        self.group.remove(self)
 
     def __add_part_interval(self):
         if len(self.parts) < self.PARTS_COUNT:
@@ -70,8 +93,8 @@ class TrailShadow:
 
     def __add_part(self):
         self.parts.append(TrailPart(
-            self.sprite.position,
-            .3 * min(self.sprite.width, self.sprite.height),
-            Color(255, 255, 255, 0),
-            100
+            self.item.position,
+            self.size,
+            self.INITIAL_COLOR,
+            self.MAX_ALPHA
         ))

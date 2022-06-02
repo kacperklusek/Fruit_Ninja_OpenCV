@@ -1,5 +1,8 @@
+import math
 from pygame.sprite import Group
 from pygame.math import Vector2
+
+from src.app.effects.visual import Trail
 from src.config import image_path
 
 from src.app.items.item import Item
@@ -17,24 +20,22 @@ def slice_image_path(image_path: str, slice_no: int):
 
 
 class Fruit(Item):
-    MAGIC_CONSTANT = .5  # THAT IS REALLY NECESSARY FOR FRUIT SLICING XD
+    SLICE_RECOIL = 100
 
     def __init__(self, image_path, group: Group):
         Item.__init__(self, image_path, group)
 
-    def spawn(self, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
-        Item.spawn(self, position, velocity)
+    def slice(self, effects_group: Group, display_trail: bool = False):
+        slice1 = FruitSlice(slice_image_path(self.image_path, 1), effects_group)
+        slice2 = FruitSlice(slice_image_path(self.image_path, 2), effects_group)
 
-    def kill(self):
-        Item.kill(self)
-        if not self.item_out_of_bounds():
-            self.spawn_slices()
+        recoil_vector = self.SLICE_RECOIL * Vector2(math.cos(self.angle), math.sin(self.angle))
+        slice1.throw(self.position - Vector2(1, 0), self.velocity - recoil_vector, self.angle, self.angular_velocity)
+        slice2.throw(self.position + Vector2(1, 0), self.velocity + recoil_vector, self.angle, self.angular_velocity)
 
-    def spawn_slices(self):
-        slice1 = SlicedFruit(slice_image_path(self.image_path, 1))
-        slice2 = SlicedFruit(slice_image_path(self.image_path, 2))
-        slice1.spawn(self.position, (self.velocity * self.MAGIC_CONSTANT))
-        slice2.spawn(self.position, (self.velocity * self.MAGIC_CONSTANT))
+        if display_trail:
+            Trail(slice1, effects_group, min(slice1.height, slice1.width) / 5)
+            Trail(slice2, effects_group, min(slice2.height, slice2.width) / 5)
 
 
 class PlainFruit(Fruit):
@@ -44,31 +45,21 @@ class PlainFruit(Fruit):
         Fruit.__init__(self, fruit_image_path(fruit_type), group)
 
 
-class SlicedFruit(Item):
-    group = Group()
-
-    def __init__(self, image: str):
-        Item.__init__(self, image, self.group)
-
-    def spawn(self, position: Vector2, velocity: Vector2 = Vector2(0, 0)):
-        Item.spawn(self, position, velocity)
-
-    def kill(self):
-        Item.kill(self)
-
-
+class FruitSlice(Item):
+    def __init__(self, image_path: str, group: Group):
+        Item.__init__(self, image_path, group)
 
 
 # TODO
-class GravityFruit(Fruit):
-    # TODO - add type
-
-    def __init__(self):
-        super().__init__(fruit_image_path('gravity-banana'))
-
-
-class FreezeFruit(Fruit):
-    # TODO - add type
-
-    def __init__(self):
-        super().__init__(fruit_image_path('freeze-banana'))
+# class GravityFruit(Fruit):
+#     # TODO - add type
+#
+#     def __init__(self):
+#         super().__init__(fruit_image_path('gravity-banana'))
+#
+#
+# class FreezeFruit(Fruit):
+#     # TODO - add type
+#
+#     def __init__(self):
+#         super().__init__(fruit_image_path('freeze-banana'))

@@ -9,9 +9,6 @@ from pygame.math import Vector2
 from pygame.color import Color
 from enum import Enum, auto
 from .common import MenuElement
-from ..game_modes.singleplayer.arcade_mode import ArcadeMode
-from ..game_modes.singleplayer.classic_mode import ClassicMode
-from ..game_modes.singleplayer.zen_mode import ZenMode
 from ..utils.enums import GameMode
 
 
@@ -115,15 +112,15 @@ class Menu:
 
     def blit_elements(self):
         for element in self.background_elements:
-            element.blit(self.game.surface)
+            element.blit(self.game.background_surface)
         for element in self.elements:
             element.blit(self.menu_surface)
 
     def update_screen(self):
+        self.game.background_surface.blit(self.game.background, (0, 0))
         self.menu_surface.fill(pygame.Color(0, 0, 0, 0))
-        self.game.surface.blit(self.game.background, (0, 0))
         self.blit_elements()
-        self.game.screen.blit(self.game.surface, (0, 0))
+        self.game.screen.blit(self.game.background_surface, (0, 0))
         self.game.screen.blit(self.menu_surface, self.menu_surface_position)
         self.blade.draw()
         pygame.display.update()
@@ -268,11 +265,11 @@ class OriginalModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case OriginalMenuInput.CLASSIC:
-                ClassicMode(self.game).start_game()
+                self.game.start_game(GameMode.CLASSIC)
             case OriginalMenuInput.ARCADE:
-                ArcadeMode(self.game).start_game()
+                self.game.start_game(GameMode.ARCADE)
             case OriginalMenuInput.ZEN:
-                ZenMode(self.game).start_game()
+                self.game.start_game(GameMode.ZEN)
             case OriginalMenuInput.BACK:
                 # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
@@ -327,10 +324,10 @@ class MultiplayerModeMenu(Menu):
         match self.get_input():
             case MultiplayerMenuInput.CLASSIC_ATTACK:
                 # ClassicAttack.start_game(self.game)
-                print('comming soon')
+                print('coming soon')
             case MultiplayerMenuInput.ZEN_DUEL:
                 # ClassicAttack.start_game(self.game)
-                print('comming soon')
+                print('coming soon')
             case MultiplayerMenuInput.BACK:
                 # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
@@ -372,7 +369,7 @@ class GameOverMenu(Menu):
         if self.back_button.checked:
             return GameOverMenuInputEnum.BACK
         return None
-2
+
 
 class SinglePlayerGameOverMenu(GameOverMenu):
     def __init__(self, game, score):

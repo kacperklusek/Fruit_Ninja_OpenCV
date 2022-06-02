@@ -1,6 +1,6 @@
 import pygame
 from pygame.math import Vector2
-from .common import SinglePlayerMode
+from .singleplayer_mode import SinglePlayerMode
 from src.app.items.items_spawner import ClassicModeItemSpawner
 from src.app.controllers.gravity_controller import GravityController
 from src.app.gui.bars import HealthBar, ScoreBar
@@ -17,16 +17,17 @@ class ClassicMode(SinglePlayerMode):
         )
 
         self.gravity_controller = GravityController(Vector2(0, 600))
-        self.item_spawner = ClassicModeItemSpawner(self.fruits, self.bombs)
+        self.item_spawner = ClassicModeItemSpawner(self._fruits, self._bombs, self.notify_item_spawn)
+
         self.health_bar = HealthBar(classic_mode_config.LIVES)
         self.score_bar = ScoreBar(self.score_controller)
+        self.hud_elements.extend([self.health_bar, self.score_bar])
 
         # Current state
         self.lives = classic_mode_config.LIVES
 
     def start_game(self):
         self.time_controller.start()
-        self.game.start_game(self)
 
     def handle_fruit_collision(self, fruit):
         SinglePlayerMode.handle_fruit_collision(self, fruit)
@@ -37,7 +38,7 @@ class ClassicMode(SinglePlayerMode):
         self.decrease_lives()
 
     def decrease_lives(self):
-        self.lives -= 1
+        print('hit')
         self.health_bar.update_lives(self.lives)
         if self.lives == 0:
             self.game.game_over()
@@ -47,10 +48,6 @@ class ClassicMode(SinglePlayerMode):
         self.update_difficulty()
         self.score_controller.check_combo_finished()
         self.item_spawner.update()
-
-        # TODO check if passing surface this way is correct
-        self.score_bar.blit(self.game.surface)
-        self.health_bar.blit(self.game.surface)
 
     def handle_out_of_bounds(self):
         self.decrease_lives()

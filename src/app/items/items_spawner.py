@@ -15,9 +15,10 @@ from pygame.sprite import Group
 class ItemSpawner(ABC):
     BONUS_FRUIT_CHANCE = 0.1
 
-    def __init__(self, fruits: Group, bombs: Group):
+    def __init__(self, fruits: Group, bombs: Group, callback):
         self.fruits = fruits
         self.bombs = bombs
+        self.callback = callback
 
     @abstractmethod
     def update(self):
@@ -29,8 +30,8 @@ class ItemSpawner(ABC):
 
 
 class ClassicModeItemSpawner(ItemSpawner):
-    def __init__(self, fruits: Group, bombs: Group):
-        ItemSpawner.__init__(self, fruits, bombs)
+    def __init__(self, fruits: Group, bombs: Group, callback):
+        ItemSpawner.__init__(self, fruits, bombs, callback)
 
         self._interval = 2  # seconds
         self._items_to_spawn = []
@@ -88,11 +89,12 @@ class ClassicModeItemSpawner(ItemSpawner):
         v_y = random.randint(1.2 * window_config.HEIGHT, int(1.5 * window_config.HEIGHT))
 
         if self.gravity_controller.gravity.y > 0:
-            item.spawn(Vector2(x, 1.1 * window_config.HEIGHT), Vector2(v_x, -v_y))
+            item.throw(Vector2(x, 1.1 * window_config.HEIGHT), Vector2(v_x, -v_y))
         else:
-            item.spawn(Vector2(x, -.1 * window_config.HEIGHT), Vector2(v_x, v_y))
+            item.throw(Vector2(x, -.1 * window_config.HEIGHT), Vector2(v_x, v_y))
 
         SoundController.play_throw_sound()
+        self.callback(item)
 
     def set_interval(self, interval):
         self._interval = interval
