@@ -182,4 +182,3 @@ sound_config = SoundConfig(
     START=os.path.join('assets', 'sounds', 'start.mp3'), START_VOLUME=general_volume,
     THROW=os.path.join('assets', 'sounds', 'throw.mp3'), THROW_VOLUME=lower_volume
 )
-

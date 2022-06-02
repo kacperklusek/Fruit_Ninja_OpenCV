@@ -70,7 +70,7 @@ class HealthBar(MenuElement):
 
     @property
     def lives(self):
-        return self.lives
+        return self._lives
 
     def update_lives(self, lives):
         if not 0 <= lives <= self._max_lives:

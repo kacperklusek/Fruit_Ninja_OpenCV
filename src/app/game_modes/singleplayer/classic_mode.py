@@ -24,7 +24,7 @@ class ClassicMode(SinglePlayerMode):
         self.lives = classic_mode_config.LIVES
 
     def start_game(self):
-        ...
+        pass  # TODO
 
     def handle_fruit_collision(self, fruit):
         SinglePlayerMode.handle_fruit_collision(self, fruit)
@@ -43,3 +43,6 @@ class ClassicMode(SinglePlayerMode):
     def update(self):
         SinglePlayerMode.update(self)
         self.item_spawner.update()
+
+    def handle_out_of_bounds(self):
+        self.decrease_lives()

@@ -1,9 +1,10 @@
 from pygame.sprite import Group
 from src.app.controllers.score_controller import ScoreController
 from src.app.controllers.time_controller import TimeController
+from abc import ABC, abstractmethod
 
 
-class SinglePlayerMode:
+class SinglePlayerMode(ABC):
     def __init__(self, game):
         self.game = game
         self.time_controller = TimeController()
@@ -16,6 +17,10 @@ class SinglePlayerMode:
     @property
     def blade(self):
         return self.game.blade
+
+    @property
+    def score(self):
+        return self.score_controller.score
 
     def handle_collisions(self):
         for bomb in self.bombs:
@@ -39,10 +44,14 @@ class SinglePlayerMode:
 
     def blit(self):
         duration = self.time_controller.last_frame_duration
-        self.fruits.update(duration)
+        self.fruits.update(duration, self.handle_out_of_bounds)
         self.bombs.update(duration)
         self.fruits.draw(self.game.surface)
         self.bombs.draw(self.game.surface)
+
+    @abstractmethod
+    def handle_out_of_bounds(self):
+        pass
 
     def update(self):
         self.handle_collisions()

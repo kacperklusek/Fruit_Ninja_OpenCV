@@ -15,9 +15,9 @@ from pygame.sprite import Group
 class ItemSpawner(ABC):
     BONUS_FRUIT_CHANCE = 0.1
 
-    def __init__(self, fruits, bombs):
-        self.fruits_group = fruits
-        self.bombs_group = bombs
+    def __init__(self, fruits: Group, bombs: Group):
+        self.fruits = fruits
+        self.bombs = bombs
 
     @abstractmethod
     def update(self):
@@ -74,13 +74,13 @@ class ClassicModeItemSpawner(ItemSpawner):
             self.last_spawn_time = curr_time
 
     def spawn_item(self, item_type: ItemType):
-        item = ItemFactory.create(item_type)
-
         match item_type:
             case ItemType.PLAIN_FRUIT:
-                self.fruits_group.add(item)
+                item = ItemFactory.create(item_type, self.fruits)
             case ItemType.BOMB:
-                self.bombs_group.add(item)
+                item = ItemFactory.create(item_type, self.bombs)
+            case _:
+                raise ValueError(f'{item_type} is not a valid item type')
 
         # TODO - refactor code below
         x = window_config.WIDTH * (random.random() * .5 + .25)

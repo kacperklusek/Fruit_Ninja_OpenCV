@@ -17,6 +17,8 @@ class MenuInput(Enum):
     ORIGINAL = auto()
     MULTIPLAYER = auto()
     GAME_OVER = auto()
+    SINGLE_PLAYER_GAME_OVER_MENU = auto()
+    MULTI_PLAYER_GAME_OVER_MENU = auto()
 
 
 class MainMenuInput(Enum):
@@ -66,6 +68,8 @@ class Menu:
     def __init__(self, game):
         self.game = game
         self.blade = game.blade
+        self.font = Font(game_config.FONT, game_config.FONT_SIZE)
+
         self.menu_surface = pygame.Surface((
             window_config.WIDTH - 2 * menu_config.PADDING,
             window_config.HEIGHT - 2 * menu_config.PADDING
@@ -340,7 +344,6 @@ class MultiplayerModeMenu(Menu):
 class GameOverMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.font = Font(game_config.FONT, game_config.FONT_SIZE)
         self.back_button = create_back_button(game, self.menu_surface)
         self.game_over_text = self.font.render('Game over', True, 'White')
         self.game_over_label = ScoreLabel(
@@ -353,18 +356,6 @@ class GameOverMenu(Menu):
 
         self.add_elements(self.back_button, self.game_over_label)
 
-    def update(self):
-        self.elements.remove(self.score_label)
-        self.score_text = window_config.FONT.render(f'Your Score: {self.game.score}', True, 'White')
-        self.score_label = ScoreLabel(
-            self.score_text,
-            Vector2(
-                self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
-                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width() // 2
-            )
-        )
-        self.add_elements(self.score_label)
-
     def handle_input(self):
         Menu.handle_input(self)
         match self.get_input():
@@ -376,3 +367,22 @@ class GameOverMenu(Menu):
         if self.back_button.checked:
             return GameOverMenuInputEnum.BACK
         return None
+
+
+class SinglePlayerGameOverMenu(GameOverMenu):
+    def __init__(self, game, score):
+        GameOverMenu.__init__(self, game)
+        self.score_text = self.font.render(f'Your Score: {score}', True, 'White')
+        self.score_label = ScoreLabel(
+            self.score_text,
+            Vector2(
+                self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
+                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width() // 2
+            )
+        )
+        self.add_elements(self.score_label)
+
+
+class MultiPlayerGameOverMenu(GameOverMenu):
+    def __init__(self, game):
+        GameOverMenu.__init__(self, game)

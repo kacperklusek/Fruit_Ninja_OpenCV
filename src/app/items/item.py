@@ -1,5 +1,5 @@
 import pygame
-from pygame.sprite import Sprite
+from pygame.sprite import Sprite, Group
 
 import random
 from pygame.math import Vector2
@@ -10,7 +10,7 @@ from src.app.effects.visual import TrailShadow
 
 
 class Item(Sprite):
-    def __init__(self, image_path: str):
+    def __init__(self, image_path: str, group: Group):
         Sprite.__init__(self)
         self.image_path = image_path
         self.gravity_controller = GravityController()
@@ -25,6 +25,7 @@ class Item(Sprite):
         self.rotation_speed = (random.random() - 0.5)
         self.angle = random.randint(0, 360)
         self.trail_shadow = None
+        self.group = group
 
     @property
     def width(self):
@@ -34,16 +35,22 @@ class Item(Sprite):
     def height(self):
         return self.image.get_height()
 
-    def spawn(self, position, velocity=Vector2(0, 0)):
+    def spawn(self, position: Vector2, velocity=Vector2(0, 0)):
+        self.group.add(self)
         self.position = position
         self.velocity = velocity
-        self.update_position()
         self.trail_shadow = TrailShadow(self)
+        self.update_position()
 
-    def update(self, elapsed_time):
+    def kill(self):
+        self.group.remove(self)
+        Sprite.kill(self)
+
+    def update(self, elapsed_time, handle_out_of_bounds=lambda: None):
         self.rotate()
         self.apply_gravity(elapsed_time)
         if self.item_out_of_bounds():
+            handle_out_of_bounds()
             self.kill()
         self.update_position()
 
