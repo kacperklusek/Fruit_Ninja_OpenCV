@@ -93,17 +93,12 @@ class Game:
 
         self.curr_menu.display()
 
-    def start_game(self, game_mode: GameMode):
+    def start_game(self, game_mode):    # TODO add parent class for single and multiplayer gamemode
         self.reset()
+        self.game_mode = game_mode
+
         SoundController.stop_menu_sound()
         SoundController.play_game_start_sound()
-
-        match game_mode:
-            case GameMode.CLASSIC:
-                self.game_mode = ClassicMode(self)
-            case _:
-                print('COMING SOON')  # TODO
-                return
 
         while self.game_active:
             self.game_update()
@@ -144,5 +139,3 @@ class Game:
             randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET // 2,
             randint(0, self.SCREEN_SHAKE_OFFSET) - self.SCREEN_SHAKE_OFFSET // 2
         )
-
-

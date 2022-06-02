@@ -9,6 +9,9 @@ from pygame.math import Vector2
 from pygame.color import Color
 from enum import Enum, auto
 from .common import MenuElement
+from ..game_modes.singleplayer.arcade_mode import ArcadeMode
+from ..game_modes.singleplayer.classic_mode import ClassicMode
+from ..game_modes.singleplayer.zen_mode import ZenMode
 from ..utils.enums import GameMode
 
 
@@ -265,11 +268,11 @@ class OriginalModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case OriginalMenuInput.CLASSIC:
-                self.game.start_game(GameMode.CLASSIC)
+                ClassicMode(self.game).start_game()
             case OriginalMenuInput.ARCADE:
-                self.game.start_game(GameMode.ARCADE)
+                ArcadeMode(self.game).start_game()
             case OriginalMenuInput.ZEN:
-                self.game.start_game(GameMode.ZEN)
+                ZenMode(self.game).start_game()
             case OriginalMenuInput.BACK:
                 # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
@@ -323,9 +326,11 @@ class MultiplayerModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case MultiplayerMenuInput.CLASSIC_ATTACK:
-                self.game.start_game(GameMode.CLASSIC_ATTACK)
+                # ClassicAttack.start_game(self.game)
+                print('comming soon')
             case MultiplayerMenuInput.ZEN_DUEL:
-                self.game.start_game(GameMode.ZEN_DUEL)
+                # ClassicAttack.start_game(self.game)
+                print('comming soon')
             case MultiplayerMenuInput.BACK:
                 # Reset back button state to ensure that it won't be checked after reentering the gui
                 self.back_button.reset()
@@ -367,7 +372,7 @@ class GameOverMenu(Menu):
         if self.back_button.checked:
             return GameOverMenuInputEnum.BACK
         return None
-
+2
 
 class SinglePlayerGameOverMenu(GameOverMenu):
     def __init__(self, game, score):

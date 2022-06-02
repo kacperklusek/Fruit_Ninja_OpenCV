@@ -14,6 +14,10 @@ class SinglePlayerMode(ABC):
         self.fruits = Group()
         self.bombs = Group()
 
+    @abstractmethod
+    def start_game(self):
+        pass
+
     @property
     def blade(self):
         return self.game.blade
@@ -55,4 +59,5 @@ class SinglePlayerMode(ABC):
 
     def update(self):
         self.handle_collisions()
+        self.score_controller.check_combo_finished()
         self.blit()

@@ -93,3 +93,9 @@ class ClassicModeItemSpawner(ItemSpawner):
             item.spawn(Vector2(x, -.1 * window_config.HEIGHT), Vector2(v_x, v_y))
 
         SoundController.play_throw_sound()
+
+    def set_interval(self, interval):
+        self._interval = interval
+
+    def set_intensity(self, intensity):
+        self._intensity = intensity

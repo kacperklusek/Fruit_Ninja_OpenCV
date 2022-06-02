@@ -61,7 +61,7 @@ class HealthIcon(MenuElement):
 
 class HealthBar(MenuElement):
     ICON_WIDTH = window_config.WIDTH * .1
-    ICON_PADDING = window_config.WIDTH * .025
+    ICON_PADDING = -window_config.WIDTH * .05
 
     def __init__(self, max_lives):
         self.health_icons = self.__create_health_icons(max_lives)
@@ -79,6 +79,7 @@ class HealthBar(MenuElement):
         self.update()
 
     def blit(self, surface):
+        self.update()
         for icon in self.health_icons:
             icon.blit(surface)
 
@@ -91,8 +92,16 @@ class HealthBar(MenuElement):
             HealthIcon(
                 health_bar_config.GET_HEALTH_ICON(i % health_bar_config.HEALTHS_COUNT + 1),
                 health_bar_config.GET_FAILED_HEALTH_ICON(i % health_bar_config.HEALTHS_COUNT + 1),
-                Vector2(window_config.WIDTH - (lives - i - 1) *
+                Vector2(window_config.WIDTH - (lives - i) *
                         (self.ICON_WIDTH + self.ICON_PADDING), 0)
             )
             for i in range(lives)
         ]
+
+
+class ScoreBar:
+    def __init__(self):
+        self.score = 0
+
+
+

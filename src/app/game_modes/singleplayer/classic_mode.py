@@ -24,7 +24,8 @@ class ClassicMode(SinglePlayerMode):
         self.lives = classic_mode_config.LIVES
 
     def start_game(self):
-        pass  # TODO
+        self.time_controller.start()
+        self.game.start_game(self)
 
     def handle_fruit_collision(self, fruit):
         SinglePlayerMode.handle_fruit_collision(self, fruit)
@@ -42,7 +43,18 @@ class ClassicMode(SinglePlayerMode):
 
     def update(self):
         SinglePlayerMode.update(self)
+        self.update_difficulty()
         self.item_spawner.update()
+        self.health_bar.blit(self.game.surface)
 
     def handle_out_of_bounds(self):
         self.decrease_lives()
+
+    def update_difficulty(self):
+        # updating interval and intensity based on time elapsed since beginning of the game
+        self.item_spawner.set_interval(
+            max(1.5, min(2, - self.time_controller.total_elapsed_time // 15))
+        )
+        self.item_spawner.set_intensity(
+            max(3 , min(6, 1 + self.time_controller.total_elapsed_time // 8))
+        )

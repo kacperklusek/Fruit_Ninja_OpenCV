@@ -24,14 +24,17 @@ class ScoreController:
 
         curr_time = time.time()
         if curr_time - self.last_fruit_kill_time <= self.COMBO_TIME_DIFF:
-            self.combo += 1
-        else:
-            if self.combo >= self.MIN_FRUITS_COUNT:
-                self.display_combo()
-                self._score += self.combo
-            self.combo = 0
+            self.combo += 1 if self.combo > 0 else 2
+            print(self.combo)
 
         self.last_fruit_kill_time = curr_time
+
+    def check_combo_finished(self):
+        curr_time = time.time()
+        if curr_time - self.last_fruit_kill_time > self.COMBO_TIME_DIFF and self.combo >= self.MIN_FRUITS_COUNT:
+            self.display_combo()
+            self._score += self.combo
+            self.combo = 0
 
     def display_combo(self):
         print(f'COMBO {self.combo}')

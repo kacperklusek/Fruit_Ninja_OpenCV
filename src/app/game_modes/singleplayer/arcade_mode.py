@@ -1,8 +1,13 @@
-from .common import SinglePlayerGameMode
+from .common import SinglePlayerMode
 
 
-class ArcadeMode(SinglePlayerGameMode):
-    def __init__(self):
-        SinglePlayerGameMode.__init__(self)
+class ArcadeMode(SinglePlayerMode):
+    def __init__(self, game):
+        SinglePlayerMode.__init__(self, game)
         pass
 
+    def start_game(self):
+        print("comming soon!")
+
+    def handle_out_of_bounds(self):
+        pass

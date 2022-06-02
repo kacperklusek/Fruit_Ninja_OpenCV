@@ -120,7 +120,7 @@ spawn_frequency = SpawnFrequencyConfig(
 
 classic_mode_config = ClassicModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
-    LIVES=6
+    LIVES=3
 )
 
 mouse_input_config = MouseInputConfig(
