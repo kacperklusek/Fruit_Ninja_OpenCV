@@ -1,11 +1,14 @@
+import itertools
 import time
 import pygame
-import mediapipe as mp
-from threading import Lock, Thread
 from cv2 import cv2
+import mediapipe as mp
+from typing import Callable
 from functools import reduce
 from collections import deque
+from threading import Lock, Thread
 from abc import ABC, abstractmethod
+
 from src.app.utils.point import Point
 from src.config import mouse_input_config, \
     hand_input_config, finger_input_config, \
@@ -13,8 +16,8 @@ from src.config import mouse_input_config, \
 
 
 class InputPoint:
-    def __init__(self, coords, time_added):
-        self.coords = coords
+    def __init__(self, coordinates: (int | float, int | float), time_added: int | float):
+        self.coordinates = coordinates
         self.time_added = time_added
 
 
@@ -27,7 +30,7 @@ class InputController(ABC):
     @property
     def points_history(self):
         self._mutex.acquire(True)
-        history = list(map(lambda point: point.coords, self._points_history))
+        history = list(map(lambda point: point.coordinates, self._points_history))
         self._mutex.release()
         return history
 
@@ -39,9 +42,9 @@ class InputController(ABC):
     def end_tracking(self):
         self.thread.join()
 
-    def add_to_history(self, coords):
+    def add_to_history(self, coordinates: (int | float, int | float)):
         self._mutex.acquire(True)
-        self._points_history.append(InputPoint(Point(*coords), time.time()))
+        self._points_history.append(InputPoint(Point(*coordinates), time.time()))
         self._mutex.release()
 
     def clear_history(self):
@@ -61,14 +64,14 @@ class InputController(ABC):
         pass
 
     @abstractmethod
-    def run(self, callback):
+    def run(self, callback: Callable):
         pass
 
 
 class CameraInput(InputController, ABC):
     mp_hands = mp.solutions.hands
 
-    def __init__(self, min_detection_confidence, min_tracking_confidence):
+    def __init__(self, min_detection_confidence: float, min_tracking_confidence: float):
         InputController.__init__(self)
         self.min_detection_confidence = min_detection_confidence
         self.min_tracking_confidence = min_tracking_confidence
@@ -90,7 +93,7 @@ class CameraInput(InputController, ABC):
         image.flags.writeable = True
         return results
 
-    def run(self, callback):
+    def run(self, callback: Callable):
         with self.mp_hands.Hands(
                 model_complexity=0,
                 min_detection_confidence=self.min_detection_confidence,
@@ -100,24 +103,27 @@ class CameraInput(InputController, ABC):
                 results = self.get_cv_results(hands)
 
                 if results and results.multi_hand_landmarks:
-                    self.add_to_history(self.get_coords(results))
+                    self.add_to_history(self.get_coordinates(results))
 
                 callback()
                 cv2.waitKey(1)
 
     @abstractmethod
-    def get_coords(self, results):
+    def get_coordinates(self, results):
         pass
 
     def get_points_for_collision(self):
-        current_time = time.time()
-        if len(self._points_history) >= 5:
-            points = self._points_history[-5:]
-        else:
-            points = self._points_history[:]
+        if not self._points_history:
+            return []
 
-        while current_time - points[0].time_added > blade_config.VALIDITY_DURATION_FOR_COLLISION:
-            points.popleft()
+        current_time = time.time()
+
+        n = len(self.points_history)
+        points = list(itertools.islice(self.points_history, n - min(n, 5), n))
+
+        while self._points_history and \
+                current_time - self._points_history[0].time_added > blade_config.VALIDITY_DURATION_FOR_COLLISION:
+            self._points_history.popleft()
 
         return points
 
@@ -131,9 +137,9 @@ class FingerInput(CameraInput):
         )
         self.finger_code = finger_input_config.FINGER_CODE
 
-    def get_coords(self, results):
-        coords = results.multi_hand_landmarks[-1].landmark[self.finger_code]
-        return (1 - coords.x) * window_config.WIDTH, coords.y * window_config.HEIGHT
+    def get_coordinates(self, results):
+        coordinates = results.multi_hand_landmarks[-1].landmark[self.finger_code]
+        return (1 - coordinates.x) * window_config.WIDTH, coordinates.y * window_config.HEIGHT
 
 
 class HandInput(CameraInput):
@@ -144,7 +150,7 @@ class HandInput(CameraInput):
             hand_input_config.MIN_TRACKING_CONFIDENCE
         )
 
-    def get_coords(self, results):
+    def get_coordinates(self, results):
         landmarks = results.multi_hand_landmarks[0].landmark
         x, y = reduce(lambda acc, p: (acc[0] + p.x, acc[1] + p.y), landmarks, (0, 0))
         n = len(landmarks)
@@ -165,7 +171,7 @@ class MouseInput(InputController):
         self.is_tracking = False
         super().end_tracking()
 
-    def run(self, callback):
+    def run(self, callback: Callable):
         while self.is_tracking:
             start_time = time.time()
 

@@ -1,11 +1,10 @@
 import pygame.transform
 from typing import Union
-from pygame.sprite import Sprite, Group
 from pygame.math import Vector2
-from pygame.surface import SurfaceType, Surface
-
-from src.app.effects.animations import Animation, KeyFrame, scale_animation, cubic_timing
+from pygame.sprite import Sprite, Group
 from src.app.gui.common import MenuElement
+from pygame.surface import SurfaceType, Surface
+from src.app.effects.animations import Animation, KeyFrame, scale_animation, cubic_timing
 
 
 class Label(MenuElement):

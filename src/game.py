@@ -3,16 +3,17 @@ from random import randint
 import pygame
 import sys
 
-from src.app.controllers.blade import Blade
-from src.app.game_modes.singleplayer.arcade_mode import ArcadeMode
-from src.app.game_modes.singleplayer.zen_mode import ZenMode
+from src.app.effects.blade import Blade
 from src.app.utils.enums import GameMode
 from src.app.effects.sounds import SoundController
-from src.app.controllers.time_controller import TimeController
-from src.app.game_modes.singleplayer.classic_mode import ClassicMode
-from src.app.gui.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuInput, SinglePlayerGameOverMenu
-
 from src.config import window_config, game_config
+from src.app.game_modes.singleplayer.zen_mode import ZenMode
+from src.app.controllers.time_controller import TimeController
+from src.app.game_modes.singleplayer.arcade_mode import ArcadeMode
+from src.app.game_modes.multiplayer.zen_duel_mode import ZenDuelMode
+from src.app.game_modes.singleplayer.classic_mode import ClassicMode
+from src.app.game_modes.multiplayer.classic_attack_mode import ClassicAttackMode
+from src.app.gui.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuInput, SinglePlayerGameOverMenu
 
 
 class Game:
@@ -65,7 +66,11 @@ class Game:
         self.remaining_screen_shake_duration = 0
 
     def exit(self):
-        self.curr_menu.finish_animations()
+        if self.curr_game:
+            self.curr_game.clear()
+        if self.curr_menu:
+            self.curr_menu.finish_animations()
+
         self.blade.destroy()
         pygame.quit()
         sys.exit()
@@ -77,6 +82,7 @@ class Game:
 
     def display_menu(self, menu: MenuInput):
         self.blade.clear()
+        self.curr_menu.reset()
         match menu:
             case MenuInput.MAIN:
                 self.curr_menu = MainMenu(self)
@@ -87,24 +93,28 @@ class Game:
             case MenuInput.SINGLE_PLAYER_GAME_OVER_MENU:
                 self.curr_menu = SinglePlayerGameOverMenu(self, self.curr_game.score)
             case _:
-                return
+                raise ValueError(f'{menu} is not a valid menu')
 
         self.curr_menu.display()
 
-    def start_game(self, curr_game: GameMode):
+    def start_game(self, game_mode: GameMode):
         self.reset()
+        self.curr_menu.reset()
         SoundController.stop_menu_sound()
 
-        match curr_game:
+        match game_mode:
             case GameMode.CLASSIC:
                 self.curr_game = ClassicMode(self)
             case GameMode.ZEN:
                 self.curr_game = ZenMode(self)
             case GameMode.ARCADE:
                 self.curr_game = ArcadeMode(self)
+            case GameMode.CLASSIC_ATTACK:
+                self.curr_game = ClassicAttackMode(self)
+            case GameMode.ZEN_DUEL:
+                self.curr_game = ZenDuelMode(self)
             case _:
-                print('COMING SOON')  # TODO
-                return
+                raise ValueError(f'{game_mode} is not a valid game mode')
 
         self.curr_game.start_game()
         SoundController.play_game_start_sound()

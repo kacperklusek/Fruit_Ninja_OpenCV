@@ -1,6 +1,5 @@
 import time
 from threading import Thread, Lock
-
 from src.app.controllers.time_controller import TimeController
 
 

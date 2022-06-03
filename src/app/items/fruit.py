@@ -45,8 +45,8 @@ class Fruit(Item):
             self.splash(effects_group)
 
         if effects_config.DISPLAY_ITEM_SLICES:
-            Trail(slice1, effects_group, min(slice1.height, slice1.width) / 5)
-            Trail(slice2, effects_group, min(slice2.height, slice2.width) / 5)
+            slice1.add_observer(Trail(slice1, effects_group, min(slice1.height, slice1.width) / 5))
+            slice2.add_observer(Trail(slice2, effects_group, min(slice2.height, slice2.width) / 5))
 
     def splash(self, effects_group: Group):
         Splash(self.splash_image, self.position, effects_group)

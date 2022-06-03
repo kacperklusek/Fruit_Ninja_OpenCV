@@ -1,8 +1,7 @@
-from pygame.sprite import Group
 from src.app.controllers.score_controller import ScoreController
-from abc import ABC
-
 from src.app.game_modes.game_mode import GameModeCommon
+from pygame.sprite import Group
+from abc import ABC
 
 
 class SinglePlayerMode(GameModeCommon, ABC):
@@ -56,6 +55,13 @@ class SinglePlayerMode(GameModeCommon, ABC):
         self.handle_collisions()
         self.blit_items()
         self.game.screen.blit(self.items_surface, (0, 0))
+
+    def clear(self):
+        GameModeCommon.clear(self)
+        for fruit in self._fruits:
+            fruit.kill()
+        for bomb in self._bombs:
+            bomb.kill()
 
     def game_over(self):
         self.game.game_over()

@@ -2,12 +2,11 @@ import pygame
 from pygame import Surface
 from pygame.color import Color
 from pygame.sprite import Group
-
 from abc import ABC, abstractmethod
-from src.app.controllers.time_controller import TimeController
-from src.app.effects.sounds import SoundController
 from src.app.effects.visual import Trail
+from src.app.effects.sounds import SoundController
 from src.config import window_config, effects_config
+from src.app.controllers.time_controller import TimeController
 
 
 class GameModeCommon(ABC):
@@ -58,8 +57,19 @@ class GameModeCommon(ABC):
         fruit.slice(self.fruit_slices, self.effects)
         fruit.kill()
 
+    def clear(self):
+        for fruit_slice in self.fruit_slices:
+            fruit_slice.kill()
+
     def _spawn_fruit_slices(self, fruit):
         pass
+
+    @staticmethod
+    def _create_surface():
+        return Surface((
+            window_config.WIDTH,
+            window_config.HEIGHT
+        ), pygame.SRCALPHA)
 
     @abstractmethod
     def handle_out_of_bounds(self):
@@ -73,8 +83,6 @@ class GameModeCommon(ABC):
     def blit_items(self):
         pass
 
-    def _create_surface(self):
-        return Surface((
-            window_config.WIDTH,
-            window_config.HEIGHT
-        ), pygame.SRCALPHA)
+    @abstractmethod
+    def start_game(self):
+        pass

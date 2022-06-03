@@ -32,7 +32,7 @@ class TrailPart:
     def y(self):
         return self.position.y
 
-    def blit(self, surface):  # TODO - maybe make common abstract class not only for Menu Elements but also for other objects like this (with the abstract blit method)
+    def blit(self, surface):
         self.update()
         pygame.draw.circle(surface, self.color, (self.x, self.y), self.size)
 
@@ -58,6 +58,7 @@ class Trail(Sprite):
         # Dummy variables required by the Sprite class
         self.image = Surface((0, 0))
         self.rect = self.image.get_rect()
+        self.item.add_observer(self)
         group.add(self)
 
     def blit(self, surface):
@@ -67,10 +68,6 @@ class Trail(Sprite):
         self.mutex.release()
 
     def update(self, **kwargs):
-        if self.item.is_killed:
-            self.remove()
-            return
-
         while self.parts and self.parts[0].size <= 0:
             self.parts.popleft()
             # Add the new trail part if the interval is finished
@@ -84,6 +81,9 @@ class Trail(Sprite):
             self.interval.clear()
         self.parts.clear()
         self.group.remove(self)
+
+    def item_killed(self):
+        self.remove()
 
     def __add_part_interval(self):
         if len(self.parts) < effects_config.ITEM_TRAIL_PARTS_COUNT:

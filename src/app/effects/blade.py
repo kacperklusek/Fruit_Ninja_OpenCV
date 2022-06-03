@@ -1,12 +1,12 @@
-import pygame
+from src.app.controllers.input_controller import FingerInput, HandInput, MouseInput
 from src.config import blade_config as config
 from src.app.utils.enums import InputSource
-from src.app.controllers.input_controller import FingerInput, HandInput, MouseInput
 from src.app.utils.point import Point
 from src.config import window_config
+import pygame
 
 
-class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade to the effects directory and move the logic to some controller
+class Blade(pygame.sprite.Sprite):
     EMPTY_COLOR = pygame.Color(0, 0, 0, 0)
     BLADE_WIDTH = 5
 
@@ -14,8 +14,9 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
         pygame.sprite.Sprite.__init__(self)
         self.game = game
         self.input_source = self.create_input_source(input_source)
-        self.blade_surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
         self.input_source.start_tracking()
+        self._blade_surface = pygame.Surface((window_config.WIDTH, window_config.HEIGHT), pygame.SRCALPHA)
+        self._collision_enabled = True
 
     def __len__(self):
         return len(self.input_source.points_history)
@@ -25,6 +26,12 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
 
     def __getitem__(self, idx):
         return self.points_history[idx]
+
+    def enable_collision(self):
+        self._collision_enabled = True
+
+    def disable_collision(self):
+        self._collision_enabled = False
 
     @property
     def points_history(self):
@@ -46,13 +53,11 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
         self.input_source.end_tracking()
 
     def draw(self):
-        self.blade_surface.fill(self.EMPTY_COLOR)
+        self._blade_surface.fill(self.EMPTY_COLOR)
         points = self.points_history[:]
         if len(points) > 1:
-            pygame.draw.lines(self.blade_surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
-            for point in points:
-                pygame.draw.circle(self.blade_surface, 'red', point, 4)  # TODO - remove this line after improving collision points
-        self.game.screen.blit(self.blade_surface, (0, 0))
+            pygame.draw.lines(self._blade_surface, config.COLORS[0], False, points, self.BLADE_WIDTH)
+        self.game.screen.blit(self._blade_surface, (0, 0))
 
     def change_input_source(self, input_source_type):
         self.input_source.end_tracking()
@@ -72,4 +77,6 @@ class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade t
                 return MouseInput()
 
     def collides(self, obj):
+        if not self._collision_enabled:
+            return False
         return any(map(obj.rect.collidepoint, self.input_source.get_points_for_collision()))

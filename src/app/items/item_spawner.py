@@ -1,17 +1,15 @@
 import time
 import random
-from collections import deque
 from typing import Union
-
 from pygame import Vector2
-
-from src.app.controllers.gravity_controller import GravityController
+from collections import deque
+from pygame.sprite import Group
 from src.app.items.item import Item
 from src.config import window_config
 from src.app.utils.enums import ItemType
 from src.app.items.item_factory import ItemFactory
 from src.app.effects.sounds import SoundController
-from pygame.sprite import Group
+from src.app.controllers.gravity_controller import GravityController
 
 
 class ItemToSpawn:
@@ -47,8 +45,8 @@ class ItemSpawner:
         self.last_spawn_time = 0
         self.create_items_methods = []
         self.items_to_spawn = deque()
-        self._interval = 2  # TODO - change these variables
-        self._intensity = 1  # TODO - change these variables
+        self._interval = 1
+        self._intensity = 1
 
     @property
     def interval(self):
@@ -200,7 +198,6 @@ class ArcadeModeItemSpawner(ClassicModeItemSpawner):
             item_type = ItemType.BOMB
 
         item = ItemFactory.create(item_type, self.bombs if item_type is ItemType.BOMB else self.fruits)
-        print('ITEM', item)
         x = random.randint(self.MIN_SPAWN_X, self.MAX_SPAWN_X)
         ratio = (x - self.MIN_SPAWN_X) / (self.MAX_SPAWN_X - self.MIN_SPAWN_X) - .5
         v_x = int(-ratio * random.random() * window_config.WIDTH)

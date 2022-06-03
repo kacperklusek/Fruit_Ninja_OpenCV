@@ -6,7 +6,7 @@ from src.config import sound_config
 pygame.mixer.init()
 
 
-class SoundController:  # TODO  - rename
+class SoundController:
     _throw_sound = mixer.Sound(sound_config.THROW)
     _throw_sound.set_volume(sound_config.THROW_VOLUME)
 

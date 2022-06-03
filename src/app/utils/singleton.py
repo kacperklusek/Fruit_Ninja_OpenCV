@@ -1,11 +1,6 @@
 from threading import Lock
 
 
-# TODO - remove link below
-# Link to the implementation explanation:
-# https://refactoring.guru/pl/design-patterns/singleton/python/example#example-1
-
-
 class SingletonMeta(type):
     _instances = {}
     _lock: Lock = Lock()  # Make it thread-safe

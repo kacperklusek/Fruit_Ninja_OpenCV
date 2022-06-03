@@ -1,15 +1,15 @@
 import time
-
-from pygame.math import Vector2
-from pygame.font import Font
-from .singleplayer_mode import SinglePlayerMode
 import pygame
+from pygame.font import Font
+from pygame.math import Vector2
+from .singleplayer_mode import SinglePlayerMode
+
+from src.app.gui.labels import AnimatedLabel
+from src.app.gui.bars import ScoreBar, TimeBar
+from src.app.utils.enums import ItemType, BonusType
+from src.app.items.item_spawner import ArcadeModeItemSpawner
+from src.app.controllers.gravity_controller import GravityController
 from src.config import window_config, arcade_mode_config, game_config
-from ...controllers.gravity_controller import GravityController
-from ...gui.bars import ScoreBar, TimeBar
-from ...gui.labels import AnimatedLabel
-from ...items.item_spawner import ArcadeModeItemSpawner
-from ...utils.enums import ItemType, BonusType
 
 
 class ArcadeMode(SinglePlayerMode):
@@ -65,10 +65,10 @@ class ArcadeMode(SinglePlayerMode):
         self.score_controller.score -= points_decrease
 
         AnimatedLabel([
-            Font(game_config.FONT, 50).render(f'-{points_decrease}', True, pygame.Color(198, 46, 247, 0)),   # TODO - move parameters to config
+            Font(game_config.FONT, 50).render(f'-{points_decrease}', True, arcade_mode_config.DECREASE_POINTS_COLOR),
         ],
             bomb.position,
-            2,  # TODO - move to config
+            arcade_mode_config.DECREASE_POINTS_VISIBILITY_DURATION,
             self.labels
         )
 
@@ -99,10 +99,10 @@ class ArcadeMode(SinglePlayerMode):
 
     def update_difficulty(self):
         gameplay_time = self.time_controller.total_elapsed_time
-        self.item_spawner.intensity = int(gameplay_time // 20) + 6
-        self.item_spawner.interval = .5 + max((1000 - gameplay_time) / 500, 0)
+        self.item_spawner.intensity = int(gameplay_time // 15) + 3
+        self.item_spawner.interval = .35 + max((1000 - gameplay_time) / 500, 0)
         self.item_spawner.bomb_probability = min(.15 + gameplay_time / 2000, .3)
-        self.item_spawner.bonus_item_probability = min(.5 + gameplay_time / 2000, .1) # TODO change to .05
+        self.item_spawner.bonus_item_probability = min(.05 + gameplay_time / 2000, .1)
 
     def handle_out_of_bounds(self):
         pass

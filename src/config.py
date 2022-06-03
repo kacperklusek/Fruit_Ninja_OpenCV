@@ -26,7 +26,10 @@ GameConfig = namedtuple('GameConfig', [
     'INPUT_SOURCE',
     'FONT',
     'FONT_SIZE',
-    'ITEM_SIZE'
+    'ITEM_SIZE',
+    'COMBO_TIME_DIFF',
+    'MIN_COMBO_FRUITS',
+    'DEFAULT_FONT_COLOR'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -71,7 +74,13 @@ ArcadeModeConfig = namedtuple('ClassicModeConfig', [
     'GRAVITY_CHANGE_DURATION',
     'FREEZE_DURATION',
     'FREEZE_RATIO',
-    'BOMB_COLLISION_POINTS_DECREASE'
+    'BOMB_COLLISION_POINTS_DECREASE',
+    'DECREASE_POINTS_COLOR',
+    'DECREASE_POINTS_VISIBILITY_DURATION'
+])
+
+MultiPlayerModeConfig = namedtuple('MultiPlayerModeConfig', [
+    'COMING_SOON_DISPLAY_DURATION'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -135,7 +144,10 @@ game_config = GameConfig(
     INPUT_SOURCE=InputSource.MOUSE,
     FONT=os.path.join('assets', 'fonts', 'go3v2.ttf'),
     FONT_SIZE=25,
-    ITEM_SIZE=100
+    ITEM_SIZE=100,
+    COMBO_TIME_DIFF=.2,
+    MIN_COMBO_FRUITS=3,
+    DEFAULT_FONT_COLOR=Color(255, 255, 255)
 )
 
 window_config = WindowConfig(
@@ -193,7 +205,13 @@ arcade_mode_config = ArcadeModeConfig(
     GRAVITY_CHANGE_DURATION=5,
     FREEZE_DURATION=5,
     FREEZE_RATIO=.4,
-    BOMB_COLLISION_POINTS_DECREASE=10
+    BOMB_COLLISION_POINTS_DECREASE=10,
+    DECREASE_POINTS_COLOR=Color(198, 46, 247, 0),
+    DECREASE_POINTS_VISIBILITY_DURATION=2
+)
+
+multi_player_mode_config = MultiPlayerModeConfig(
+    COMING_SOON_DISPLAY_DURATION=5
 )
 
 mouse_input_config = MouseInputConfig(

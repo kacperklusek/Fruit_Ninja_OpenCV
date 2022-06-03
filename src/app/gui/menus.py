@@ -1,19 +1,16 @@
-import sys
-
 import pygame.display
+from enum import Enum, auto
 from pygame.font import Font
-
-from src.app.gui.buttons import TimedButton, FruitButton
+from pygame.color import Color
+from pygame.math import Vector2
 from src.app.gui.images import Image
 from src.app.gui.labels import Label
+from src.app.utils.enums import GameMode
+from src.app.utils.timeouts import Timeout
+from src.app.gui.common import MenuElement
+from src.app.gui.buttons import TimedButton, FruitButton
 from src.config import window_config, menu_config, game_config
-from pygame.math import Vector2
-from pygame.color import Color
-from enum import Enum, auto
-from .common import MenuElement
-from ..effects.animations import Animation, KeyFrame, position_animation, cubic_timing, cubic_bezier, scale_animation, \
-    fade_animation, AnimationFillMode
-from ..utils.enums import GameMode
+from src.app.effects.animations import Animation, KeyFrame, position_animation, fade_animation, AnimationFillMode
 
 
 class MenuInput(Enum):
@@ -68,6 +65,7 @@ def create_back_button(game, menu_surface):
 
 class Menu:
     QUIT_BUTTON_SIZE = window_config.WIDTH * .15
+    BLADE_COLLISION_ACTIVATION_DELAY = .5
 
     def __init__(self, game):
         self.game = game
@@ -93,6 +91,7 @@ class Menu:
             ),
             self.QUIT_BUTTON_SIZE
         )
+        self.back_button = None
 
         self.background_elements: [MenuElement] = []
         self.animated_elements: [MenuElement] = [self.quit_button]
@@ -160,9 +159,16 @@ class Menu:
             self.update_screen()
 
     def switch_menu(self, target_menu: MenuInput):
+        self.blade.disable_collision()
+        Timeout(self.blade.enable_collision, self.BLADE_COLLISION_ACTIVATION_DELAY)
+        self.reset()
+        self.game.display_menu(target_menu)
+
+    def reset(self):
         self.run_display = False
         self.finish_animations()
-        self.game.display_menu(target_menu)
+        if self.back_button:
+            self.back_button.reset()
 
     def update(self):
         pass
@@ -217,7 +223,10 @@ class MainMenu(Menu):
         )
         self.new_text_image = Image(
             menu_config.NEW_TEXT_IMAGE,
-            self.multiplayer_button.position + Vector2(self.multiplayer_button.width / 4, -self.multiplayer_button.height / 2),
+            self.multiplayer_button.position + Vector2(
+                self.multiplayer_button.width / 4,
+                -self.multiplayer_button.height / 2
+            ),
             self.NEW_TEXT_IMAGE_WIDTH
         )
 
@@ -351,8 +360,6 @@ class OriginalModeMenu(Menu):
             case OriginalMenuInput.ZEN:
                 self.game.start_game(GameMode.ZEN)
             case OriginalMenuInput.BACK:
-                # Reset back button state to ensure that it won't be checked after reentering the gui
-                self.back_button.reset()
                 self.switch_menu(MenuInput.MAIN)
 
     def get_input(self):
@@ -418,14 +425,10 @@ class MultiplayerModeMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case MultiplayerMenuInput.CLASSIC_ATTACK:
-                # ClassicAttack.start_game(self.game)
-                print('coming soon')
+                self.game.start_game(GameMode.CLASSIC_ATTACK)
             case MultiplayerMenuInput.ZEN_DUEL:
-                # ClassicAttack.start_game(self.game)
-                print('coming soon')
+                self.game.start_game(GameMode.ZEN_DUEL)
             case MultiplayerMenuInput.BACK:
-                # Reset back button state to ensure that it won't be checked after reentering the gui
-                self.back_button.reset()
                 self.switch_menu(MenuInput.MAIN)
 
     def get_input(self):
@@ -457,7 +460,6 @@ class GameOverMenu(Menu):
         Menu.handle_input(self)
         match self.get_input():
             case GameOverMenuInputEnum.BACK:
-                self.back_button.reset()
                 self.switch_menu(MenuInput.MAIN)
 
     def get_input(self):
@@ -474,7 +476,8 @@ class SinglePlayerGameOverMenu(GameOverMenu):
             self.score_text,
             Vector2(
                 self.menu_surface.get_width() // 2 - self.score_text.get_width() // 2,
-                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2 + self.game_over_text.get_width() // 2
+                self.menu_surface.get_height() // 2 - self.score_text.get_height() // 2
+                + self.game_over_text.get_width() // 2
             )
         )
 

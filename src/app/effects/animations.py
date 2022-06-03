@@ -1,8 +1,7 @@
-import sys
-import time
+from threading import Thread
 from enum import Enum, auto
 from typing import Union
-from threading import Thread
+import time
 
 from src.app.utils.timeouts import Timeout
 from src.config import game_config
@@ -29,27 +28,27 @@ class Animation:
     )
 
     def __init__(self,
-                 animated_element,
+                 animated_element: object,
                  keyframes: [KeyFrame],
                  duration: Union[int, float],
                  delay: Union[int, float] = 0,
                  repetitions: [int, float('inf')] = 1,
                  fps: int = game_config.FPS,
                  animation_fill_mode: AnimationFillMode = AnimationFillMode.NONE):
+        self.animation_fill_mode = animation_fill_mode
         self.animated_element = animated_element
+        self.repetitions = repetitions
         self.keyframes = keyframes
         self.duration = duration
         self.delay = delay
-        self.repetitions = repetitions
-        self.animation_fill_mode = animation_fill_mode
 
-        self._start_time = 0
-        self._current_frame_idx = 0
         self._thread = None
         self._timeout = None
-        self._last_frame_time = 0
-        self._refresh_interval = 1 / fps
         self._finished = False
+        self._start_time = 0
+        self._last_frame_time = 0
+        self._current_frame_idx = 0
+        self._refresh_interval = 1 / fps
 
         self.__properties_copy = self._copy_animated_properties()
         self._apply_fill_mode()
@@ -193,10 +192,3 @@ def fade_animation(from_scale, to_scale, from_alpha, to_alpha, animation_timing_
 
 def cubic_timing(percent):
     return percent ** 3
-
-
-def cubic_bezier(p0, p1, p2, p3):  # TODO - doesn't work as it should idk why
-    def apply_timing(percent):
-        t = percent
-        return (1 - t)**3 * p0 + 3*(1 - t)**2 * t * p1 + 3*(1 - t) * t**2 * p2 + t**3 * p3
-    return apply_timing

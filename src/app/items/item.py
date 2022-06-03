@@ -1,12 +1,11 @@
 import pygame
-from pygame.sprite import Sprite, Group
-
 import random
 from pygame.math import Vector2
-from src.app.controllers.gravity_controller import GravityController
-from src.app.controllers.time_controller import TimeController
+from pygame.sprite import Sprite, Group
 from src.config import window_config, game_config
 from src.app.utils.image_loader import ImageLoader
+from src.app.controllers.time_controller import TimeController
+from src.app.controllers.gravity_controller import GravityController
 
 
 class Item(Sprite):
@@ -19,14 +18,24 @@ class Item(Sprite):
         self.position = Vector2(0, 0)
         self.original_image = ImageLoader.load_png(self.image_path, -1, game_config.ITEM_SIZE)
         self.image = self.original_image
-        self.rect = self.image.get_rect()  # TODO
-        self.rect.center = self.image.get_rect().center  # TODO
-        self.rect.x = 0  # TODO
-        self.rect.y = 0  # TODO
         self.angular_velocity = 0
         self.angle = 0
         self.group = group
         self.is_killed = False
+
+        self.observers = []
+
+    def add_observer(self, observer):
+        if observer not in self.observers:
+            self.observers.append(observer)
+
+    def notify_item_killed(self):
+        for observer in self.observers:
+            observer.item_killed()
+
+    @property
+    def rect(self):
+        return self.image.get_rect(center=self.position)
 
     @property
     def width(self):
@@ -48,6 +57,7 @@ class Item(Sprite):
         self.is_killed = True
         self.group.remove(self)
         Sprite.kill(self)
+        self.notify_item_killed()
 
     def update(self, **kwargs):
         self.rotate()

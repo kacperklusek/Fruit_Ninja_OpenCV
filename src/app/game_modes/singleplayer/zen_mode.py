@@ -1,10 +1,9 @@
 import pygame
-
-from src.config import zen_mode_config, window_config
+from src.app.gui.bars import ScoreBar, TimeBar
 from .singleplayer_mode import SinglePlayerMode
-from ...controllers.gravity_controller import GravityController
-from ...gui.bars import ScoreBar, TimeBar
-from ...items.item_spawner import ZenModeItemSpawner
+from src.config import zen_mode_config, window_config
+from src.app.items.item_spawner import ZenModeItemSpawner
+from src.app.controllers.gravity_controller import GravityController
 
 
 class ZenMode(SinglePlayerMode):

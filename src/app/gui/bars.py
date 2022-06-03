@@ -1,13 +1,14 @@
 import pygame
-from pygame.math import Vector2
-from pygame.color import Color
 from typing import Union
+from pygame import Surface
+from pygame.font import Font
+from pygame.color import Color
+from pygame.math import Vector2
+from src.app.gui.common import MenuElement
 from src.app.utils.enums import Orientation
 from src.app.utils.image_loader import ImageLoader
-from .common import MenuElement
+from src.app.controllers.score_controller import ScoreController
 from src.config import health_bar_config, window_config, game_config, menu_config
-from pygame.font import Font
-from ..controllers.score_controller import ScoreController
 
 
 class ProgressBar(MenuElement):
@@ -24,7 +25,7 @@ class ProgressBar(MenuElement):
         self.height = height
         self.color = color
         self.orientation = orientation
-        self.bar = pygame.Surface((width, height))
+        self.bar = Surface((width, height))
         self._bar_size = 0
         self._progress = 0
 

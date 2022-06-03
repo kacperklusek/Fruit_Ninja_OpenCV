@@ -1,15 +1,14 @@
 import time
-
 import pygame
-from pygame.math import Vector2
-from pygame.color import Color
 from typing import Union
+from pygame.color import Color
 from abc import abstractmethod
-from src.app.utils.image_loader import ImageLoader
+from pygame.math import Vector2
 from src.app.gui.bars import ProgressBar
 from src.app.utils.enums import Orientation
-from .common import MenuElement, AnimatedMenuElement
-from ..controllers.input_controller import MouseInput
+from src.app.utils.image_loader import ImageLoader
+from src.app.controllers.input_controller import MouseInput
+from src.app.gui.common import MenuElement, AnimatedMenuElement
 
 
 class Button(MenuElement):
@@ -123,7 +122,7 @@ class FruitButton(Button, AnimatedMenuElement):
                  inner_rotation_speed: Union[int, float] = .2,
                  outer_rotation_speed: Union[int, float] = -.05,
                  inner_initial_angle: Union[int, float] = 0,
-                 outer_initial_angle: Union[int, float] = 0):  # TODO - add type hints to every method parameters
+                 outer_initial_angle: Union[int, float] = 0):
         Button.__init__(self, blade)
         self.original_inner_image = ImageLoader.load_png(inner_image_path, size * .35)
         self.original_outer_image = ImageLoader.load_png(outer_image_path, size)
@@ -165,7 +164,6 @@ class FruitButton(Button, AnimatedMenuElement):
         return pygame.transform.rotate(image, new_angle), new_angle
 
     def blit(self, surface):
-        # TODO - clear this code
         inner_image = pygame.transform.scale(self.inner_image, (self.scale * self.inner_image.get_width(), self.scale * self.inner_image.get_height()))
         outer_image = pygame.transform.scale(self.outer_image, (self.scale * self.width, self.scale * self.height))
         inner_image.set_alpha(self.alpha)
