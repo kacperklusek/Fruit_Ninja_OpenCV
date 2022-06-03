@@ -29,10 +29,6 @@ class ClassicMode(SinglePlayerMode):
     def start_game(self):
         self.time_controller.start()
 
-    def handle_fruit_collision(self, fruit):
-        SinglePlayerMode.handle_fruit_collision(self, fruit)
-        self.score_controller.register_fruit_cut(fruit)
-
     def handle_bomb_collision(self, bomb):
         SinglePlayerMode.handle_bomb_collision(self, bomb)
         self.game_over()

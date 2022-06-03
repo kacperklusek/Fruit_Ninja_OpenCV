@@ -6,7 +6,7 @@ from src.app.effects.visual import Trail
 from src.config import image_path
 
 from src.app.items.item import Item
-from src.app.utils.enums import FruitType, ItemType
+from src.app.utils.enums import FruitType, ItemType, BonusType
 
 
 def fruit_image_path(fruit_name):
@@ -40,6 +40,7 @@ class Fruit(Item):
 
 class PlainFruit(Fruit):
     TYPE = ItemType.PLAIN_FRUIT
+    BONUS_TYPE = None
 
     def __init__(self, fruit_type: FruitType, group: Group):
         Fruit.__init__(self, fruit_image_path(fruit_type), group)
@@ -52,6 +53,7 @@ class FruitSlice(Item):
 
 class GravityFruit(Fruit):
     TYPE = ItemType.BONUS_FRUIT
+    BONUS_TYPE = BonusType.GRAVITY_FRUIT
 
     def __init__(self, group):
         super().__init__(fruit_image_path('gravity-banana'), group)
@@ -59,6 +61,7 @@ class GravityFruit(Fruit):
 
 class FreezeFruit(Fruit):
     TYPE = ItemType.BONUS_FRUIT
+    BONUS_TYPE = BonusType.FREEZE_FRUIT
 
     def __init__(self, group):
         super().__init__(fruit_image_path('freeze-banana'), group)

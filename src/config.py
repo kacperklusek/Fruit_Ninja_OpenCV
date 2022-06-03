@@ -66,7 +66,10 @@ ZenModeConfig = namedtuple('ClassicModeConfig', [
 
 ArcadeModeConfig = namedtuple('ClassicModeConfig', [
     'TIME',
-    'BACKGROUND_PATH'
+    'BACKGROUND_PATH',
+    'GRAVITY_CHANGE_DURATION',
+    'FREEZE_DURATION',
+    'FREEZE_RATIO'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -167,7 +170,10 @@ zen_mode_config = ZenModeConfig(
 
 arcade_mode_config = ArcadeModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
-    TIME=60
+    TIME=60,
+    GRAVITY_CHANGE_DURATION=5,
+    FREEZE_DURATION=5,
+    FREEZE_RATIO=.4
 )
 
 mouse_input_config = MouseInputConfig(

@@ -5,6 +5,7 @@ from typing import Union
 
 from pygame import Vector2
 
+from src.app.controllers.gravity_controller import GravityController
 from src.app.items.item import Item
 from src.config import window_config
 from src.app.utils.enums import ItemType
@@ -76,7 +77,12 @@ class ItemSpawner:
     def spawn_items(self):
         while self.items_to_spawn and self.items_to_spawn[0].can_be_spawned():
             item = self.items_to_spawn.popleft()
+
+            if GravityController().gravity.y < 0:
+                item.position = Vector2(item.position.x, -.1 * window_config.HEIGHT)
+                item.velocity = Vector2(item.velocity.x, -item.velocity.y)
             item.throw()
+
             self.callback(item.item)
 
     def create_items_to_spawn(self):
