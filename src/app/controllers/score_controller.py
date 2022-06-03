@@ -1,8 +1,10 @@
 import time
 from pygame.sprite import Group
+from pygame.font import Font
 
-from src.app.gui.labels import ComboLabel
+from src.app.gui.labels import AnimatedLabel
 from src.app.items.fruit import Fruit
+from src.config import effects_config, game_config
 
 
 class ScoreController:
@@ -58,4 +60,16 @@ class ScoreController:
             self.combo = 0
 
     def display_combo(self):
-        ComboLabel(self.combo, self.last_fruit_kill_position, self.combo_group)
+        font = game_config.FONT
+        size = effects_config.COMBO_FONT_SIZE
+        color = effects_config.COMBO_TEXT_COLOR
+
+        AnimatedLabel([
+                Font(font, int(size * .75)).render(f'{self.combo} fruits', True, color),
+                Font(font, size).render('combo', True, color),
+                Font(font, int(size * 1.5)).render(f'+{self.combo}', True, color)
+            ],
+            self.last_fruit_kill_position,
+            effects_config.COMBO_DISPLAY_DURATION,
+            self.combo_group
+        )

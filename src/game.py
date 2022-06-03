@@ -4,6 +4,7 @@ import pygame
 import sys
 
 from src.app.controllers.blade import Blade
+from src.app.game_modes.singleplayer.arcade_mode import ArcadeMode
 from src.app.game_modes.singleplayer.zen_mode import ZenMode
 from src.app.utils.enums import GameMode
 from src.app.effects.sounds import SoundController
@@ -103,6 +104,8 @@ class Game:
                 self.curr_game = ClassicMode(self)
             case GameMode.ZEN:
                 self.curr_game = ZenMode(self)
+            case GameMode.ARCADE:
+                self.curr_game = ArcadeMode(self)
             case _:
                 print('COMING SOON')  # TODO
                 return

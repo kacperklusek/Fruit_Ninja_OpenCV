@@ -1,4 +1,5 @@
 from collections import namedtuple
+from pygame.color import Color
 import mediapipe as mp
 import os
 
@@ -54,13 +55,18 @@ SinglePlayerModeConfig = namedtuple('SinglePlayerModeConfig', [
 ])
 
 ClassicModeConfig = namedtuple('ClassicModeConfig', [
-    'LIVES',  # TODO - rename to lives
+    'LIVES',
     'BACKGROUND_PATH'
 ])
 
 ZenModeConfig = namedtuple('ClassicModeConfig', [
     'BACKGROUND_PATH',
     'TIME'
+])
+
+ArcadeModeConfig = namedtuple('ClassicModeConfig', [
+    'TIME',
+    'BACKGROUND_PATH'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -106,7 +112,8 @@ HealthBarConfig = namedtuple('HealthBarConfig', [
 EffectsConfig = namedtuple('EffectsConfig', [
     'DISPLAY_ITEM_TRAIL',
     'COMBO_FONT_SIZE',
-    'COMBO_DISPLAY_DURATION'
+    'COMBO_DISPLAY_DURATION',
+    'COMBO_TEXT_COLOR'
 ])
 
 
@@ -134,6 +141,7 @@ blade_config = BladeConfig(
 effects_config = EffectsConfig(
     DISPLAY_ITEM_TRAIL=True,
     COMBO_FONT_SIZE=40,
+    COMBO_TEXT_COLOR=Color(255, 255, 255),  # TODO
     COMBO_DISPLAY_DURATION=2
 )
 
@@ -155,6 +163,11 @@ classic_mode_config = ClassicModeConfig(
 zen_mode_config = ZenModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
     TIME=90
+)
+
+arcade_mode_config = ArcadeModeConfig(
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    TIME=60
 )
 
 mouse_input_config = MouseInputConfig(

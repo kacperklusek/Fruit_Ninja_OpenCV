@@ -50,16 +50,15 @@ class FruitSlice(Item):
         Item.__init__(self, image_path, group)
 
 
-# TODO
-# class GravityFruit(Fruit):
-#     # TODO - add type
-#
-#     def __init__(self):
-#         super().__init__(fruit_image_path('gravity-banana'))
-#
-#
-# class FreezeFruit(Fruit):
-#     # TODO - add type
-#
-#     def __init__(self):
-#         super().__init__(fruit_image_path('freeze-banana'))
+class GravityFruit(Fruit):
+    TYPE = ItemType.BONUS_FRUIT
+
+    def __init__(self, group):
+        super().__init__(fruit_image_path('gravity-banana'), group)
+
+
+class FreezeFruit(Fruit):
+    TYPE = ItemType.BONUS_FRUIT
+
+    def __init__(self, group):
+        super().__init__(fruit_image_path('freeze-banana'), group)

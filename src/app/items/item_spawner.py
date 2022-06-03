@@ -160,3 +160,45 @@ class ZenModeItemSpawner(ItemSpawner):
         for i in range(max(random.randint(int(self.intensity // 2), int(self.intensity)), 1)):
             item_to_spawn = self.create_item_to_spawn(i * delay, 0)
             self.items_to_spawn.append(item_to_spawn)
+
+
+class ArcadeModeItemSpawner(ClassicModeItemSpawner):
+    def __init__(self, fruits: Group, bombs: Group, callback):
+        ClassicModeItemSpawner.__init__(self, fruits, bombs, callback)
+
+        self.create_items_methods.extend([
+            self.create_multiple,
+            self.create_sequence
+        ])
+
+        self._bomb_probability = 0
+        self._bonus_item_probability = 0
+
+    @property
+    def bonus_item_probability(self):
+        return self._bonus_item_probability
+
+    @bonus_item_probability.setter
+    def bonus_item_probability(self, new_probability: float):
+        if not 0 < new_probability < 1:
+            raise ValueError(f'Bonus item probability probability must be between 0 and 1')
+        self._bonus_item_probability = new_probability
+
+    def create_item_to_spawn(self, delay, bomb_probability):
+        if random.random() > bomb_probability:
+            if random.random() > self.bonus_item_probability:
+                item_type = ItemType.PLAIN_FRUIT
+            else:
+                item_type = ItemType.BONUS_FRUIT
+        else:
+            item_type = ItemType.BOMB
+
+        item = ItemFactory.create(item_type, self.bombs if item_type is ItemType.BOMB else self.fruits)
+        x = random.randint(self.MIN_SPAWN_X, self.MAX_SPAWN_X)
+        ratio = (x - self.MIN_SPAWN_X) / (self.MAX_SPAWN_X - self.MIN_SPAWN_X) - .5
+        v_x = int(-ratio * random.random() * window_config.WIDTH)
+        v_y = -random.randint(int(1.2 * window_config.HEIGHT), int(1.5 * window_config.HEIGHT))
+        position = Vector2(x, 1.1 * window_config.HEIGHT)
+        velocity = Vector2(v_x, v_y)
+
+        return ItemToSpawn(item, position, velocity, delay)

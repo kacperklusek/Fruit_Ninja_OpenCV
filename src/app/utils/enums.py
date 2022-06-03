@@ -14,7 +14,12 @@ class ExtendedEnum(Enum):
 class ItemType(ExtendedEnum):  # TODO -maybe change all properties to auto()
     PLAIN_FRUIT = auto()
     BOMB = auto()
-    # TODO - add bonus fruits
+    BONUS_FRUIT = auto()
+
+
+class BonusItemType(ExtendedEnum):
+    FREEZE_FRUIT = auto()
+    GRAVITY_FRUIT = auto()
 
 
 class FruitType(ExtendedEnum):

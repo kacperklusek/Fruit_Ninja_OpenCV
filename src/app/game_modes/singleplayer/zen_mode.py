@@ -28,7 +28,7 @@ class ZenMode(SinglePlayerMode):
 
     def update(self):
         SinglePlayerMode.update(self)
-        self.score_controller.check_combo_finished(self.effects_surface)
+        self.score_controller.check_combo_finished()
         self.update_difficulty()
         self.item_spawner.update()
         self.time_bar.update_time(self.time_controller.total_elapsed_time)
