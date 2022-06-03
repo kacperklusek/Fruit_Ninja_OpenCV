@@ -11,10 +11,10 @@ class ExtendedEnum(Enum):
         return [x.value for x in cls]
 
 
-class ItemType(ExtendedEnum):  # TODO -maybe change all properties to auto()
-    PLAIN_FRUIT = auto()
+class ItemType(ExtendedEnum):
     BOMB = auto()
-    # TODO - add bonus fruits
+    PLAIN_FRUIT = auto()
+    BONUS_FRUIT = auto()
 
 
 class FruitType(ExtendedEnum):
@@ -25,18 +25,28 @@ class FruitType(ExtendedEnum):
     WATERMELON = 'watermelon'
 
 
-class InputSource(Enum):
+class BonusFruitType(ExtendedEnum):
+    FREEZE = 'freeze-banana'
+    GRAVITY = 'gravity-banana'
+
+
+class BonusType(ExtendedEnum):
+    FREEZE = auto()
+    GRAVITY = auto()
+
+
+class InputSource(ExtendedEnum):
     FINGER = 'finger'
     HAND = 'hand'
     MOUSE = 'mouse'
 
 
-class Orientation(Enum):
+class Orientation(ExtendedEnum):
     HORIZONTAL = auto()
     VERTICAL = auto()
 
 
-class GameMode(Enum):
+class GameMode(ExtendedEnum):
     CLASSIC = auto()
     ARCADE = auto()
     ZEN = auto()

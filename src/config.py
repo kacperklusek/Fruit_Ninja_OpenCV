@@ -70,7 +70,8 @@ ArcadeModeConfig = namedtuple('ClassicModeConfig', [
     'BACKGROUND_PATH',
     'GRAVITY_CHANGE_DURATION',
     'FREEZE_DURATION',
-    'FREEZE_RATIO'
+    'FREEZE_RATIO',
+    'BOMB_COLLISION_POINTS_DECREASE'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -163,7 +164,7 @@ effects_config = EffectsConfig(
     COMBO_DISPLAY_DURATION=2,
     DISPLAY_SPLASH=True,
     SPLASH_VISIBILITY_DURATION=2,
-    SPLASH_ALPHA=125
+    SPLASH_ALPHA=125,
 )
 
 spawn_frequency = SpawnFrequencyConfig(
@@ -191,7 +192,8 @@ arcade_mode_config = ArcadeModeConfig(
     TIME=60,
     GRAVITY_CHANGE_DURATION=5,
     FREEZE_DURATION=5,
-    FREEZE_RATIO=.4
+    FREEZE_RATIO=.4,
+    BOMB_COLLISION_POINTS_DECREASE=10
 )
 
 mouse_input_config = MouseInputConfig(

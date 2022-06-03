@@ -6,7 +6,7 @@ from src.app.effects.visual import Trail
 from src.config import image_path
 
 from src.app.items.item import Item
-from src.app.utils.enums import FruitType, ItemType
+from src.app.utils.enums import FruitType, ItemType, BonusType, BonusFruitType
 from src.app.utils.image_loader import ImageLoader
 from src.app.effects.visual import Splash
 from src.config import game_config, effects_config
@@ -29,9 +29,9 @@ def splash_image_path(fruit_name):
 class Fruit(Item):
     SLICE_RECOIL = 100
 
-    def __init__(self, fruit_type, group: Group):
-        Item.__init__(self, fruit_image_path(fruit_type), group)
-        self.splash_image = ImageLoader.load_png(splash_image_path(fruit_type), -1, game_config.ITEM_SIZE)
+    def __init__(self, fruit_name, group: Group):
+        Item.__init__(self, fruit_image_path(fruit_name), group)
+        self.splash_image = ImageLoader.load_png(splash_image_path(fruit_name), -1, game_config.ITEM_SIZE)
 
     def slice(self, effects_group: Group):
         slice1 = FruitSlice(slice_image_path(self.image_path, 1), effects_group)
@@ -55,25 +55,26 @@ class Fruit(Item):
 class PlainFruit(Fruit):
     TYPE = ItemType.PLAIN_FRUIT
 
-    def __init__(self, fruit_type: FruitType, group: Group):
-        Fruit.__init__(self, fruit_type, group)
+    def __init__(self, fruit_name: FruitType, group: Group):
+        Fruit.__init__(self, fruit_name, group)
 
 
 class FruitSlice(Item):
-    def __init__(self, image_path: str, group: Group):
-        Item.__init__(self, image_path, group)
+    def __init__(self, fruit_name: str, group: Group):
+        Item.__init__(self, fruit_name, group)
 
 
-# TODO
-# class GravityFruit(Fruit):
-#     # TODO - add type
-#
-#     def __init__(self):
-#         super().__init__(fruit_image_path('gravity-banana'))
-#
-#
-# class FreezeFruit(Fruit):
-#     # TODO - add type
-#
-#     def __init__(self):
-#         super().__init__(fruit_image_path('freeze-banana'))
+class GravityFruit(Fruit):
+    TYPE = ItemType.BONUS_FRUIT
+    BONUS_TYPE = BonusType.GRAVITY
+
+    def __init__(self, fruit_name: BonusFruitType, group):
+        super().__init__(fruit_name, group)
+
+
+class FreezeFruit(Fruit):
+    TYPE = ItemType.BONUS_FRUIT
+    BONUS_TYPE = BonusType.FREEZE
+
+    def __init__(self, fruit_name: BonusFruitType, group):
+        super().__init__(fruit_name, group)

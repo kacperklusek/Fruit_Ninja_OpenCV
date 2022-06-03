@@ -25,13 +25,13 @@ class GameModeCommon(ABC):
             window_config.WIDTH,
             window_config.HEIGHT
         ), pygame.SRCALPHA)
-        self.combo_surface = Surface((
+        self.labels_surface = Surface((
             window_config.WIDTH,
             window_config.HEIGHT
         ), pygame.SRCALPHA)
 
         self.effects = Group()
-        self.combo = Group()
+        self.labels = Group()
         self.hud_elements = []
 
     def notify_item_spawn(self, item):
@@ -40,20 +40,20 @@ class GameModeCommon(ABC):
 
     def update(self):
         self.hud_surface.fill(self.EMPTY_COLOR)
-        self.combo_surface.fill(self.EMPTY_COLOR)
+        self.labels_surface.fill(self.EMPTY_COLOR)
         self.effects_surface.fill(self.EMPTY_COLOR)
 
         self.effects.update(surface=self.effects_surface)
-        self.combo.update()
+        self.labels.update()
 
         self.effects.draw(self.effects_surface)
-        self.combo.draw(self.combo_surface)
+        self.labels.draw(self.labels_surface)
 
         for hud_element in self.hud_elements:
             hud_element.blit(self.hud_surface)
 
         self.game.screen.blit(self.effects_surface, (0, 0))
-        self.game.screen.blit(self.combo_surface, (0, 0))
+        self.game.screen.blit(self.labels_surface, (0, 0))
         self.game.screen.blit(self.hud_surface, (0, 0))
 
     def handle_fruit_collision(self, fruit):

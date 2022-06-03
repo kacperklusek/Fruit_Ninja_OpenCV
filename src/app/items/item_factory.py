@@ -1,7 +1,7 @@
 import random
 from pygame.sprite import Group
-from src.app.utils.enums import ItemType, FruitType
-from src.app.items.fruit import PlainFruit  #, GravityFruit, FreezeFruit
+from src.app.utils.enums import ItemType, FruitType, BonusType
+from src.app.items.fruit import PlainFruit, FreezeFruit, GravityFruit, BonusFruitType
 from src.app.items.bomb import Bomb
 
 
@@ -13,10 +13,8 @@ class ItemFactory:
                 return ItemFactory.create_plain_fruit(group)
             case ItemType.BOMB:
                 return ItemFactory.create_bomb(group)
-            # case ItemType.FREEZE_FRUIT:
-            #     return FreezeFruit()
-            # case ItemType.GRAVITY_FRUIT:
-            #     return GravityFruit()
+            case ItemType.BONUS_FRUIT:
+                return ItemFactory.create_bonus_fruit(group)
 
     @staticmethod
     def create_plain_fruit(group):
@@ -26,3 +24,12 @@ class ItemFactory:
     @staticmethod
     def create_bomb(group):
         return Bomb(group)
+
+    @staticmethod
+    def create_bonus_fruit(group):
+        item_type = random.choice(BonusType.names())
+        match item_type:
+            case BonusType.FREEZE.name:
+                return FreezeFruit(BonusFruitType.FREEZE.value, group)
+            case BonusType.GRAVITY.name:
+                return GravityFruit(BonusFruitType.GRAVITY.value, group)
