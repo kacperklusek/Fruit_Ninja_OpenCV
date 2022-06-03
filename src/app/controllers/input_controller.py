@@ -45,12 +45,16 @@ class InputController(ABC):
         self._mutex.release()
 
     def clear_history(self):
+        self._mutex.acquire(True)
         self._points_history.clear()
+        self._mutex.release()
 
     def update_blade(self):
+        self._mutex.acquire(True)
         while self._points_history and \
                 time.time() - self._points_history[0].time_added >= blade_config.VISIBILITY_DURATION:
             self._points_history.popleft()
+        self._mutex.release()
 
     @abstractmethod
     def get_points_for_collision(self):
@@ -116,7 +120,6 @@ class CameraInput(InputController, ABC):
             points.popleft()
 
         return points
-
 
 
 class FingerInput(CameraInput):

@@ -1,3 +1,4 @@
+import sys
 import time
 from enum import Enum, auto
 from typing import Union
@@ -104,7 +105,7 @@ class Animation:
 
     def run(self):
         i = 0
-        while i < self.repetitions:
+        while i < self.repetitions and not self._finished:
             self.reset()
             self._run_animation_frames(i)
             i += 1

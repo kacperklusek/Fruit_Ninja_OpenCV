@@ -1,21 +1,15 @@
-import pygame
-from pygame import Surface
 from pygame.sprite import Group
 from src.app.controllers.score_controller import ScoreController
 from abc import ABC
 
 from src.app.game_modes.game_mode import GameModeCommon
-from src.config import single_player_mode_config
 
 
 class SinglePlayerMode(GameModeCommon, ABC):
     def __init__(self, game):
         GameModeCommon.__init__(self, game)
         self.score_controller = ScoreController(self.labels)
-        self.items_surface = Surface((
-            single_player_mode_config.BOARD_WIDTH,
-            single_player_mode_config.BOARD_HEIGHT
-        ), pygame.SRCALPHA)
+        self.items_surface = self._create_surface()
 
         # Current state
         self._fruits = Group()
@@ -48,7 +42,7 @@ class SinglePlayerMode(GameModeCommon, ABC):
 
     def kill_fruits(self):
         for fruit in self._fruits:
-            fruit.kill()  # TODO - add splash effect
+            fruit.kill()
 
     def blit_items(self):
         self._fruits.update(out_of_bounds_handler=self.handle_out_of_bounds)

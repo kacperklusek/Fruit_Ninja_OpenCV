@@ -33,9 +33,9 @@ class Fruit(Item):
         Item.__init__(self, fruit_image_path(fruit_name), group)
         self.splash_image = ImageLoader.load_png(splash_image_path(fruit_name), -1, game_config.ITEM_SIZE)
 
-    def slice(self, effects_group: Group):
-        slice1 = FruitSlice(slice_image_path(self.image_path, 1), effects_group)
-        slice2 = FruitSlice(slice_image_path(self.image_path, 2), effects_group)
+    def slice(self, slices_group: Group, effects_group: Group):
+        slice1 = FruitSlice(slice_image_path(self.image_path, 1), slices_group)
+        slice2 = FruitSlice(slice_image_path(self.image_path, 2), slices_group)
 
         recoil_vector = self.SLICE_RECOIL * Vector2(math.cos(self.angle), math.sin(self.angle))
         slice1.throw(self.position - Vector2(1, 0), self.velocity - recoil_vector, self.angle, self.angular_velocity)

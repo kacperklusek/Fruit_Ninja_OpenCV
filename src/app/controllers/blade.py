@@ -3,7 +3,7 @@ from src.config import blade_config as config
 from src.app.utils.enums import InputSource
 from src.app.controllers.input_controller import FingerInput, HandInput, MouseInput
 from src.app.utils.point import Point
-from src.config import game_config, window_config
+from src.config import window_config
 
 
 class Blade(pygame.sprite.Sprite):  # TODO - maybe move the blade effect blade to the effects directory and move the logic to some controller

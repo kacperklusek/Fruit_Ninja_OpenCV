@@ -1,3 +1,5 @@
+import sys
+
 import pygame.display
 from pygame.font import Font
 
@@ -124,6 +126,10 @@ class Menu:
         for animation in self.animations:
             animation.start()
 
+    def finish_animations(self):
+        for animation in self.animations:
+            animation.finish()
+
     def blit_elements(self):
         for element in self.background_elements:
             element.blit(self.game.background_surface)
@@ -155,6 +161,7 @@ class Menu:
 
     def switch_menu(self, target_menu: MenuInput):
         self.run_display = False
+        self.finish_animations()
         self.game.display_menu(target_menu)
 
     def update(self):
@@ -217,8 +224,6 @@ class MainMenu(Menu):
         self.add_animated_elements(self.original_button, self.multiplayer_button)
         self.add_background_elements(self.backdrop_image, self.fruit_text_image, self.ninja_text_image)
         self.add_elements(self.new_text_image)
-
-        # TODO !!!!! - exit all animation threads when closing the game
 
         self.add_animations(
             Animation(self.backdrop_image, [

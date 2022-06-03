@@ -65,6 +65,7 @@ class Game:
         self.remaining_screen_shake_duration = 0
 
     def exit(self):
+        self.curr_menu.finish_animations()
         self.blade.destroy()
         pygame.quit()
         sys.exit()

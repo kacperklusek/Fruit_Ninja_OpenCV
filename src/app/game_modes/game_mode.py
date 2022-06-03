@@ -17,19 +17,12 @@ class GameModeCommon(ABC):
         self.game = game
         self.time_controller = TimeController()
 
-        self.effects_surface = Surface((
-            window_config.WIDTH,
-            window_config.HEIGHT
-        ), pygame.SRCALPHA)
-        self.hud_surface = Surface((
-            window_config.WIDTH,
-            window_config.HEIGHT
-        ), pygame.SRCALPHA)
-        self.labels_surface = Surface((
-            window_config.WIDTH,
-            window_config.HEIGHT
-        ), pygame.SRCALPHA)
+        self.effects_surface = self._create_surface()
+        self.fruit_slices_surface = self._create_surface()
+        self.hud_surface = self._create_surface()
+        self.labels_surface = self._create_surface()
 
+        self.fruit_slices = Group()
         self.effects = Group()
         self.labels = Group()
         self.hud_elements = []
@@ -42,10 +35,13 @@ class GameModeCommon(ABC):
         self.hud_surface.fill(self.EMPTY_COLOR)
         self.labels_surface.fill(self.EMPTY_COLOR)
         self.effects_surface.fill(self.EMPTY_COLOR)
+        self.fruit_slices_surface.fill(self.EMPTY_COLOR)
 
         self.effects.update(surface=self.effects_surface)
+        self.fruit_slices.update()
         self.labels.update()
 
+        self.fruit_slices.draw(self.fruit_slices_surface)
         self.effects.draw(self.effects_surface)
         self.labels.draw(self.labels_surface)
 
@@ -53,12 +49,13 @@ class GameModeCommon(ABC):
             hud_element.blit(self.hud_surface)
 
         self.game.screen.blit(self.effects_surface, (0, 0))
+        self.game.screen.blit(self.fruit_slices_surface, (0, 0))
         self.game.screen.blit(self.labels_surface, (0, 0))
         self.game.screen.blit(self.hud_surface, (0, 0))
 
     def handle_fruit_collision(self, fruit):
         SoundController.play_splatter_sound()
-        fruit.slice(self.effects)
+        fruit.slice(self.fruit_slices, self.effects)
         fruit.kill()
 
     def _spawn_fruit_slices(self, fruit):
@@ -75,3 +72,9 @@ class GameModeCommon(ABC):
     @abstractmethod
     def blit_items(self):
         pass
+
+    def _create_surface(self):
+        return Surface((
+            window_config.WIDTH,
+            window_config.HEIGHT
+        ), pygame.SRCALPHA)
