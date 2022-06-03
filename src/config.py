@@ -1,4 +1,5 @@
 from collections import namedtuple
+from pygame.color import Color
 import mediapipe as mp
 import os
 
@@ -25,6 +26,7 @@ GameConfig = namedtuple('GameConfig', [
     'INPUT_SOURCE',
     'FONT',
     'FONT_SIZE',
+    'ITEM_SIZE'
 ])
 
 BladeConfig = namedtuple('BladeConfig', [
@@ -54,13 +56,21 @@ SinglePlayerModeConfig = namedtuple('SinglePlayerModeConfig', [
 ])
 
 ClassicModeConfig = namedtuple('ClassicModeConfig', [
-    'LIVES',  # TODO - rename to lives
+    'LIVES',
     'BACKGROUND_PATH'
 ])
 
 ZenModeConfig = namedtuple('ClassicModeConfig', [
     'BACKGROUND_PATH',
     'TIME'
+])
+
+ArcadeModeConfig = namedtuple('ClassicModeConfig', [
+    'TIME',
+    'BACKGROUND_PATH',
+    'GRAVITY_CHANGE_DURATION',
+    'FREEZE_DURATION',
+    'FREEZE_RATIO'
 ])
 
 SpawnFrequencyConfig = namedtuple('SpawnFrequencyConfig', [
@@ -104,9 +114,18 @@ HealthBarConfig = namedtuple('HealthBarConfig', [
 ])
 
 EffectsConfig = namedtuple('EffectsConfig', [
+    'DISPLAY_ITEM_SLICES',
     'DISPLAY_ITEM_TRAIL',
     'COMBO_FONT_SIZE',
-    'COMBO_DISPLAY_DURATION'
+    'COMBO_DISPLAY_DURATION',
+    'COMBO_TEXT_COLOR',
+    'ITEM_TRAIL_COLOR',
+    'ITEM_TRAIL_MAX_ALPHA',
+    'ITEM_TRAIL_PARTS_COUNT',
+    'ITEM_TRAIL_SPAWN_INTERVAL',
+    'DISPLAY_SPLASH',
+    'SPLASH_VISIBILITY_DURATION',
+    'SPLASH_ALPHA'
 ])
 
 
@@ -114,7 +133,8 @@ game_config = GameConfig(
     FPS=float('inf'),  # Unlimited
     INPUT_SOURCE=InputSource.MOUSE,
     FONT=os.path.join('assets', 'fonts', 'go3v2.ttf'),
-    FONT_SIZE=25
+    FONT_SIZE=25,
+    ITEM_SIZE=100
 )
 
 window_config = WindowConfig(
@@ -132,9 +152,18 @@ blade_config = BladeConfig(
 )
 
 effects_config = EffectsConfig(
+    DISPLAY_ITEM_SLICES=True,
     DISPLAY_ITEM_TRAIL=True,
+    ITEM_TRAIL_COLOR=Color(255, 255, 255, 0),
+    ITEM_TRAIL_MAX_ALPHA=50,
+    ITEM_TRAIL_PARTS_COUNT=10,
+    ITEM_TRAIL_SPAWN_INTERVAL=.01,
     COMBO_FONT_SIZE=40,
-    COMBO_DISPLAY_DURATION=2
+    COMBO_TEXT_COLOR=Color(255, 201, 54),
+    COMBO_DISPLAY_DURATION=2,
+    DISPLAY_SPLASH=True,
+    SPLASH_VISIBILITY_DURATION=2,
+    SPLASH_ALPHA=125
 )
 
 spawn_frequency = SpawnFrequencyConfig(
@@ -155,6 +184,14 @@ classic_mode_config = ClassicModeConfig(
 zen_mode_config = ZenModeConfig(
     BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
     TIME=90
+)
+
+arcade_mode_config = ArcadeModeConfig(
+    BACKGROUND_PATH=image_path('backgrounds', 'background.jpg'),
+    TIME=60,
+    GRAVITY_CHANGE_DURATION=5,
+    FREEZE_DURATION=5,
+    FREEZE_RATIO=.4
 )
 
 mouse_input_config = MouseInputConfig(

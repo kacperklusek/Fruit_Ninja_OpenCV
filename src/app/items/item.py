@@ -5,7 +5,7 @@ import random
 from pygame.math import Vector2
 from src.app.controllers.gravity_controller import GravityController
 from src.app.controllers.time_controller import TimeController
-from src.config import window_config
+from src.config import window_config, game_config
 from src.app.utils.image_loader import ImageLoader
 
 
@@ -17,7 +17,7 @@ class Item(Sprite):
         self.time_controller = TimeController()
         self.velocity = Vector2(0, 0)
         self.position = Vector2(0, 0)
-        self.original_image = ImageLoader.load_png(self.image_path, -1, 100)
+        self.original_image = ImageLoader.load_png(self.image_path, -1, game_config.ITEM_SIZE)
         self.image = self.original_image
         self.rect = self.image.get_rect()  # TODO
         self.rect.center = self.image.get_rect().center  # TODO

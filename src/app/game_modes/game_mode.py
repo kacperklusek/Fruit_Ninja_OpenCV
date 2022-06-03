@@ -58,7 +58,7 @@ class GameModeCommon(ABC):
 
     def handle_fruit_collision(self, fruit):
         SoundController.play_splatter_sound()
-        fruit.slice(self.effects, effects_config.DISPLAY_ITEM_TRAIL)
+        fruit.slice(self.effects)
         fruit.kill()
 
     def _spawn_fruit_slices(self, fruit):
