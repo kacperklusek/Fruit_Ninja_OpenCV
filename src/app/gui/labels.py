@@ -31,11 +31,11 @@ class AnimatedLabel(Sprite):
         self.group = group
         group.add(self)
 
-        self.animation = Animation(self, display_duration, [
+        self.animation = Animation(self, [
             KeyFrame(0, scale_animation(0, 1, cubic_timing)),
             KeyFrame(.2, None),
             KeyFrame(.8, scale_animation(1, 0, cubic_timing))
-        ])
+        ], display_duration)
         self.scale = 0
 
     @property

@@ -9,6 +9,7 @@ from src.app.utils.image_loader import ImageLoader
 from src.app.gui.bars import ProgressBar
 from src.app.utils.enums import Orientation
 from .common import MenuElement, AnimatedMenuElement
+from ..controllers.input_controller import MouseInput
 
 
 class Button(MenuElement):
@@ -68,8 +69,8 @@ class TimedButton(Button):
     @property
     def checked(self):
         # Do not apply timeout while using the MouseInput controller
-        # if isinstance(self.game.blade.input_source, MouseInput):  # TODO - uncomment this line after the game is finished
-        #     return self.game.blade.collides(self)
+        if isinstance(self.game.blade.input_source, MouseInput):
+            return self.game.blade.collides(self)
 
         curr_time = time.time()
         if not self.game.blade.collides(self):
@@ -133,6 +134,8 @@ class FruitButton(Button, AnimatedMenuElement):
         self.inner_rotation_speed = inner_rotation_speed
         self.outer_rotation_speed = outer_rotation_speed
         self.position = position
+        self.scale = 1
+        self.alpha = 255
 
     @property
     def rect(self):
@@ -162,8 +165,13 @@ class FruitButton(Button, AnimatedMenuElement):
         return pygame.transform.rotate(image, new_angle), new_angle
 
     def blit(self, surface):
-        self._blit_centered(self.inner_image, surface)
-        self._blit_centered(self.outer_image, surface)
+        # TODO - clear this code
+        inner_image = pygame.transform.scale(self.inner_image, (self.scale * self.inner_image.get_width(), self.scale * self.inner_image.get_height()))
+        outer_image = pygame.transform.scale(self.outer_image, (self.scale * self.width, self.scale * self.height))
+        inner_image.set_alpha(self.alpha)
+        outer_image.set_alpha(self.alpha)
+        self._blit_centered(inner_image, surface)
+        self._blit_centered(outer_image, surface)
 
     def _blit_centered(self, image, surface):
         surface.blit(image, self.position - Vector2(image.get_width() // 2, image.get_height() // 2))

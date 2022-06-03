@@ -1,5 +1,17 @@
 import time
+from enum import Enum, auto
+from typing import Union
 from threading import Thread
+
+from src.app.utils.timeouts import Timeout
+from src.config import game_config
+
+
+class AnimationFillMode(Enum):
+    FORWARDS = auto()
+    BACKWARDS = auto()
+    BOTH = auto()
+    NONE = auto()
 
 
 class KeyFrame:
@@ -9,17 +21,37 @@ class KeyFrame:
 
 
 class Animation:
-    def __init__(self, animated_element, duration, keyframes=[], fps: int = 144):
-        self.animated_element = animated_element
-        self.duration = duration
+    ANIMATED_PROPERTIES = (
+        'position',
+        'scale',
+        'alpha'
+    )
 
-        self._keyframes: [KeyFrame] = keyframes
+    def __init__(self,
+                 animated_element,
+                 keyframes: [KeyFrame],
+                 duration: Union[int, float],
+                 delay: Union[int, float] = 0,
+                 repetitions: [int, float('inf')] = 1,
+                 fps: int = game_config.FPS,
+                 animation_fill_mode: AnimationFillMode = AnimationFillMode.NONE):
+        self.animated_element = animated_element
+        self.keyframes = keyframes
+        self.duration = duration
+        self.delay = delay
+        self.repetitions = repetitions
+        self.animation_fill_mode = animation_fill_mode
+
         self._start_time = 0
         self._current_frame_idx = 0
         self._thread = None
+        self._timeout = None
         self._last_frame_time = 0
         self._refresh_interval = 1 / fps
         self._finished = False
+
+        self.__properties_copy = self._copy_animated_properties()
+        self._apply_fill_mode()
 
     def __len__(self):
         return len(self.keyframes)
@@ -59,16 +91,58 @@ class Animation:
     def start(self):
         self.keyframes.append(KeyFrame(1, None))
         self._thread = Thread(target=self.run)
+        self._timeout = Timeout(self._start_after_delay, self.delay)
+
+    def finish(self):
+        self._finished = True
+        self._apply_fill_mode()
+
+    def reset(self):
+        self._start_time = time.time()
+        self._last_frame_time = self._start_time
+        self._current_frame_idx = 0
+
+    def run(self):
+        i = 0
+        while i < self.repetitions:
+            self.reset()
+            self._run_animation_frames(i)
+            i += 1
+
+    def _apply_fill_mode(self):
+        if self.finished:
+            # Reset element properties after animation
+            if self.animation_fill_mode in {AnimationFillMode.NONE, AnimationFillMode.BACKWARDS}:
+                self._restore_animated_properties()
+        elif not self.started:
+            # Apply initial animations
+            if self.keyframes and self.keyframes[0].function:
+                self.keyframes[0].function(self.animated_element, 0)
+
+    def _copy_animated_properties(self):
+        copy = {}
+        for prop in self.ANIMATED_PROPERTIES:
+            if prop in dir(self.animated_element):
+                copy[prop] = getattr(self.animated_element, prop)
+        return copy
+
+    def _restore_animated_properties(self):
+        for prop, value in self.__properties_copy.items():
+            setattr(self.animated_element, prop, value)
+
+    def _start_after_delay(self):
         self._start_time = time.time()
         self._last_frame_time = self._start_time
         self._thread.start()
 
-    def run(self):
+    def _run_animation_frames(self, current_repetition):
         while self.next_keyframe:
             curr_time = time.time()
             percent = (curr_time - self._start_time) / self.duration
+
             if percent >= 1:
-                self._finished = True
+                if current_repetition == self.repetitions:
+                    self.finish()
                 return
 
             frame_duration_percent = self.next_keyframe.start_percent - self.current_keyframe.start_percent
@@ -101,5 +175,27 @@ def alpha_animation(from_alpha, to_alpha, animation_timing_function=lambda x: x)
     return apply
 
 
+def position_animation(from_vector, to_vector, animation_timing_function=lambda x: x):
+    def apply(element, percent):
+        percent = animation_timing_function(percent)
+        delta_vector = to_vector - from_vector
+        element.position = from_vector + percent * delta_vector
+    return apply
+
+
+def fade_animation(from_scale, to_scale, from_alpha, to_alpha, animation_timing_function=lambda x: x):
+    def apply(element, percent):
+        scale_animation(from_scale, to_scale, animation_timing_function)(element, percent)
+        alpha_animation(from_alpha, to_alpha, animation_timing_function)(element, percent)
+    return apply
+
+
 def cubic_timing(percent):
     return percent ** 3
+
+
+def cubic_bezier(p0, p1, p2, p3):  # TODO - doesn't work as it should idk why
+    def apply_timing(percent):
+        t = percent
+        return (1 - t)**3 * p0 + 3*(1 - t)**2 * t * p1 + 3*(1 - t) * t**2 * p2 + t**3 * p3
+    return apply_timing

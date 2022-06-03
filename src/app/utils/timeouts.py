@@ -28,3 +28,25 @@ class Interval:
     def clear(self):
         self.is_running = False
         self.thread.join()
+
+
+class Timeout:
+    def __init__(self, callback, timeout, mutex=None, *args, **kwargs):
+        self.callback = callback
+        self.timeout = timeout
+        self.mutex = mutex or Lock()
+        self.is_cleared = False
+        self.thread = Thread(target=self.run, args=args, kwargs=kwargs)
+        self.thread.start()
+
+    def run(self, *args, **kwargs):
+        time.sleep(self.timeout)
+        if self.is_cleared:
+            return
+        self.mutex.acquire(True)
+        self.callback(*args, **kwargs)
+        self.mutex.release()
+
+    def clear(self):
+        self.is_cleared = True
+        self.thread.join()

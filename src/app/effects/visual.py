@@ -110,10 +110,10 @@ class Splash(Sprite):
         self.group = group
         self.alpha = effects_config.SPLASH_ALPHA
 
-        self.animation = Animation(self, effects_config.SPLASH_VISIBILITY_DURATION, [
+        self.animation = Animation(self, [
             KeyFrame(0, None),
             KeyFrame(.75, alpha_animation(self.alpha, 0))
-        ])
+        ], effects_config.SPLASH_VISIBILITY_DURATION)
         self.group.add(self)
 
     @property

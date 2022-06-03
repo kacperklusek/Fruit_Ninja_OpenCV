@@ -9,6 +9,8 @@ from pygame.math import Vector2
 from pygame.color import Color
 from enum import Enum, auto
 from .common import MenuElement
+from ..effects.animations import Animation, KeyFrame, position_animation, cubic_timing, cubic_bezier, scale_animation, \
+    fade_animation, AnimationFillMode
 from ..utils.enums import GameMode
 
 
@@ -93,7 +95,15 @@ class Menu:
         self.background_elements: [MenuElement] = []
         self.animated_elements: [MenuElement] = [self.quit_button]
         self.elements: [MenuElement] = [*self.animated_elements]
+        self.animations: [Animation] = [
+            Animation(self.quit_button, [
+                KeyFrame(0, fade_animation(.2, 1, 0, 255))
+            ], .3)
+        ]
         self.run_display = True
+
+    def add_animations(self, *animations):
+        self.animations.extend(animations)
 
     def add_animated_elements(self, *elements):
         self.animated_elements.extend(elements)
@@ -109,6 +119,10 @@ class Menu:
     def animate(self):
         for element in self.animated_elements:
             element.animate()
+
+    def start_animations(self):
+        for animation in self.animations:
+            animation.start()
 
     def blit_elements(self):
         for element in self.background_elements:
@@ -130,6 +144,7 @@ class Menu:
             self.game.exit()
 
     def display(self):
+        self.start_animations()
         self.run_display = True
         while self.run_display:
             self.update()
@@ -203,6 +218,48 @@ class MainMenu(Menu):
         self.add_background_elements(self.backdrop_image, self.fruit_text_image, self.ninja_text_image)
         self.add_elements(self.new_text_image)
 
+        # TODO !!!!! - exit all animation threads when closing the game
+
+        self.add_animations(
+            Animation(self.backdrop_image, [
+                KeyFrame(0, position_animation(
+                    self.backdrop_image.position - Vector2(0, self.backdrop_image.height),
+                    self.backdrop_image.position
+                ))
+            ], .3),
+            Animation(self.fruit_text_image, [
+                KeyFrame(0, position_animation(
+                    self.fruit_text_image.position - Vector2(0, self.backdrop_image.height),
+                    self.fruit_text_image.position
+                ))
+            ], .3, .2, animation_fill_mode=AnimationFillMode.BACKWARDS),
+            Animation(self.ninja_text_image, [
+                KeyFrame(0, position_animation(
+                    self.ninja_text_image.position - Vector2(0, self.backdrop_image.height),
+                    self.ninja_text_image.position
+                ))
+            ], .3, .4, animation_fill_mode=AnimationFillMode.BACKWARDS),
+            Animation(self.new_text_image, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .5),
+            Animation(self.new_text_image, [
+                KeyFrame(0, position_animation(
+                    self.new_text_image.position,
+                    self.new_text_image.position + Vector2(0, 10)
+                )),
+                KeyFrame(.5, position_animation(
+                    self.new_text_image.position + Vector2(0, 10),
+                    self.new_text_image.position
+                ))
+            ], 1.5, .8, float('inf'), animation_fill_mode=AnimationFillMode.BACKWARDS),
+            Animation(self.original_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .3),
+            Animation(self.multiplayer_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .5)
+        )
+
     def handle_input(self):
         Menu.handle_input(self)
         match self.get_input():
@@ -261,6 +318,24 @@ class OriginalModeMenu(Menu):
         self.add_animated_elements(self.classic_button, self.arcade_button, self.zen_button)
         self.add_elements(self.back_button)
 
+        self.add_animations(
+            Animation(self.back_button, [
+                KeyFrame(0, position_animation(
+                    self.back_button.position + Vector2(0, self.back_button.height * 2),
+                    self.back_button.position
+                ))
+            ], .3, .1, animation_fill_mode=AnimationFillMode.BACKWARDS),
+            Animation(self.classic_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .2),
+            Animation(self.arcade_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .3),
+            Animation(self.zen_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .4)
+        )
+
     def handle_input(self):
         Menu.handle_input(self)
         match self.get_input():
@@ -318,6 +393,21 @@ class MultiplayerModeMenu(Menu):
 
         self.add_animated_elements(self.classic_attack_button, self.zen_duel_button)
         self.add_elements(self.back_button)
+
+        self.add_animations(
+            Animation(self.back_button, [
+                KeyFrame(0, position_animation(
+                    self.back_button.position + Vector2(0, self.back_button.height * 2),
+                    self.back_button.position
+                ))
+            ], .3, .1, animation_fill_mode=AnimationFillMode.BACKWARDS),
+            Animation(self.classic_attack_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .2),
+            Animation(self.zen_duel_button, [
+                KeyFrame(0, fade_animation(0, 1, 0, 255))
+            ], .3, .3)
+        )
 
     def handle_input(self):
         Menu.handle_input(self)

@@ -10,8 +10,7 @@ from src.app.utils.enums import GameMode
 from src.app.effects.sounds import SoundController
 from src.app.controllers.time_controller import TimeController
 from src.app.game_modes.singleplayer.classic_mode import ClassicMode
-from src.app.gui.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, GameOverMenu, MenuInput, \
-    SinglePlayerGameOverMenu
+from src.app.gui.menus import MainMenu, OriginalModeMenu, MultiplayerModeMenu, MenuInput, SinglePlayerGameOverMenu
 
 from src.config import window_config, game_config
 
@@ -40,15 +39,11 @@ class Game:
         self.blade = Blade(self, game_config.INPUT_SOURCE)
 
         # Game state
-        self.game_active = True  # TODO
+        self.game_active = True
         self.curr_game = None
 
         # Menus
-        self.main_menu = MainMenu(self)
-        self.original_menu = OriginalModeMenu(self)
-        self.multiplayer_menu = MultiplayerModeMenu(self)
-        self.game_over_menu = GameOverMenu(self)
-        self.curr_menu = self.original_menu
+        self.curr_menu = MainMenu(self)
 
         # Screen Shaking
         self.render_offset = [0, 0]
@@ -83,11 +78,11 @@ class Game:
         self.blade.clear()
         match menu:
             case MenuInput.MAIN:
-                self.curr_menu = self.main_menu
+                self.curr_menu = MainMenu(self)
             case MenuInput.ORIGINAL:
-                self.curr_menu = self.original_menu
+                self.curr_menu = OriginalModeMenu(self)
             case MenuInput.MULTIPLAYER:
-                self.curr_menu = self.multiplayer_menu
+                self.curr_menu = MultiplayerModeMenu(self)
             case MenuInput.SINGLE_PLAYER_GAME_OVER_MENU:
                 self.curr_menu = SinglePlayerGameOverMenu(self, self.curr_game.score)
             case _:
