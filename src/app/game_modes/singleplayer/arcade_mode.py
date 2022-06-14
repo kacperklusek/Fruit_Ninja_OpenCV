@@ -41,13 +41,13 @@ class ArcadeMode(SinglePlayerMode):
         if not self.gravity_bonus_enabled:
             self.gravity_bonus_enabled = True
             self.gravity_controller.gravity *= -1
-            self.gravity_start_time = time.time()
+        self.gravity_start_time = time.time()
 
     def handle_freeze(self):
         if not self.freeze_bonus_enabled:
             self.freeze_bonus_enabled = True
             self.time_controller.ratio = arcade_mode_config.FREEZE_RATIO
-            self.freeze_bonus_start_time = time.time()
+        self.freeze_bonus_start_time = time.time()
 
     def handle_fruit_collision(self, fruit):
         SinglePlayerMode.handle_fruit_collision(self, fruit)
@@ -99,10 +99,10 @@ class ArcadeMode(SinglePlayerMode):
 
     def update_difficulty(self):
         gameplay_time = self.time_controller.total_elapsed_time
-        self.item_spawner.intensity = int(gameplay_time // 15) + 3
-        self.item_spawner.interval = .35 + max((1000 - gameplay_time) / 500, 0)
+        self.item_spawner.intensity = int(gameplay_time // 15) + 5
+        self.item_spawner.interval = .25 + max((1000 - gameplay_time) / 500, 0)
         self.item_spawner.bomb_probability = min(.15 + gameplay_time / 2000, .3)
-        self.item_spawner.bonus_item_probability = min(.05 + gameplay_time / 2000, .1)
+        self.item_spawner.bonus_item_probability = min(.05 + gameplay_time / 4000, .1)
 
     def handle_out_of_bounds(self):
         pass

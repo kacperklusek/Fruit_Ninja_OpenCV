@@ -40,7 +40,7 @@ class ZenMode(SinglePlayerMode):
     def update_difficulty(self):
         gameplay_time = self.time_controller.total_elapsed_time
         self.item_spawner.intensity = int(gameplay_time // 10) + 2
-        self.item_spawner.interval = .5 + max((1000 - gameplay_time) / 300, 0)
+        self.item_spawner.interval = .3 + max((2000 - gameplay_time) / 2000, 0)
 
     def handle_out_of_bounds(self):
         pass

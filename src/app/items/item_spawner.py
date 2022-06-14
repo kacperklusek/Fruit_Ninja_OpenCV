@@ -5,6 +5,7 @@ from pygame import Vector2
 from collections import deque
 from pygame.sprite import Group
 from src.app.items.item import Item
+from abc import ABC, abstractmethod
 from src.config import window_config
 from src.app.utils.enums import ItemType
 from src.app.items.item_factory import ItemFactory
@@ -34,7 +35,7 @@ class ItemToSpawn:
         self.item.throw(self.position, self.velocity)
 
 
-class ItemSpawner:
+class ItemSpawner(ABC):
     MIN_SPAWN_X = int(.25 * window_config.WIDTH)
     MAX_SPAWN_X = int(.75 * window_config.WIDTH)
 
@@ -86,8 +87,12 @@ class ItemSpawner:
     def create_items_to_spawn(self):
         random.choice(self.create_items_methods)()
 
+    @abstractmethod
+    def choose_item_type(self, bomb_probability):
+        pass
+
     def create_item_to_spawn(self, delay, bomb_probability):
-        item_type = ItemType.PLAIN_FRUIT if random.random() > bomb_probability else ItemType.BOMB
+        item_type = self.choose_item_type(bomb_probability)
         item = ItemFactory.create(item_type, self.bombs if item_type is ItemType.BOMB else self.fruits)
         x = random.randint(self.MIN_SPAWN_X, self.MAX_SPAWN_X)
         ratio = (x - self.MIN_SPAWN_X) / (self.MAX_SPAWN_X - self.MIN_SPAWN_X) - .5
@@ -130,9 +135,14 @@ class ClassicModeItemSpawner(ItemSpawner):
                 self.items_to_spawn.append(self.create_item_to_spawn(delay, 1))
 
     def create_sequence(self):
-        min_delay = max(int(self.interval / 8), 1)
-        max_delay = max(int(self.interval / 3), 1)
-        self._create_sequence_helper(random.randint(min_delay, max_delay), self.bomb_probability)
+        min_delay = self.interval / 8
+        max_delay = self.interval / 3
+        delay = (max_delay - min_delay) * random.random() + min_delay
+        print(delay)
+        self._create_sequence_helper(delay, self.bomb_probability)
+
+    def choose_item_type(self, bomb_probability):
+        return ItemType.PLAIN_FRUIT if random.random() > bomb_probability else ItemType.BOMB
 
     def _create_sequence_helper(self, delay, bomb_probability):
         bomb_probability = bomb_probability if random.random() < .75 else 0
@@ -142,8 +152,8 @@ class ClassicModeItemSpawner(ItemSpawner):
 
 
 class ZenModeItemSpawner(ItemSpawner):
-    MIN_SPAWN_X = int(-.1 * window_config.WIDTH)
-    MAX_SPAWN_X = int(1.1 * window_config.WIDTH)
+    MIN_SPAWN_X = 0
+    MAX_SPAWN_X = window_config.WIDTH
 
     def __init__(self, fruits: Group, bombs: Group, callback):
         ItemSpawner.__init__(self, fruits, bombs, callback)
@@ -156,9 +166,13 @@ class ZenModeItemSpawner(ItemSpawner):
         self._create_sequence_helper(0)
 
     def create_sequence(self):
-        min_delay = max(int(self.interval / 8), 1)
-        max_delay = max(int(self.interval / 3), 1)
-        self._create_sequence_helper(random.randint(min_delay, max_delay))
+        min_delay = self.interval / 4
+        max_delay = self.interval / 2
+        delay = (max_delay - min_delay) * random.random() + min_delay
+        self._create_sequence_helper(delay)
+
+    def choose_item_type(self, _):
+        return ItemType.PLAIN_FRUIT
 
     def _create_sequence_helper(self, delay):
         for i in range(max(random.randint(int(self.intensity // 2), int(self.intensity)), 1)):
@@ -188,21 +202,9 @@ class ArcadeModeItemSpawner(ClassicModeItemSpawner):
             raise ValueError(f'Bonus item probability probability must be between 0 and 1')
         self._bonus_item_probability = new_probability
 
-    def create_item_to_spawn(self, delay, bomb_probability):
+    def choose_item_type(self, bomb_probability):
         if random.random() > bomb_probability:
             if random.random() > self.bonus_item_probability:
-                item_type = ItemType.PLAIN_FRUIT
-            else:
-                item_type = ItemType.BONUS_FRUIT
-        else:
-            item_type = ItemType.BOMB
-
-        item = ItemFactory.create(item_type, self.bombs if item_type is ItemType.BOMB else self.fruits)
-        x = random.randint(self.MIN_SPAWN_X, self.MAX_SPAWN_X)
-        ratio = (x - self.MIN_SPAWN_X) / (self.MAX_SPAWN_X - self.MIN_SPAWN_X) - .5
-        v_x = int(-ratio * random.random() * window_config.WIDTH)
-        v_y = -random.randint(int(1.2 * window_config.HEIGHT), int(1.5 * window_config.HEIGHT))
-        position = Vector2(x, 1.1 * window_config.HEIGHT)
-        velocity = Vector2(v_x, v_y)
-
-        return ItemToSpawn(item, position, velocity, delay)
+                return ItemType.PLAIN_FRUIT
+            return ItemType.BONUS_FRUIT
+        return ItemType.BOMB
